@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://bmad-backletter.onrender.com",
     images: [
-      { url: "/window.svg", width: 1200, height: 630, alt: "Blackletter" },
+      { url: "/og/blackletter.svg", width: 1200, height: 630, alt: "Blackletter Systems" },
     ],
   },
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 import { landing } from "@/content/landing";
 
 export default function LandingPage() {
@@ -115,17 +116,25 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="hero" id="home" aria-labelledby="hero-heading">
         <div className="container">
-          <div className="hero-badge">{landing.tagline}</div>
-          <h1 id="hero-heading">{landing.hero.h1}</h1>
-          <p>{landing.hero.sub}</p>
-          <div className="cta-buttons">
+          <motion.div className="hero-badge" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            {landing.tagline}
+          </motion.div>
+          <motion.h1 id="hero-heading" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.05 }}>
+            {landing.hero.h1}
+          </motion.h1>
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
+            {landing.hero.sub}
+          </motion.p>
+          <motion.div className="cta-buttons" initial="hidden" animate="show" variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } }}>
             {landing.hero.ctas.map((c) => (
-              <a key={c.href} href={c.href} className={c.variant === "primary" ? "btn-primary" : "btn-secondary"} aria-label={c.label}>
+              <motion.a key={c.href} href={c.href} className={c.variant === "primary" ? "btn-primary" : "btn-secondary"} aria-label={c.label} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
                 {c.label}
-              </a>
+              </motion.a>
             ))}
-          </div>
-          <p className="text-xs" aria-label="privacy note" style={{ marginTop: 8, color: "var(--muted)" }}>{landing.hero.micro}</p>
+          </motion.div>
+          <motion.p className="text-xs" aria-label="privacy note" style={{ marginTop: 8, color: "var(--muted)" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+            {landing.hero.micro}
+          </motion.p>
         </div>
       </section>
 
@@ -135,15 +144,15 @@ export default function LandingPage() {
           <h2 id="value-props-heading">Why <span className="gradient-text">Blackletter</span></h2>
           <p style={{ color: "var(--muted)" }}>Compliance‑first, evidence‑first, UK‑centric.</p>
         </div>
-        <div className="features-grid">
+        <motion.div className="features-grid" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}>
           {landing.valueProps.map((v, i) => (
-            <div key={i} className="feature-card animate-on-scroll">
+            <motion.div key={i} className="feature-card animate-on-scroll" variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
               <div className="feature-icon" aria-hidden />
               <h3 style={{ marginTop: 8 }}>{v.title}</h3>
               <p style={{ color: "var(--muted)", marginTop: 4 }}>{v.body}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* How It Works */}
@@ -152,15 +161,15 @@ export default function LandingPage() {
           <h2 id="how-heading">How it <span className="gradient-text">works</span></h2>
           <p style={{ color: "var(--muted)" }}>Four steps to explainable findings.</p>
         </div>
-        <div className="features-grid">
+        <motion.div className="features-grid" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}>
           {landing.howItWorks.map((h, i) => (
-            <div key={i} className="feature-card animate-on-scroll" style={{ position: 'relative' }}>
+            <motion.div key={i} className="feature-card animate-on-scroll" style={{ position: 'relative' }} variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}>
               <div style={{ position:'absolute', top: 12, left: 12, width: 28, height: 28, borderRadius: 999, background: 'var(--grad-primary)', color: '#000', display:'grid', placeItems:'center', fontWeight:700, fontSize:12 }}>{i+1}</div>
               <h3 style={{ marginTop: 8, paddingLeft: 40 }}>{h.step}</h3>
               <p style={{ color: "var(--muted)", marginTop: 4, paddingLeft: 40 }}>{h.body}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* Compliance Focus band + Logic map */}

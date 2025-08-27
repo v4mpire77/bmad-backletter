@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#f4d03f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0b0b0c"/>
+  <g opacity="0.16">
+    <circle cx="200" cy="180" r="220" fill="url(#g)"/>
+    <circle cx="950" cy="420" r="180" fill="url(#g)"/>
+    <circle cx="500" cy="520" r="140" fill="url(#g)"/>
+  </g>
+  <text x="80" y="300" fill="#f7f7f8" font-family="Segoe UI, system-ui, -apple-system, sans-serif" font-weight="700" font-size="68">Blackletter Systems</text>
+  <text x="80" y="360" fill="#c9c9cc" font-family="Segoe UI, system-ui, -apple-system, sans-serif" font-weight="500" font-size="28">Compliance‑First AI for UK GDPR Contract Review</text>
+</svg>
+
