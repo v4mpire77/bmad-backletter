@@ -1,0 +1,26 @@
+Full-Stack Agent Orchestration Guide
+===================================
+
+This repository uses a filesystem message bus for coordinating Windows-based agents.
+
+1. Import the bus module and initialize directories:
+   ````powershell
+   Import-Module .\tools\bus.psm1
+   Initialize-Bus
+   ````
+2. Start the tray notifier for your role:
+   ````powershell
+   pwsh .\scripts\Start-Notifier.ps1 -Role orchestrator
+   ````
+3. Send a task to another role:
+   ````powershell
+   Send-Task -To po -From orchestrator -Title "Create story CHK-001"
+   ````
+4. Receive and complete tasks inside the agent loop:
+   ````powershell
+   $t = Receive-Task -Role po
+   # ...process...
+   Complete-Task -Task $t -Status ok -Note "Done"
+   ````
+
+Messages move through `bus/inbox`, `bus/processing`, `bus/outbox`, and `bus/archive` ensuring durable, GitHub-free collaboration.

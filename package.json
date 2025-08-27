@@ -3,6 +3,7 @@
     "test": "node --test test"
   },
   "dependencies": {
-    "bmad-method": "^4.41.0"
+    "bmad-method": "^4.41.0",
+    "codex": "^0.2.3"
   }
 }

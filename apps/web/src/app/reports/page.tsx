@@ -1,14 +1,27 @@
 "use client";
 
-import { getExports } from "@/lib/mockStore";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import type { ExportRecord } from "@/lib/types";
+
+async function fetchExports(): Promise<ExportRecord[]> {
+  const base =
+    process.env.NEXT_PUBLIC_API_BASE ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8000";
+  try {
+    const res = await fetch(`${base}/api/reports`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return (await res.json()) as ExportRecord[];
+  } catch {
+    return [];
+  }
+}
 
 export default function ReportsPage() {
-  const [items, setItems] = useState(() => getExports());
+  const [items, setItems] = useState<ExportRecord[]>([]);
   useEffect(() => {
-    // Refresh on mount (in case of navigation back)
-    setItems(getExports());
+    fetchExports().then(setItems);
   }, []);
 
   return (
