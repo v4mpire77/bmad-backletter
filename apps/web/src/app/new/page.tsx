@@ -32,8 +32,7 @@ export default function NewUploadPage() {
   const [canceled, setCanceled] = useState(false);
   const timerRef = useRef<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [jobId, setJobId] = useState<string | null>(null);
-  const lastAnalysisId = useRef<string | null>(null);
+    const lastAnalysisId = useRef<string | null>(null);
   const router = useRouter();
 
   const mockMode = process.env.NEXT_PUBLIC_USE_MOCKS === "1";
@@ -47,7 +46,7 @@ export default function NewUploadPage() {
     setCanceled(false);
     setRunning(true);
     setError(null);
-    setJobId(null);
+    
     lastAnalysisId.current = null;
     if (!mockMode) {
       startRealUpload(f).catch((e) => {
@@ -60,8 +59,7 @@ export default function NewUploadPage() {
   const startRealUpload = async (f: File) => {
     // 1) Upload
     const init = await uploadContract(f);
-    setJobId(init.id);
-    if (init.analysis_id) lastAnalysisId.current = init.analysis_id;
+        if (init.analysis_id) lastAnalysisId.current = init.analysis_id;
     // queued
     setStepIndex(0);
     // 2) Poll
@@ -95,7 +93,6 @@ export default function NewUploadPage() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Advance state machine on a timer when running (mock mode only)
@@ -128,7 +125,7 @@ export default function NewUploadPage() {
     setCanceled(false);
     setRunning(false);
     setError(null);
-    setJobId(null);
+    
     lastAnalysisId.current = null;
   }
 
@@ -201,6 +198,9 @@ export default function NewUploadPage() {
                 />
               </div>
 
+              {error && (
+                <p className="mt-2 text-sm text-red-700">Error: {error}</p>
+              )}
               {canceled && (
                 <p className="mt-2 text-sm text-amber-700">Simulation canceled. Press Resume to continue or Start over.</p>
               )}
@@ -282,3 +282,4 @@ function DropZone({ onPick }: { onPick: (f: File | null) => void }) {
     </div>
   );
 }
+

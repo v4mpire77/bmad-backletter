@@ -1,0 +1,4 @@
+# Ignore non-TS config and test setup shims
+jest.config.js
+test/setup-jest.ts
+test/setup.ts
