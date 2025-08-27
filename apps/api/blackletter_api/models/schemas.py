@@ -51,3 +51,17 @@ class AnalysisSummary(BaseModel):
     created_at: str
     size: int
     verdicts: VerdictCounts
+
+
+class ExportOptions(BaseModel):
+    include_logo: bool
+    include_meta: bool
+    date_format: str
+
+
+class ReportExport(BaseModel):
+    id: str
+    analysis_id: str
+    filename: str
+    created_at: str
+    options: ExportOptions

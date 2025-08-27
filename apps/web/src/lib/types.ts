@@ -16,14 +16,28 @@ export type AnalysisSummary = {
 };
 
 export type Finding = {
-  detector_id: string;
-  rule_id: string;
-  verdict: Verdict;
-  snippet: string;
-  page: number;
-  start: number;
-  end: number;
-  rationale: string;
-  reviewed: boolean;
+    detector_id: string;
+    rule_id: string;
+    verdict: Verdict;
+    snippet: string;
+    page: number;
+    start: number;
+    end: number;
+    rationale: string;
+    reviewed: boolean;
+};
+
+export type ExportOptions = {
+  includeLogo: boolean;
+  includeMeta: boolean;
+  dateFormat: string;
+};
+
+export type ExportRecord = {
+  id: string;
+  analysis_id: string;
+  filename: string;
+  created_at: string;
+  options: ExportOptions;
 };
 

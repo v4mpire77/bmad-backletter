@@ -14,7 +14,7 @@ This is the web frontend for Blackletter, built with Next.js (App Router). In th
 - `src/app/page.tsx`: Root redirect to `/dashboard`.
 - `src/app/dashboard/page.tsx`: Demo Dashboard (mock-enabled).
 - `src/app/analyses/[id]/page.tsx`: Findings view with table, drawer, export dialog.
-- `src/app/reports/page.tsx`: Reports (mock stub list).
+- `src/app/reports/page.tsx`: Reports list fetched from the API.
 - `src/components/*`: FindingsTable, EvidenceDrawer, VerdictChips, ExportDialog.
 - `src/lib/mocks.ts`: Seeded UI mocks (enable via env).
 - `src/lib/anchors.ts`: Detector → anchor terms for highlighting.
@@ -23,7 +23,7 @@ This is the web frontend for Blackletter, built with Next.js (App Router). In th
 
 - Set `NEXT_PUBLIC_USE_MOCKS=1` (see `.env.example`).
 - Visit `/dashboard` → open ACME_DPA_MOCK.pdf → navigate to `/analyses/mock-1`.
-- Use Export in the Findings header to push a mock record and navigate to `/reports`.
+- Use Export in the Findings header to create a report via the API and navigate to `/reports`.
 - Unset `NEXT_PUBLIC_USE_MOCKS` to fall back to API stubs. Optionally set `NEXT_PUBLIC_API_BASE=http://localhost:8000`.
 
 **Deployment: Vercel (Monorepo)**

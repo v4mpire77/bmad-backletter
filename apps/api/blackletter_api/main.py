@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import rules, analyses
+from .routers import rules, analyses, reports
 
 app = FastAPI(title="Blackletter API", version="0.1.0")
 
@@ -23,6 +23,7 @@ app.add_middleware(
 
 app.include_router(rules.router, prefix="/api")
 app.include_router(analyses.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
 
 
 @app.get("/")

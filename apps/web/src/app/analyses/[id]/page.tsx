@@ -2,7 +2,6 @@ import FindingsTable from "@/components/FindingsTable";
 import EvidenceDrawer from "@/components/EvidenceDrawer";
 import VerdictChips from "@/components/VerdictChips";
 import ExportDialog from "@/components/ExportDialog";
-import { addExport } from "@/lib/mockStore";
 import { useRouter } from "next/navigation";
 import { getMockAnalysisSummary, getMockFindings } from "@/lib/mocks";
 import type { AnalysisSummary, Finding } from "@/lib/types";
@@ -103,17 +102,21 @@ function ExportClient() {
       <ExportDialog
         open={open}
         onClose={() => setOpen(false)}
-        onConfirm={(opts) => {
-          // Determine analysis id and filename for mock record
+        onConfirm={async (opts) => {
           const id = pathname?.split("/").pop() || "mock-1";
-          const filename = `${id.toUpperCase()}.pdf`;
-          addExport({
-            id: `${id}-${Date.now()}`,
-            analysis_id: id,
-            filename,
-            created_at: new Date().toISOString(),
-            options: opts,
-          });
+          const base =
+            process.env.NEXT_PUBLIC_API_BASE ||
+            process.env.NEXT_PUBLIC_API_URL ||
+            "http://localhost:8000";
+          try {
+            await fetch(`${base}/api/reports/${id}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(opts),
+              }
+            );
+          } catch {}
           router.push("/reports");
         }}
       />
