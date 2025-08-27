@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { landing } from "@/content/landing";
 
@@ -222,11 +222,10 @@ export default function LandingPage() {
 }
 
 function LogicMapGrid() {
-  const React = require("react") as typeof import("react");
   type Node = { id: string; title: string; rule_id: string; description?: string };
   type Map = { id: string; checks: Node[] };
-  const [map, setMap] = React.useState<Map | null>(null);
-  React.useEffect(() => {
+  const [map, setMap] = useState<Map | null>(null);
+  useEffect(() => {
     fetch('/rules/art28_3_logic_map.json').then(r => r.ok ? r.json() : null).then(setMap).catch(() => setMap(null));
   }, []);
   const nodes: Node[] = map?.checks || landing.compliance.items.map((title, i) => ({ id: `A28_${i+1}`, title, rule_id: `art28_v1.${title.toLowerCase().replace(/[^a-z0-9]+/g,'_')}` }));

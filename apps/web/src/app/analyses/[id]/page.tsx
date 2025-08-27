@@ -1,9 +1,6 @@
-import FindingsTable from "@/components/FindingsTable";
-import EvidenceDrawer from "@/components/EvidenceDrawer";
 import VerdictChips from "@/components/VerdictChips";
-import ExportDialog from "@/components/ExportDialog";
-import { addExport } from "@/lib/mockStore";
-import { useRouter } from "next/navigation";
+import FindingsClient from "@/components/FindingsClient";
+import ExportClient from "@/components/ExportClient";
 import { getMockAnalysisSummary, getMockFindings } from "@/lib/mocks";
 import type { AnalysisSummary, Finding } from "@/lib/types";
 import { Suspense } from "react";
@@ -67,56 +64,5 @@ export default async function AnalysisPage({ params }: { params: { id: string } 
         <FindingsClient initialFindings={findings} />
       </Suspense>
     </div>
-  );
-}
-
-function FindingsClient({ initialFindings }: { initialFindings: Finding[] }) {
-  const React = require("react") as typeof import("react");
-  const [selected, setSelected] = React.useState<Finding | null>(null);
-  const [findings, setFindings] = React.useState<Finding[]>(initialFindings);
-
-  function markReviewed(f: Finding) {
-    setFindings((prev) => prev.map((x) => (x === f ? { ...x, reviewed: true } : x)));
-  }
-  return (
-    <>
-      <FindingsTable findings={findings} onSelect={setSelected} />
-      <EvidenceDrawer
-        finding={selected}
-        onClose={() => setSelected(null)}
-        onMarkReviewed={markReviewed}
-      />
-    </>
-  );
-}
-
-function ExportClient() {
-  const React = require("react") as typeof import("react");
-  const [open, setOpen] = React.useState(false);
-  const router = (require("next/navigation") as typeof import("next/navigation")).useRouter();
-  const pathname = (require("next/navigation") as typeof import("next/navigation")).usePathname();
-  return (
-    <>
-      <button className="rounded bg-black text-white px-3 py-2 text-sm" onClick={() => setOpen(true)}>
-        Export
-      </button>
-      <ExportDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        onConfirm={(opts) => {
-          // Determine analysis id and filename for mock record
-          const id = pathname?.split("/").pop() || "mock-1";
-          const filename = `${id.toUpperCase()}.pdf`;
-          addExport({
-            id: `${id}-${Date.now()}`,
-            analysis_id: id,
-            filename,
-            created_at: new Date().toISOString(),
-            options: opts,
-          });
-          router.push("/reports");
-        }}
-      />
-    </>
   );
 }

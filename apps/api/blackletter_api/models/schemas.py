@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from typing import Dict, List, Literal, Optional, Tuple
+from enum import Enum
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -51,3 +53,18 @@ class AnalysisSummary(BaseModel):
     created_at: str
     size: int
     verdicts: VerdictCounts
+
+
+class JobState(str, Enum):
+    queued = "queued"
+    running = "running"
+    done = "done"
+    error = "error"
+
+
+class JobStatus(BaseModel):
+    id: str
+    status: JobState
+    analysis_id: Optional[str] = None
+    error_reason: Optional[str] = None
+    created_at: Optional[datetime] = None

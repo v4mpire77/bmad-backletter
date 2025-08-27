@@ -27,10 +27,15 @@ export default function ExportDialog({ open, onClose, onConfirm }: Props) {
 
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center" role="dialog" aria-modal="true">
+    <div
+      className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="export-title"
+    >
       <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-lg p-5 shadow-xl">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Export Report</h2>
+          <h2 id="export-title" className="text-lg font-semibold">Export Report</h2>
           <button ref={firstBtnRef} className="text-sm rounded border px-2 py-1 focus:ring-2 focus:ring-offset-2 focus:ring-black" onClick={onClose} aria-label="Close export dialog">
             Close
           </button>

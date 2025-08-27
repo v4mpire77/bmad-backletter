@@ -1,5 +1,7 @@
 **Overview**
 
+- Developer Guide (always-on): `docs/dev/always-on-dev-guide.md` — quick commands, agent flows, spec map
+
 This is the web frontend for Blackletter, built with Next.js (App Router). In this monorepo, the web app lives under `apps/web` and the API (FastAPI) under `apps/api`.
 
 **Local Development**

@@ -27,3 +27,12 @@ export type Finding = {
   reviewed: boolean;
 };
 
+export type JobState = "queued" | "running" | "done" | "error";
+
+export type JobStatusDto = {
+  id: string;
+  status: JobState;
+  analysis_id?: string;
+  error_reason?: string;
+  created_at?: string;
+};

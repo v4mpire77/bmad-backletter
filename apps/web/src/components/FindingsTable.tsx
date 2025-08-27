@@ -46,7 +46,9 @@ export default function FindingsTable({ findings, onSelect }: Props) {
           aria-label="Filter by verdict"
           className="border rounded-md px-2 py-2 text-sm"
           value={verdict}
-          onChange={(e) => setVerdict(e.target.value as any)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setVerdict(e.target.value as Verdict | "all")
+          }
         >
           <option value="all">All</option>
           <option value="pass">Pass</option>

@@ -3,9 +3,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import List
 
+import os
 from fastapi import APIRouter, Query
 
 from ..models.schemas import AnalysisSummary, Finding, VerdictCounts
+from ..services import storage
 
 
 router = APIRouter(tags=["analyses"])
@@ -13,8 +15,10 @@ router = APIRouter(tags=["analyses"])
 
 @router.get("/analyses", response_model=List[AnalysisSummary])
 def list_analyses(limit: int = Query(default=50, ge=1, le=200)) -> List[AnalysisSummary]:
-    # MVP scaffold: return an empty list until persistence is implemented.
-    # Later: read from DB and/or filesystem under .data/analyses/...
+    # Feature-gated: by default return stubbed list for MVP wiring
+    if os.getenv("ANALYSES_FS_ENABLED", "0") == "1":
+        # Read from filesystem under .data/analyses/*/analysis.json
+        return storage.list_analyses_summaries(limit=limit)
     return []
 
 

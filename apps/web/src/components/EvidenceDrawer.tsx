@@ -28,6 +28,7 @@ export default function EvidenceDrawer({ finding, onClose, onMarkReviewed }: Pro
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="evidence-title"
       className="fixed inset-0 z-50 bg-black/30 flex justify-end"
       onClick={onClose}
     >
@@ -39,7 +40,7 @@ export default function EvidenceDrawer({ finding, onClose, onMarkReviewed }: Pro
       >
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold">{finding.detector_id}</h2>
+            <h2 id="evidence-title" className="text-lg font-semibold">{finding.detector_id}</h2>
             <p className="text-xs text-gray-500">Rule: {finding.rule_id}</p>
           </div>
           <button

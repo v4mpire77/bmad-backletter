@@ -4,7 +4,9 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field
+from pydantic import ConfigDict
+from pydantic import field_validator, model_validator
 
 
 class AnalysisStatus(str, Enum):
@@ -49,17 +51,30 @@ class AnalysisBase(BaseModel):
     tags: List[str] = Field(default_factory=list, description="Freeform labels")
     archived: bool = Field(False, description="Hidden from primary views")
 
-    class Config:
-        orm_mode = True  # allow population from ORM objects later
+    # Pydantic v2 config
+    model_config = ConfigDict(from_attributes=True)
 
-    @validator("filename")
+    @field_validator("filename")
     def filename_not_empty(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("filename must be a non-empty string")
         return v.strip()
 
-    @validator("tags", each_item=True)
-    def normalize_tags(cls, v: str) -> str:
+    @field_validator("tags", mode="before")
+    def normalize_tags_list(cls, v):
+        # Ensure tags is a list before per-item validation
+        return v
+
+    @field_validator("tags", mode="after")
+    def normalize_tags(cls, v: List[str]) -> List[str]:
+        # Strip and validate each tag
+        normalized: List[str] = []
+        for item in v:
+            nv = (item or "").strip()
+            if not nv:
+                raise ValueError("tags cannot contain empty strings")
+            normalized.append(nv)
+        return normalized
         nv = v.strip()
         if not nv:
             raise ValueError("tags cannot contain empty strings")
@@ -102,15 +117,15 @@ class AnalysisListFilters(BaseModel):
         None, description="Opaque server-provided cursor for pagination"
     )
 
-    @root_validator
-    def check_ranges(cls, values):
-        df, dt = values.get("date_from"), values.get("date_to")
+    @model_validator(mode="after")
+    def check_ranges(self):
+        df, dt = self.date_from, self.date_to
         if df and dt and df >= dt:
             raise ValueError("date_from must be earlier than date_to")
-        mn, mx = values.get("min_findings"), values.get("max_findings")
+        mn, mx = self.min_findings, self.max_findings
         if mn is not None and mx is not None and mn > mx:
             raise ValueError("min_findings cannot be greater than max_findings")
-        return values
+        return self
 
 
 class AnalysisListResponse(BaseModel):
@@ -119,4 +134,3 @@ class AnalysisListResponse(BaseModel):
     total_estimate: Optional[int] = Field(
         None, description="Optional approximate count for UX hints"
     )
-
