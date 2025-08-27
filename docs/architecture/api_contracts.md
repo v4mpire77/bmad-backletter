@@ -56,6 +56,10 @@ This document provides the authoritative API contract specifications for the Bla
     }
     ```
 
+### GET /api/reports
+-   **Description**: Returns a list of generated report exports.
+-   **Response (200 OK)**: `ReportExport[]`
+
 ## 2. Shared Schemas
 
 ### Finding Model
