@@ -1,4 +1,5 @@
 import { getMockAnalyses } from "@/lib/mocks";
+import DemoBanner from "@/components/DemoBanner";
 import type { AnalysisSummary } from "@/lib/types";
 
 async function fetchAnalyses(): Promise<AnalysisSummary[]> {
@@ -14,7 +15,10 @@ async function fetchAnalyses(): Promise<AnalysisSummary[]> {
     }
     return items;
   }
-  const base = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
+  const base =
+    process.env.NEXT_PUBLIC_API_BASE ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:8000";
   try {
     const res = await fetch(`${base}/api/analyses?limit=50`, { cache: "no-store" });
     if (!res.ok) return [];
@@ -46,6 +50,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl p-8">
+      <DemoBanner />
       <h1 className="text-2xl font-semibold mb-6">Recent Analyses</h1>
       <div className="border rounded-lg overflow-hidden">
         <table className="w-full text-sm">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import DemoBanner from "@/components/DemoBanner";
 
 type Step = "queued" | "extracting" | "detecting" | "reporting" | "done";
 
@@ -43,9 +44,7 @@ export default function NewUploadPage() {
   // ESC to cancel/reset simulation
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        cancel();
-      }
+      if (e.key === "Escape") cancel();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -89,11 +88,10 @@ export default function NewUploadPage() {
 
   return (
     <div className="mx-auto max-w-3xl p-8">
+      <DemoBanner />
       <h1 className="text-2xl font-semibold mb-4">New Analysis</h1>
 
-      {!file && (
-        <DropZone onPick={pickFile} />
-      )}
+      {!file && <DropZone onPick={pickFile} />}
 
       {file && (
         <div className="space-y-4" aria-live="polite">
