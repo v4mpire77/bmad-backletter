@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: blackletter-api
+    env: python
+    autoDeploy: true
+    plan: free
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn blackletter_api.main:app --app-dir apps/api --host 0.0.0.0 --port $PORT --workers 2
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: blackletter-web
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: web
+    name: blackletter-web
+    env: node
+    autoDeploy: true
+    plan: free
+    rootDir: apps/web
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start -- -p $PORT
+    envVars:
+      - key: NEXT_PUBLIC_API_BASE
+        fromService:
+          type: web
+          name: blackletter-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NEXT_PUBLIC_USE_MOCKS
+        value: "0"
