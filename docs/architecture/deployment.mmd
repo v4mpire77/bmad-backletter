@@ -1,0 +1,41 @@
+graph TB
+    subgraph "Development Environment"
+        A[Developer Machine] --> B[Local Docker<br/>Containers]
+        B --> C[Frontend Container<br/>(Next.js Dev Server)]
+        B --> D[Backend Container<br/>(FastAPI Dev Server)]
+        B --> E[Database Container<br/>(SQLite/PostgreSQL)]
+        B --> F[File Storage<br/>(Local Volume)]
+    end
+    
+    subgraph "Production Environment"
+        G[Load Balancer] --> H[Frontend Servers<br/>(Next.js)]
+        G --> I[Backend Servers<br/>(FastAPI)]
+        I --> J[Database Cluster<br/>(PostgreSQL)]
+        I --> K[Object Storage<br/>(Supabase)]
+        I --> L[Background Workers<br/>(Celery)]
+        L --> M[Message Queue<br/>(Redis)]
+    end
+    
+    subgraph "External Services"
+        N[OCR Service<br/>(Tesseract)]
+        O[LLM API<br/>(Optional)]
+    end
+    
+    I --> N
+    I --> O
+    
+    style A fill:#FFE4E1,stroke:#333
+    style B fill:#87CEEB,stroke:#333
+    style C fill:#98FB98,stroke:#333
+    style D fill:#98FB98,stroke:#333
+    style E fill:#FFB6C1,stroke:#333
+    style F fill:#FFB6C1,stroke:#333
+    style G fill:#DDA0DD,stroke:#333
+    style H fill:#98FB98,stroke:#333
+    style I fill:#98FB98,stroke:#333
+    style J fill:#FFB6C1,stroke:#333
+    style K fill:#FFB6C1,stroke:#333
+    style L fill:#FFD700,stroke:#333
+    style M fill:#FFD700,stroke:#333
+    style N fill:#FFA07A,stroke:#333
+    style O fill:#FFA07A,stroke:#333

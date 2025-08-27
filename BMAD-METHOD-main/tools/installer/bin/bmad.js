@@ -89,9 +89,9 @@ program
   .description('Update existing BMad installation')
   .option('--force', 'Force update, overwriting modified files')
   .option('--dry-run', 'Show what would be updated without making changes')
-  .action(async () => {
+  .action(async (options) => {
     try {
-      await installer.update();
+      await installer.update(options);
     } catch (error) {
       console.error(chalk.red('Update failed:'), error.message);
       process.exit(1);

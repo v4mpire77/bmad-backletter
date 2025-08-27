@@ -1,0 +1,24 @@
+graph TB
+    subgraph "Blackletter System"
+        A[User Interface] --> B[Frontend App<br/>(Next.js)]
+        B --> C[Backend API<br/>(FastAPI)]
+        C --> D[(Database<br/>(SQLite/PostgreSQL))]
+        C --> E[File Storage]
+        C --> F[Rule Engine]
+    end
+    
+    G[End User<br/>(Legal Professional)] --> A
+    H[Admin User] --> A
+    F --> I[Rulepack Files]
+    J[OCR Service<br/>(Optional)] --> C
+    
+    style A fill:#FFE4B5,stroke:#333
+    style B fill:#87CEEB,stroke:#333
+    style C fill:#98FB98,stroke:#333
+    style D fill:#FFB6C1,stroke:#333
+    style E fill:#FFB6C1,stroke:#333
+    style F fill:#DDA0DD,stroke:#333
+    style G fill:#FFE4E1,stroke:#333
+    style H fill:#FFE4E1,stroke:#333
+    style I fill:#FFF8DC,stroke:#333
+    style J fill:#FFD700,stroke:#333

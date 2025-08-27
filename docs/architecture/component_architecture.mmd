@@ -1,0 +1,48 @@
+graph TB
+    subgraph "Frontend (Next.js)"
+        A[App Router] --> B[Components]
+        B --> C[UI Library<br/>(shadcn/ui)]
+        A --> D[React Query<br/>Data Fetching]
+        D --> E[API Client]
+    end
+    
+    subgraph "Backend (FastAPI)"
+        F[API Routers] --> G[Services Layer]
+        G --> H[Extraction Service]
+        G --> I[Detection Service]
+        G --> J[Reporting Service]
+        H --> K[Document Extractors<br/>(PyMuPDF, python-docx)]
+        I --> L[Rule Engine]
+        L --> M[Rulepack Loader]
+        M --> N[YAML Rulepacks]
+        G --> O[Database Layer<br/>(SQLAlchemy)]
+        O --> P[(Database)]
+    end
+    
+    subgraph "External Services"
+        Q[OCR Service<br/>(Tesseract)]
+        R[LLM Gateway<br/>(Optional)]
+    end
+    
+    E --> F
+    H --> Q
+    I --> R
+    
+    style A fill:#87CEEB,stroke:#333
+    style B fill:#87CEEB,stroke:#333
+    style C fill:#87CEEB,stroke:#333
+    style D fill:#87CEEB,stroke:#333
+    style E fill:#87CEEB,stroke:#333
+    style F fill:#98FB98,stroke:#333
+    style G fill:#98FB98,stroke:#333
+    style H fill:#98FB98,stroke:#333
+    style I fill:#98FB98,stroke:#333
+    style J fill:#98FB98,stroke:#333
+    style K fill:#98FB98,stroke:#333
+    style L fill:#DDA0DD,stroke:#333
+    style M fill:#DDA0DD,stroke:#333
+    style N fill:#DDA0DD,stroke:#333
+    style O fill:#FFB6C1,stroke:#333
+    style P fill:#FFB6C1,stroke:#333
+    style Q fill:#FFD700,stroke:#333
+    style R fill:#FFD700,stroke:#333
