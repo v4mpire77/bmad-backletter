@@ -15,6 +15,8 @@ The technology stack is designed to be deterministic, explainable, and productio
 -   **Icons**: lucide-react
 -   **Data Fetching**: React Query for managing server state
 
+> Note: The current scaffold under `apps/web` uses Next.js 15, React 19, and Tailwind CSS 4. For fastest SM↔Dev iteration, we accept these in MVP and record the deviation. A follow-up ADR can decide whether to downshift to the pinned matrix or fully adopt the newer versions.
+
 ## 3. Backend
 
 -   **Language**: Python 3.11+

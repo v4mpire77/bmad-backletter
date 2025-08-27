@@ -37,3 +37,17 @@ class Finding(BaseModel):
     rationale: str
     reviewed: bool = False
 
+
+class VerdictCounts(BaseModel):
+    pass_count: int = 0
+    weak_count: int = 0
+    missing_count: int = 0
+    needs_review_count: int = 0
+
+
+class AnalysisSummary(BaseModel):
+    id: str
+    filename: str
+    created_at: str
+    size: int
+    verdicts: VerdictCounts

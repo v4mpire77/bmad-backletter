@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+**Overview**
 
-## Getting Started
+This is the web frontend for Blackletter, built with Next.js (App Router). In this monorepo, the web app lives under `apps/web` and the API (FastAPI) under `apps/api`.
 
-First, run the development server:
+**Local Development**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Install deps: `npm install`
+- Run dev: `npm run dev`
+- Open: `http://localhost:3000`
+- Default route: `/` redirects to `/dashboard` (see `src/app/page.tsx`).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Project Structure (selected)**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `src/app/page.tsx`: Root redirect to `/dashboard`.
+- `src/app/dashboard/page.tsx`: Demo Dashboard (mock-enabled).
+- `src/app/analyses/[id]/page.tsx`: Findings view with table, drawer, export dialog.
+- `src/app/reports/page.tsx`: Reports (mock stub list).
+- `src/components/*`: FindingsTable, EvidenceDrawer, VerdictChips, ExportDialog.
+- `src/lib/mocks.ts`: Seeded UI mocks (enable via env).
+- `src/lib/anchors.ts`: Detector → anchor terms for highlighting.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Demo Mode (frontend-only)**
 
-## Learn More
+- Set `NEXT_PUBLIC_USE_MOCKS=1` (see `.env.example`).
+- Visit `/dashboard` → open ACME_DPA_MOCK.pdf → navigate to `/analyses/mock-1`.
+- Use Export in the Findings header to push a mock record and navigate to `/reports`.
+- Unset `NEXT_PUBLIC_USE_MOCKS` to fall back to API stubs. Optionally set `NEXT_PUBLIC_API_BASE=http://localhost:8000`.
 
-To learn more about Next.js, take a look at the following resources:
+**Deployment: Vercel (Monorepo)**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Create project:** In Vercel, click “New Project” and import your Git repository.
+2. **Root directory:** Set the project’s Root Directory to `apps/web` (monorepo setting).
+3. **Framework preset:** Vercel should auto-detect Next.js.
+4. **Build settings:**
+   - Install Command: `npm install`
+   - Build Command: `next build` (default)
+   - Output: `Next.js` (automatic)
+5. **Env vars (optional):** Add `NEXT_PUBLIC_API_BASE_URL` when your API is deployed.
+6. **Node version:** Use Node 18+ (Vercel default is fine for Next 15).
+7. **Deploy:** Trigger the first deployment. Production URL will be provided by Vercel.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Custom Domain**
 
-## Deploy on Vercel
+- Add your domain in Vercel → Project → Settings → Domains. Point DNS as instructed by Vercel. `/` will render the landing page via redirect to `/landing`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**API Deployment (FastAPI)**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The API at `apps/api` is not deployed on Vercel. Recommended options: Fly.io, Railway, Render, or Azure Web Apps.
+- After deploying the API, set `NEXT_PUBLIC_API_BASE_URL` in Vercel and update the web app to use it for HTTP calls.
+
+**Troubleshooting**
+
+- Demo not showing data: ensure `NEXT_PUBLIC_USE_MOCKS=1` and reload.
+- API fallback failing: start API with `uvicorn blackletter_api.main:app --reload --app-dir ../api` and set `NEXT_PUBLIC_API_BASE`.
+
+## Docker + Render (All-in-One)
+
+- Local Docker: see `docs/deployment/docker-local.md`.
+- Render deployment: see `render.yaml` and `docs/deployment/render.md` for one-click blueprint or dashboard setup.
+- Runtime: Nginx proxies `/api/*` to FastAPI and other routes to Next.js SSR.

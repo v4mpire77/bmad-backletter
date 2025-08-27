@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import yaml
-from pydantic import BaseModel, Field, ValidationError, root_validator
+from pydantic import BaseModel, Field, ValidationError, model_validator
 
 
 class RulepackError(Exception):
@@ -28,17 +28,13 @@ class Detector(BaseModel):
     # For lexicon detectors, reference to a lexicon name or file
     lexicon: Optional[str] = None
 
-    @root_validator
-    def validate_detector(cls, values):
-        det_type = values.get("type")
-        pattern = values.get("pattern")
-        lexicon = values.get("lexicon")
-
-        if det_type == "regex" and not pattern:
+    @model_validator(mode="after")
+    def _validate_detector(self) -> "Detector":
+        if self.type == "regex" and not self.pattern:
             raise ValueError("regex detector requires 'pattern'")
-        if det_type == "lexicon" and not lexicon:
+        if self.type == "lexicon" and not self.lexicon:
             raise ValueError("lexicon detector requires 'lexicon'")
-        return values
+        return self
 
 
 class Rulepack(BaseModel):
@@ -186,4 +182,3 @@ def get_default_loader() -> RulepackLoader:
 def load_rulepack(force: bool = False) -> Rulepack:
     loader = get_default_loader()
     return loader.load(force=force)
-

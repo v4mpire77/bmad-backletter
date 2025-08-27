@@ -1,1 +1,10 @@
  
+name: art28
+version: v1
+detectors:
+  - id: weak_language
+    type: lexicon
+    description: Flags weak or hedging language
+    lexicon: weak_language.yaml
+lexicons:
+  - file: weak_language.yaml
