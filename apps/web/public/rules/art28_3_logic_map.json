@@ -1,0 +1,96 @@
+{
+  "id": "art28_3",
+  "article": "GDPR Article 28(3)",
+  "version": "v0",
+  "checks": [
+    {
+      "id": "A28_3_a_instructions",
+      "title": "Instructions",
+      "rule_id": "art28_v1.A28_3_a_instructions",
+      "required": true,
+      "anchors": ["documented instructions", "controller's instructions", "only on instructions"],
+      "weak_language_hints": ["may", "where appropriate", "as necessary"],
+      "patterns": ["instructions? from the controller", "process personal data only on"],
+      "severity": "critical",
+      "rationale_template": "Processor must act only on documented instructions from the Controller."
+    },
+    {
+      "id": "A28_3_b_confidentiality",
+      "title": "Confidentiality",
+      "rule_id": "art28_v1.A28_3_b_confidentiality",
+      "required": true,
+      "anchors": ["confidentiality", "confidential obligations", "authorised persons"],
+      "weak_language_hints": ["reasonable", "endeavour"],
+      "patterns": ["impose.*confidential", "authorised to process personal data.*confidential"],
+      "severity": "high",
+      "rationale_template": "Authorised persons must be subject to confidentiality."
+    },
+    {
+      "id": "A28_3_c_security",
+      "title": "Security (Art.32)",
+      "rule_id": "art28_v1.A28_3_c_security",
+      "required": true,
+      "anchors": ["technical and organisational measures", "TOM", "security measures"],
+      "weak_language_hints": ["appropriate"],
+      "patterns": ["ensure a level of security", "technical and organisational measures"],
+      "severity": "critical",
+      "rationale_template": "TOMs per Article 32 must be in place."
+    },
+    {
+      "id": "A28_3_d_subprocessors",
+      "title": "Sub‑processors & flow‑down",
+      "rule_id": "art28_v1.A28_3_d_subprocessors",
+      "required": true,
+      "anchors": ["sub-processor", "prior written authorisation", "remain fully liable"],
+      "weak_language_hints": ["may"],
+      "patterns": ["prior (written )?authori[sz]ation", "remain fully liable"],
+      "severity": "high",
+      "rationale_template": "Use of sub‑processors requires authorisation and liability flow‑down."
+    },
+    {
+      "id": "A28_3_e_data_subjects",
+      "title": "Data‑subject rights assistance",
+      "rule_id": "art28_v1.A28_3_e_data_subjects",
+      "required": true,
+      "anchors": ["assist the controller", "data subject", "requests"],
+      "weak_language_hints": ["as necessary"],
+      "patterns": ["assist the controller", "respond to requests"],
+      "severity": "medium",
+      "rationale_template": "Processor assists Controller in responding to data‑subject requests."
+    },
+    {
+      "id": "A28_3_f_assistance",
+      "title": "Breach notice & compliance assistance",
+      "rule_id": "art28_v1.A28_3_f_assistance",
+      "required": true,
+      "anchors": ["assist the controller", "Articles 32 to 36", "breach notification", "DPIA"],
+      "weak_language_hints": ["reasonable"],
+      "patterns": ["assist.*Articles 3(2|6)", "notify the controller of a breach"],
+      "severity": "medium",
+      "rationale_template": "Assistance with security, DPIA, and breach notifications."
+    },
+    {
+      "id": "A28_3_g_deletion_return",
+      "title": "Return/Delete",
+      "rule_id": "art28_v1.A28_3_g_deletion_return",
+      "required": true,
+      "anchors": ["delete or return", "upon termination", "certify deletion"],
+      "weak_language_hints": ["where feasible"],
+      "patterns": ["delete or return all", "certif(y|ication) of deletion"],
+      "severity": "high",
+      "rationale_template": "Upon termination, Processor deletes or returns personal data and certifies deletion upon request."
+    },
+    {
+      "id": "A28_3_h_audit",
+      "title": "Audits & information",
+      "rule_id": "art28_v1.A28_3_h_audit",
+      "required": true,
+      "anchors": ["demonstrate compliance", "allow for audits", "inspections"],
+      "weak_language_hints": ["reasonable"],
+      "patterns": ["make available.*information", "allow for audits"],
+      "severity": "high",
+      "rationale_template": "Processor makes information available and allows audits to demonstrate compliance."
+    }
+  ]
+}
+
