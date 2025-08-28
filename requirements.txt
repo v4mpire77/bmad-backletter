@@ -41,6 +41,8 @@ pydantic_core==2.33.2
 pydub==0.25.1
 Pygments==2.19.2
 PyMuPDF==1.26.3
+pyrsistent==0.20.0
+jsonschema==4.23.0
 pytesseract==0.3.13
 python-dotenv==1.1.1
 python-multipart==0.0.20

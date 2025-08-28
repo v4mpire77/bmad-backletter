@@ -52,6 +52,7 @@ class AnalysisSummary(BaseModel):
     filename: str
     created_at: str
     size: int
+    state: str
     verdicts: VerdictCounts
 
 
@@ -64,7 +65,39 @@ class JobState(str, Enum):
 
 class JobStatus(BaseModel):
     id: str
+    # Duplicate field for API compatibility with docs: expose job_id alongside id
+    job_id: Optional[str] = None
     status: JobState
     analysis_id: Optional[str] = None
-    error_reason: Optional[str] = None
+    # Story 1.2 response compatibility: alias JSON key to `error`
+    error_reason: Optional[str] = Field(default=None, serialization_alias="error")
     created_at: Optional[datetime] = None
+
+
+class ExportOptions(BaseModel):
+    include_logo: bool = False
+    include_meta: bool = True
+    # Allow a few simple date formats for reports
+    date_format: Literal["MDY", "DMY", "ISO"] = "ISO"
+
+
+class ReportExport(BaseModel):
+    id: str
+    analysis_id: str
+    filename: str
+    created_at: str
+    options: ExportOptions
+
+
+class ExportOptions(BaseModel):
+    include_logo: bool = True
+    include_meta: bool = True
+    date_format: Literal["YMD", "DMY", "MDY"] = "YMD"
+
+
+class ReportExport(BaseModel):
+    id: str
+    analysis_id: str
+    filename: str
+    created_at: str
+    options: ExportOptions

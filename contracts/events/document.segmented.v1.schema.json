@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "document.segmented.v1",
+  "type": "object",
+  "required": ["meta", "payload"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["message_id", "analysis_id", "correlation_id", "producer", "ts", "topic", "schema"],
+      "properties": {
+        "message_id": {"type": "string"},
+        "analysis_id": {"type": "string"},
+        "correlation_id": {"type": "string"},
+        "causation_id": {"type": "string"},
+        "producer": {"type": "string"},
+        "ts": {"type": "string"},
+        "topic": {"const": "document.segmented.v1"},
+        "schema": {"type": "string"},
+        "replay": {"type": "boolean"}
+      }
+    },
+    "payload": {
+      "type": "object",
+      "required": ["clauses"],
+      "properties": {
+        "clauses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "start_offset", "end_offset"],
+            "properties": {
+              "id": {"type": "string"},
+              "type": {"type": "string"},
+              "start_offset": {"type": "integer"},
+              "end_offset": {"type": "integer"}
+            }
+          }
+        },
+        "anchors": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

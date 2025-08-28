@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 from io import BytesIO
 from time import sleep
 
@@ -34,14 +35,19 @@ def test_job_lifecycle_sync(monkeypatch):
     assert sd["analysis_id"] == analysis_id
     # Since sync, status should be done
     assert sd["status"] in ("running", "done")
-    # Extraction artifact should exist
+    
+    # Verify artifacts exist
     from pathlib import Path
-    ext_path = Path('.data') / 'analyses' / analysis_id / 'extraction.json'
-    assert ext_path.exists()
-
-    # Verify extraction artifact exists
-    # Path: .data/analyses/{analysis_id}/extraction.json
-    from pathlib import Path
-
-    extraction_path = Path('.data') / 'analyses' / analysis_id / 'extraction.json'
+    analysis_dir = Path('.data') / 'analyses' / analysis_id
+    
+    extraction_path = analysis_dir / 'extraction.json'
     assert extraction_path.exists(), f"missing {extraction_path}"
+
+    findings_path = analysis_dir / 'findings.json'
+    assert findings_path.exists(), f"missing {findings_path}"
+
+    # Verify findings content
+    with findings_path.open("r") as f:
+        findings = json.load(f)
+    assert len(findings) == 1
+    assert findings[0]["verdict"] == "pass"

@@ -67,5 +67,10 @@ async def upload_contract(
             process_job, job_id, analysis_id, safe_name, size
         )
 
-    return JobStatus(id=job_id, status=JobState.queued, analysis_id=analysis_id)
+    return JobStatus(
+        id=job_id,
+        job_id=job_id,
+        status=JobState.queued,
+        analysis_id=analysis_id,
+    )
 

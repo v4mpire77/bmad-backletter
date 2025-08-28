@@ -1,9 +1,43 @@
 import os
+import logging
+import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import rules, analyses
-from .routers import contracts, jobs
+from .routers import contracts, jobs, reports
+
+# --- Structured Logging Setup ---
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_record = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "message": record.getMessage(),
+        }
+        if hasattr(record, 'job_id'):
+            log_record['job_id'] = record.job_id
+        if hasattr(record, 'analysis_id'):
+            log_record['analysis_id'] = record.analysis_id
+        if hasattr(record, 'latency_ms'):
+            log_record['latency_ms'] = record.latency_ms
+        
+        return json.dumps(log_record)
+
+# Configure root logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Remove existing handlers and add our JSON formatter
+if logger.hasHandlers():
+    logger.handlers.clear()
+logHandler = logging.StreamHandler()
+logHandler.setFormatter(JsonFormatter())
+logger.addHandler(logHandler)
+
+# --- End Logging Setup ---
+
 
 app = FastAPI(title="Blackletter API", version="0.1.0")
 
@@ -26,6 +60,7 @@ app.include_router(rules.router, prefix="/api")
 app.include_router(analyses.router, prefix="/api")
 app.include_router(contracts.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
 
 
 @app.get("/")

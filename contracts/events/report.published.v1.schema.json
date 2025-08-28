@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "report.published.v1",
+  "type": "object",
+  "required": ["meta", "payload"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["message_id", "analysis_id", "correlation_id", "producer", "ts", "topic", "schema"],
+      "properties": {
+        "message_id": {"type": "string"},
+        "analysis_id": {"type": "string"},
+        "correlation_id": {"type": "string"},
+        "causation_id": {"type": "string"},
+        "producer": {"type": "string"},
+        "ts": {"type": "string"},
+        "topic": {"const": "report.published.v1"},
+        "schema": {"type": "string"},
+        "replay": {"type": "boolean"}
+      }
+    },
+    "payload": {
+      "type": "object",
+      "required": ["report_url"],
+      "properties": {
+        "report_url": {"type": "string"}
+      }
+    }
+  }
+}

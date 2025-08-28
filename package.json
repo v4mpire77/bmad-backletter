@@ -1,6 +1,9 @@
 {
   "scripts": {
-    "test": "node --test test"
+    "test": "node --test test",
+    "codex:bundle": "python tools/bmad/generate_codex_bundle.py",
+    "codex:rules": "python tools/bmad/generate_codex_rules_from_cursor.py",
+    "codex:all": "npm run codex:bundle && npm run codex:rules"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",

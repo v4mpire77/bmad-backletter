@@ -95,6 +95,7 @@ def load_analysis_summary(analysis_id: str) -> AnalysisSummary | None:
         filename=str(data.get("filename") or "unknown"),
         created_at=str(data.get("created_at") or datetime.now(timezone.utc).isoformat()),
         size=int(data.get("size") or 0),
+        state=str(data.get("status") or "REPORTED"),
         verdicts=VerdictCounts(),
     )
 
@@ -122,6 +123,7 @@ def list_analyses_summaries(limit: int = 50) -> List[AnalysisSummary]:
                     filename=str(data.get("filename") or "unknown"),
                     created_at=str(data.get("created_at") or datetime.now(timezone.utc).isoformat()),
                     size=int(data.get("size") or 0),
+                    state=str(data.get("status") or "REPORTED"),
                     verdicts=VerdictCounts(),
                 )
             )
