@@ -1,0 +1,110 @@
+{
+  "log_format_specification": {
+    "version": "1.0",
+    "description": "Structured JSON logging format for Blackletter API",
+    "base_format": {
+      "timestamp": "ISO 8601 timestamp (YYYY-MM-DDTHH:MM:SS.sssZ)",
+      "level": "Log level (INFO, WARNING, ERROR)",
+      "message": "Human-readable log message",
+      "logger": "Source logger name (optional)"
+    },
+    "correlation_fields": {
+      "job_id": "UUID of the job being processed",
+      "analysis_id": "UUID of the analysis being performed"
+    },
+    "performance_fields": {
+      "latency_ms": "Latency in milliseconds for the operation",
+      "upload_latency_ms": "File upload latency in milliseconds",
+      "extraction_latency_ms": "Text extraction latency in milliseconds",
+      "detection_latency_ms": "Detection analysis latency in milliseconds",
+      "request_latency_ms": "API request latency in milliseconds"
+    },
+    "context_fields": {
+      "filename": "Name of the file being processed",
+      "size_bytes": "Size of the file in bytes",
+      "content_type": "MIME type of the uploaded file",
+      "source": "Source of the log entry (e.g., 'admin-dashboard', 'api')"
+    },
+    "example_logs": [
+      {
+        "timestamp": "2024-01-15T10:30:00.123Z",
+        "level": "INFO",
+        "message": "New job created and queued",
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+      },
+      {
+        "timestamp": "2024-01-15T10:30:01.456Z",
+        "level": "INFO",
+        "message": "Contract upload successful",
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "filename": "contract_2024.pdf",
+        "size_bytes": 1048576,
+        "upload_latency_ms": 245
+      },
+      {
+        "timestamp": "2024-01-15T10:30:02.789Z",
+        "level": "INFO",
+        "message": "Starting processing for file: contract_2024.pdf",
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+      },
+      {
+        "timestamp": "2024-01-15T10:30:05.123Z",
+        "level": "INFO",
+        "message": "Extraction completed successfully",
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "latency_ms": 2340
+      },
+      {
+        "timestamp": "2024-01-15T10:30:08.456Z",
+        "level": "INFO",
+        "message": "Detection completed successfully",
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "latency_ms": 3333
+      },
+      {
+        "timestamp": "2024-01-15T10:30:08.789Z",
+        "level": "INFO",
+        "message": "Job processing completed successfully",
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+      },
+      {
+        "timestamp": "2024-01-15T10:30:10.123Z",
+        "level": "INFO",
+        "message": "Job status retrieved",
+        "job_id": "550e8400-e29b-41d4-a716-446655440000",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+        "status": "done",
+        "request_latency_ms": 12
+      },
+      {
+        "timestamp": "2024-01-15T10:30:11.456Z",
+        "level": "WARNING",
+        "message": "File too large rejected",
+        "filename": "large_contract.pdf",
+        "size_bytes": 15728640,
+        "max_bytes": 10485760
+      },
+      {
+        "timestamp": "2024-01-15T10:30:12.789Z",
+        "level": "ERROR",
+        "message": "Extraction failed: Corrupt PDF file",
+        "job_id": "550e8400-e29b-41d4-a716-446655440001",
+        "analysis_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c9",
+        "latency_ms": 156
+      }
+    ],
+    "implementation_notes": {
+      "logging_framework": "Python standard logging with custom JSON formatter",
+      "correlation": "All job-related logs include job_id and analysis_id",
+      "performance_tracking": "Latency metrics captured at key operation boundaries",
+      "error_handling": "Errors include full context and correlation IDs",
+      "admin_dashboard": "Real-time log streaming with metrics aggregation"
+    }
+  }
+}

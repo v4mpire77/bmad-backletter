@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackletter Admin Dashboard - Logs & Metrics</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .metric-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #333;
+        }
+        .log-entry.info {
+            background: rgba(0, 123, 255, 0.1);
+            border-left-color: #007bff;
+        }
+        .log-entry.warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: #ffc107;
+        }
+        .log-entry.error {
+            background: rgba(220, 53, 69, 0.1);
+            border-left-color: #dc3545;
+        }
+        .log-timestamp {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .log-level {
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        .log-level.info { color: #007bff; }
+        .log-level.warning { color: #ffc107; }
+        .log-level.error { color: #dc3545; }
+        .log-message {
+            color: #d4d4d4;
+        }
+        .log-meta {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #888;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn.secondary {
+            background: #6c757d;
+        }
+        .btn.secondary:hover {
+            background: #5a6268;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-active { background: #28a745; }
+        .status-inactive { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎭 Blackletter Admin Dashboard</h1>
+        <p>Real-time Logs & Performance Metrics</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>📊 System Metrics</h3>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value" id="total-jobs">0</div>
+                    <div class="metric-label">Total Jobs</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="active-jobs">0</div>
+                    <div class="metric-label">Active Jobs</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="avg-upload-time">0ms</div>
+                    <div class="metric-label">Avg Upload Time</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="avg-extraction-time">0ms</div>
+                    <div class="metric-label">Avg Extraction Time</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔧 System Status</h3>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">
+                        <span class="status-indicator status-active"></span>
+                        Online
+                    </div>
+                    <div class="metric-label">API Status</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="log-entries">0</div>
+                    <div class="metric-label">Log Entries</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="error-rate">0%</div>
+                    <div class="metric-label">Error Rate</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="uptime">0h</div>
+                    <div class="metric-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📝 Live Log Stream</h3>
+        <div class="controls">
+            <button class="btn" onclick="startLogStream()">▶️ Start Stream</button>
+            <button class="btn secondary" onclick="stopLogStream()">⏹️ Stop Stream</button>
+            <button class="btn secondary" onclick="clearLogs()">🗑️ Clear Logs</button>
+            <button class="btn secondary" onclick="exportLogs()">💾 Export Logs</button>
+            <span style="margin-left: auto;">
+                <label>
+                    <input type="checkbox" id="auto-scroll" checked> Auto-scroll
+                </label>
+            </span>
+        </div>
+        <div class="log-container" id="log-container">
+            <div class="log-entry info">
+                <span class="log-timestamp">2024-01-15 10:30:00</span>
+                <span class="log-level info">INFO</span>
+                <span class="log-message">Admin dashboard initialized</span>
+                <div class="log-meta">Ready to receive log stream</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let logStream = null;
+        let logEntries = [];
+        let metrics = {
+            totalJobs: 0,
+            activeJobs: 0,
+            uploadTimes: [],
+            extractionTimes: [],
+            errors: 0,
+            startTime: Date.now()
+        };
+
+        function startLogStream() {
+            if (logStream) return;
+            
+            // Simulate log stream for demo
+            logStream = setInterval(() => {
+                const mockLogs = generateMockLogs();
+                mockLogs.forEach(log => addLogEntry(log));
+                updateMetrics();
+            }, 2000);
+            
+            addLogEntry({
+                timestamp: new Date().toISOString(),
+                level: 'info',
+                message: 'Log stream started',
+                meta: { source: 'admin-dashboard' }
+            });
+        }
+
+        function stopLogStream() {
+            if (logStream) {
+                clearInterval(logStream);
+                logStream = null;
+                addLogEntry({
+                    timestamp: new Date().toISOString(),
+                    level: 'info',
+                    message: 'Log stream stopped',
+                    meta: { source: 'admin-dashboard' }
+                });
+            }
+        }
+
+        function generateMockLogs() {
+            const levels = ['info', 'warning', 'error'];
+            const messages = [
+                'Job processing started',
+                'File upload completed',
+                'Text extraction in progress',
+                'Detection analysis running',
+                'Job completed successfully',
+                'Validation check passed'
+            ];
+            
+            const log = {
+                timestamp: new Date().toISOString(),
+                level: levels[Math.floor(Math.random() * levels.length)],
+                message: messages[Math.floor(Math.random() * messages.length)],
+                meta: {
+                    job_id: `job_${Math.random().toString(36).substr(2, 9)}`,
+                    analysis_id: `analysis_${Math.random().toString(36).substr(2, 9)}`,
+                    latency_ms: Math.floor(Math.random() * 500) + 50
+                }
+            };
+            
+            return [log];
+        }
+
+        function addLogEntry(log) {
+            const container = document.getElementById('log-container');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${log.level}`;
+            
+            const timestamp = new Date(log.timestamp).toLocaleTimeString();
+            const metaStr = Object.entries(log.meta || {})
+                .map(([k, v]) => `${k}: ${v}`)
+                .join(', ');
+            
+            entry.innerHTML = `
+                <span class="log-timestamp">${timestamp}</span>
+                <span class="log-level ${log.level}">${log.level.toUpperCase()}</span>
+                <span class="log-message">${log.message}</span>
+                ${metaStr ? `<div class="log-meta">${metaStr}</div>` : ''}
+            `;
+            
+            container.appendChild(entry);
+            logEntries.push(log);
+            
+            // Auto-scroll
+            if (document.getElementById('auto-scroll').checked) {
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            // Update metrics
+            updateMetrics();
+        }
+
+        function updateMetrics() {
+            // Update job counts
+            const jobLogs = logEntries.filter(log => log.meta?.job_id);
+            const uniqueJobs = new Set(jobLogs.map(log => log.meta.job_id));
+            metrics.totalJobs = uniqueJobs.size;
+            
+            // Update active jobs (jobs with recent activity)
+            const recentLogs = logEntries.filter(log => 
+                Date.now() - new Date(log.timestamp).getTime() < 60000
+            );
+            const activeJobIds = new Set(recentLogs.map(log => log.meta?.job_id).filter(Boolean));
+            metrics.activeJobs = activeJobIds.size;
+            
+            // Update latency metrics
+            const uploadLogs = logEntries.filter(log => log.message.includes('upload'));
+            const extractionLogs = logEntries.filter(log => log.message.includes('extraction'));
+            
+            uploadLogs.forEach(log => {
+                if (log.meta?.latency_ms) {
+                    metrics.uploadTimes.push(log.meta.latency_ms);
+                }
+            });
+            
+            extractionLogs.forEach(log => {
+                if (log.meta?.latency_ms) {
+                    metrics.extractionTimes.push(log.meta.latency_ms);
+                }
+            });
+            
+            // Update error rate
+            const errorLogs = logEntries.filter(log => log.level === 'error');
+            metrics.errors = errorLogs.length;
+            
+            // Update display
+            document.getElementById('total-jobs').textContent = metrics.totalJobs;
+            document.getElementById('active-jobs').textContent = metrics.activeJobs;
+            document.getElementById('log-entries').textContent = logEntries.length;
+            
+            // Calculate averages
+            const avgUpload = metrics.uploadTimes.length > 0 
+                ? Math.round(metrics.uploadTimes.reduce((a, b) => a + b, 0) / metrics.uploadTimes.length)
+                : 0;
+            const avgExtraction = metrics.extractionTimes.length > 0
+                ? Math.round(metrics.extractionTimes.reduce((a, b) => a + b, 0) / metrics.extractionTimes.length)
+                : 0;
+            
+            document.getElementById('avg-upload-time').textContent = `${avgUpload}ms`;
+            document.getElementById('avg-extraction-time').textContent = `${avgExtraction}ms`;
+            
+            // Calculate error rate
+            const errorRate = logEntries.length > 0 
+                ? Math.round((metrics.errors / logEntries.length) * 100)
+                : 0;
+            document.getElementById('error-rate').textContent = `${errorRate}%`;
+            
+            // Calculate uptime
+            const uptimeMs = Date.now() - metrics.startTime;
+            const uptimeHours = Math.floor(uptimeMs / (1000 * 60 * 60));
+            document.getElementById('uptime').textContent = `${uptimeHours}h`;
+        }
+
+        function clearLogs() {
+            document.getElementById('log-container').innerHTML = '';
+            logEntries = [];
+            updateMetrics();
+        }
+
+        function exportLogs() {
+            const dataStr = JSON.stringify(logEntries, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `blackletter-logs-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize dashboard
+        updateMetrics();
+        
+        // Auto-start log stream after 3 seconds
+        setTimeout(() => {
+            if (!logStream) {
+                startLogStream();
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

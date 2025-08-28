@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import time
+import logging
 from pathlib import Path
 from uuid import uuid4
 
@@ -10,7 +12,7 @@ from ..models.schemas import JobStatus, JobState
 from ..services import storage
 from ..services.tasks import new_job, process_job
 
-
+logger = logging.getLogger(__name__)
 router = APIRouter(tags=["contracts"])
 
 
@@ -26,6 +28,8 @@ async def upload_contract(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
 ) -> JobStatus:
+    upload_start = time.time()
+    
     # Validate type/extension
     ext = None
     if file.content_type in ALLOWED_MIME:
@@ -38,6 +42,10 @@ async def upload_contract(
         elif lower.endswith(".docx"):
             ext = ".docx"
     if ext is None:
+        logger.warning("Unsupported file type attempted", extra={
+            "filename": file.filename,
+            "content_type": file.content_type
+        })
         raise HTTPException(status_code=415, detail="unsupported_file_type")
 
     analysis_id = str(uuid4())
@@ -52,12 +60,31 @@ async def upload_contract(
         size = storage.save_upload(file, target_path, max_bytes=MAX_BYTES)
     except ValueError as e:
         if str(e) == "file_too_large":
+            logger.warning("File too large rejected", extra={
+                "filename": file.filename,
+                "size_bytes": getattr(file, 'size', 'unknown'),
+                "max_bytes": MAX_BYTES
+            })
             raise HTTPException(status_code=413, detail="file_too_large")
         raise
     except OSError as e:
+        logger.error("Disk I/O error during upload", extra={
+            "filename": file.filename,
+            "error": str(e)
+        })
         raise HTTPException(status_code=500, detail="disk_io_error") from e
 
     job_id = new_job(analysis_id=analysis_id)
+    
+    # Log successful upload
+    upload_time = round((time.time() - upload_start) * 1000)
+    logger.info("Contract upload successful", extra={
+        "job_id": job_id,
+        "analysis_id": analysis_id,
+        "filename": safe_name,
+        "size_bytes": size,
+        "upload_latency_ms": upload_time
+    })
 
     # Run processing either sync (tests/dev) or via background task
     if os.getenv("JOB_SYNC", "0") == "1":
