@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "event-envelope",
+  "type": "object",
+  "required": ["event_id", "topic", "analysis_id", "payload"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "topic": {"type": "string"},
+    "analysis_id": {"type": "string"},
+    "payload": {"type": "object"}
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "legal.findings.ready.v1",
+  "type": "object",
+  "required": ["event_id", "topic", "analysis_id", "payload"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "topic": {"const": "legal.findings.ready.v1"},
+    "analysis_id": {"type": "string"},
+    "payload": {"type": "object"}
+  }
+}

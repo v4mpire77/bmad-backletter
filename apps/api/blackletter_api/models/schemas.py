@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Literal, Optional, Tuple
 from uuid import UUID
+from enum import Enum
 
 from pydantic import BaseModel, Field
 
@@ -45,9 +46,19 @@ class VerdictCounts(BaseModel):
     needs_review_count: int = 0
 
 
+class JobState(str, Enum):
+    RECEIVED = "RECEIVED"
+    EXTRACTED = "EXTRACTED"
+    SEGMENTED = "SEGMENTED"
+    GDPR_LEGAL_DONE = "GDPR_LEGAL_DONE"
+    GC_DONE = "GC_DONE"
+    REPORTED = "REPORTED"
+
+
 class AnalysisSummary(BaseModel):
     id: str
     filename: str
     created_at: str
     size: int
     verdicts: VerdictCounts
+    state: JobState

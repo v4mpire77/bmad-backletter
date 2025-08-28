@@ -1,34 +1,25 @@
 from fastapi.testclient import TestClient
 
 from blackletter_api.main import app
-
+from blackletter_api.orchestrator.state import orchestrator
 
 client = TestClient(app)
 
 
-def test_list_analyses_stub():
-    res = client.get("/api/analyses?limit=50")
+def test_intake_and_get_endpoints():
+    orchestrator._analyses.clear()
+    res = client.post("/api/intake")
     assert res.status_code == 200
     data = res.json()
-    assert isinstance(data, list)
+    analysis_id = data["id"]
+    assert data["state"] == "RECEIVED"
 
-
-def test_get_analysis_summary_stub():
-    res = client.get("/api/analyses/abc123")
+    res = client.get(f"/api/analyses/{analysis_id}")
     assert res.status_code == 200
-    data = res.json()
-    # shape assertions
-    for key in ["id", "filename", "created_at", "size", "verdicts"]:
-        assert key in data
-    assert data["id"] == "abc123"
-    v = data["verdicts"]
-    for k in ["pass_count", "weak_count", "missing_count", "needs_review_count"]:
-        assert k in v
+    summary = res.json()
+    assert summary["id"] == analysis_id
+    assert summary["state"] == "RECEIVED"
 
-
-def test_get_analysis_findings_stub():
-    res = client.get("/api/analyses/abc123/findings")
+    res = client.get(f"/api/analyses/{analysis_id}/findings")
     assert res.status_code == 200
-    data = res.json()
-    assert isinstance(data, list)
-
+    assert res.json() == {}
