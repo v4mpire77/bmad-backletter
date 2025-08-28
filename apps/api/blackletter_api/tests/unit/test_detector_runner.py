@@ -5,45 +5,80 @@ import uuid
 from pathlib import Path
 
 from blackletter_api.services.detector_runner import run_detectors
+from blackletter_api.services.rulepack_loader import Rulepack, Detector, Lexicon
 
 
-def test_run_detectors_creates_findings_file(tmp_path: Path, monkeypatch):
-    """Verify that run_detectors creates a findings.json file."""
+def test_run_detectors_generates_findings_and_applies_weak_language(tmp_path: Path, monkeypatch):
+    """Verify that run_detectors generates findings and applies weak language post-processing."""
     analysis_id = str(uuid.uuid4())
     
-    # The detector runner expects the analysis dir to exist
     analysis_dir_temp = tmp_path / analysis_id
     analysis_dir_temp.mkdir()
 
-    # Monkeypatch the storage function to use our temp directory
     monkeypatch.setattr(
         "blackletter_api.services.detector_runner.analysis_dir",
         lambda aid: analysis_dir_temp
     )
 
-    # Create a dummy extraction.json for the runner to read
+    # Mock the load_rulepack function
+    mock_rulepack = Rulepack(
+        name="test-rulepack",
+        version="v1",
+        detectors=[
+            Detector(
+                id="D001",
+                type="lexicon",
+                lexicon="weak-language",
+                description="Detects weak language."
+            )
+        ],
+        lexicons={
+            "weak-language": Lexicon(
+                name="weak-language",
+                terms=["may", "might", "could", "should"]
+            )
+        }
+    )
+    monkeypatch.setattr("blackletter_api.services.detector_runner.load_rulepack", lambda: mock_rulepack)
+
+    # Create a dummy extraction.json with sentences, some containing weak language terms
     dummy_extraction = {
         "text_path": "extracted.txt",
-        "page_map": [],
-        "sentences": []
+        "page_map": [
+            {"page": 1, "start": 0, "end": 100}
+        ],
+        "sentences": [
+            {"page": 1, "start": 0, "end": 20, "text": "This is a test sentence."},
+            {"page": 1, "start": 21, "end": 45, "text": "This might be a weak sentence."},
+            {"page": 1, "start": 46, "end": 70, "text": "Another sentence could be here."},
+            {"page": 1, "start": 71, "end": 95, "text": "Final sentence with no weak words."}
+        ]
     }
     extraction_path = analysis_dir_temp / "extraction.json"
     with extraction_path.open("w") as f:
         json.dump(dummy_extraction, f)
 
-    # Run the detector
     run_detectors(analysis_id, str(extraction_path))
 
-    # Check that findings.json was created
     findings_path = analysis_dir_temp / "findings.json"
     assert findings_path.exists()
 
-    # Check the content of the findings
     with findings_path.open("r") as f:
         findings = json.load(f)
     
-    assert len(findings) == 1
-    finding = findings[0]
-    assert finding["detector_id"] == "D001"
-    # The dummy text "This is a sample text." has no weak words
-    assert finding["verdict"] == "pass"
+    # Expect 2 findings for sentences with weak words
+    assert len(findings) == 2
+
+    # Check the first finding (might)
+    finding1 = findings[0]
+    assert finding1["detector_id"] == "D001"
+    assert finding1["rule_id"] == "D001"
+    assert finding1["snippet"] == "This might be a weak sentence."
+    assert finding1["verdict"] == "weak" # Should be downgraded by post-processor
+
+    # Check the second finding (could)
+    finding2 = findings[1]
+    assert finding2["detector_id"] == "D001"
+    assert finding2["rule_id"] == "D001"
+    assert finding2["snippet"] == "Another sentence could be here."
+    assert finding2["verdict"] == "weak" # Should be downgraded by post-processor

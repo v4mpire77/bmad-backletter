@@ -74,3 +74,27 @@ async def upload_contract(
         analysis_id=analysis_id,
     )
 
+
+@router.get("/contracts/validation-status/{job_id}")
+async def get_contract_validation_status(job_id: str):
+    """
+    Test endpoint for CWC demonstration - returns contract validation status
+    This endpoint would be perfect for testing CWC integration
+    """
+    return {
+        "job_id": job_id,
+        "status": "completed",
+        "validation_results": {
+            "gdpr_compliance": "pass",
+            "article_28_checks": "pass",
+            "data_processing_agreement": "pass",
+            "security_measures": "pass"
+        },
+        "recommendations": [
+            "Contract meets GDPR Article 28 requirements",
+            "All processor obligations are properly addressed",
+            "Security measures are adequate"
+        ],
+        "timestamp": "2024-01-15T10:30:00Z"
+    }
+

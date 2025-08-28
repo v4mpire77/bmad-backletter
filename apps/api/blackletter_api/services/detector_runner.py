@@ -6,6 +6,7 @@ import json
 from typing import Iterable, List, Optional, Dict, Any
 
 from .weak_lexicon import get_weak_terms
+from .rulepack_loader import load_rulepack
 from ..models.schemas import Finding
 from .storage import analysis_dir
 
@@ -53,41 +54,68 @@ def postprocess_weak_language(
 
 def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
     """Minimal detector runner for lexicon-based checks."""
-    # For now, this is a placeholder. It should load a rulepack,
-    # iterate through detectors, and generate findings.
-    # This minimal version will just return a dummy finding.
-    
-    # In a real implementation, you would load the extraction data
-    # with open(extraction_json_path, 'r') as f:
-    #     extraction_data = json.load(f)
+    findings: List[Finding] = []
 
-    # Dummy finding for demonstration
-    dummy_finding = Finding(
-        detector_id="D001",
-        rule_id="R001",
-        verdict="pass",
-        snippet="This is a sample text.",
-        page=1,
-        start=0,
-        end=22,
-        rationale="Initial pass verdict."
-    )
+    # Load extraction data
+    with open(extraction_json_path, 'r', encoding="utf-8") as f:
+        extraction_data = json.load(f)
 
-    # Apply post-processing
-    final_verdict = postprocess_weak_language(
-        original_verdict=dummy_finding.verdict,
-        window_text=dummy_finding.snippet
-    )
-    dummy_finding.verdict = final_verdict
+    sentences = extraction_data.get("sentences", [])
 
-    findings = [dummy_finding]
+    # Load rulepack dynamically
+    rulepack = load_rulepack()
+
+    for sentence_data in sentences:
+        sentence_text = sentence_data.get("text", "")
+        page = sentence_data.get("page", 1)
+        start = sentence_data.get("start", 0)
+        end = sentence_data.get("end", 0)
+
+        for detector_spec in rulepack.detectors:
+            detector_id = detector_spec.id
+            
+
+            if detector_spec.type == "lexicon":
+                lexicon_ref = detector_spec.lexicon or ""
+                # Normalize: allow filename (weak_language.yaml), name (weak_language), or hyphenated variants
+                name = (
+                    lexicon_ref.rsplit('.', 1)[0]
+                    if isinstance(lexicon_ref, str) and lexicon_ref.endswith('.yaml')
+                    else lexicon_ref
+                )
+                name = str(name).replace('-', '_')
+                lx = rulepack.lexicons.get(name) or rulepack.lexicons.get(lexicon_ref)
+                if not lx or not lx.terms:
+                    # Skip if lexicon missing or empty
+                    continue
+                anchors_any = lx.terms
+
+                if _has_any(sentence_text.lower(), anchors_any):
+                    finding = Finding(
+                        detector_id=detector_id,
+                        rule_id=detector_id, # Use detector_id as rule_id for now
+                        verdict="pass",
+                        snippet=sentence_text,
+                        page=page,
+                        start=start,
+                        end=end,
+                        rationale="Lexicon term found."
+                    )
+
+                    final_verdict = postprocess_weak_language(
+                        original_verdict=finding.verdict,
+                        window_text=finding.snippet
+                    )
+                    finding.verdict = final_verdict
+                    findings.append(finding)
+            elif detector_spec.type == "regex":
+                # TODO: Implement regex detector logic
+                pass # For now, skip regex detectors
 
     # Persist findings
     a_dir = analysis_dir(analysis_id)
     findings_path = a_dir / "findings.json"
     with findings_path.open("w", encoding="utf-8") as f:
-        # Pydantic models need to be dumped to dicts for JSON serialization
         json.dump([f.model_dump() for f in findings], f, indent=2)
 
     return findings
-
