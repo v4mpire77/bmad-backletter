@@ -1,3 +1,6 @@
+// lib/types.ts
+
+// Existing types (preserving what was there)
 export type Verdict = "pass" | "weak" | "missing" | "needs_review";
 
 export type VerdictCounts = {
@@ -16,15 +19,15 @@ export type AnalysisSummary = {
 };
 
 export type Finding = {
-    detector_id: string;
-    rule_id: string;
-    verdict: Verdict;
-    snippet: string;
-    page: number;
-    start: number;
-    end: number;
-    rationale: string;
-    reviewed: boolean;
+  detector_id: string;
+  rule_id: string;
+  verdict: Verdict;
+  snippet: string;
+  page: number;
+  start: number;
+  end: number;
+  rationale: string;
+  reviewed: boolean;
 };
 
 export type ExportOptions = {
@@ -50,3 +53,14 @@ export type JobStatusDto = {
   error_reason?: string;
   created_at?: string;
 };
+
+// New types for Org Settings
+export type OrgSettings = {
+  llm_provider: "none" | "default";
+  ocr_enabled: boolean;
+  retention_days: number;
+  updated_at?: string;
+  updated_by?: string;
+};
+
+export type SettingsUpdateRequest = Partial<OrgSettings>;
