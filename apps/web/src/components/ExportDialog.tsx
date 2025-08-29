@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 type Props = {
   open: boolean;
@@ -12,7 +13,10 @@ export default function ExportDialog({ open, onClose, onConfirm }: Props) {
   const [includeLogo, setIncludeLogo] = useState(true);
   const [includeMeta, setIncludeMeta] = useState(true);
   const [dateFormat, setDateFormat] = useState("YYYY-MM-DD");
+  const dialogRef = useRef<HTMLDivElement | null>(null);
   const firstBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  useFocusTrap(dialogRef, open);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -33,7 +37,7 @@ export default function ExportDialog({ open, onClose, onConfirm }: Props) {
       aria-modal="true"
       aria-labelledby="export-title"
     >
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-lg p-5 shadow-xl">
+      <div ref={dialogRef} className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-lg p-5 shadow-xl">
         <div className="flex items-center justify-between mb-3">
           <h2 id="export-title" className="text-lg font-semibold">Export Report</h2>
           <button ref={firstBtnRef} className="text-sm rounded border px-2 py-1 focus:ring-2 focus:ring-offset-2 focus:ring-black" onClick={onClose} aria-label="Close export dialog">
