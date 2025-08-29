@@ -36,18 +36,14 @@ Blackletter is a GDPR Processor Obligations Checker designed to automate the rev
 - **PostgreSQL** for production
 - **FastAPI BackgroundTasks** for async processing
 
-## Development
+## Quick Start (Windows)
 
-### Full Stack (API + Frontend)
-
-This is the standard setup for running the full application with the Python backend and Next.js frontend.
-
-#### Prerequisites
+### Prerequisites
 - Node.js 20+
 - Python 3.11+
 - npm or yarn
 
-#### Installation
+### Installation
 
 1. Clone the repository:
    ```powershell
@@ -68,40 +64,12 @@ This is the standard setup for running the full application with the Python back
    uvicorn blackletter_api.main:app --reload --app-dir apps/api
    ```
 
-4. Start the Frontend (run in another terminal):
-   ```bash
-   npm install --prefix apps/web
-   npm run dev --prefix apps/web
+4. (Optional) Serve demo UIs (run in another terminal):
+   ```powershell
+   python -m http.server 8080
+   # Open http://localhost:8080/docs/artifacts/job_status_demo.html
+   # or   http://localhost:8080/docs/artifacts/job_status_ui.html
    ```
-   The application will be available at `http://localhost:3000`.
-
-### Frontend-Only (Mock Mode)
-
-This setup is ideal for frontend development without needing to run the Python backend. The frontend will use mocked data.
-
-1. **Navigate to the web app directory:**
-   ```bash
-   cd apps/web
-   ```
-
-2. **Create an environment file:**
-   Create a new file named `.env.local` in the `apps/web` directory and add the following line:
-   ```
-   NEXT_PUBLIC_USE_MOCKS=1
-   ```
-
-3. **Install dependencies and run the server:**
-   ```bash
-   npm install
-   npm run dev
-   ```
-   The application will be available at `http://localhost:3000`.
-
-#### Mocked Routes
-When in mock mode, the following routes are available with mocked data:
-- `/dashboard`: Displays a list of mock analyses.
-- `/analyses/mock-1`: Shows a detail page for a mock analysis.
-- `/reports`: Shows a list of mock reports generated via the "Export" feature.
 
 ### Environment Variables
 
