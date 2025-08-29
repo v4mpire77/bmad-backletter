@@ -1,0 +1,69 @@
+schema: 1
+story: '2.1'
+story_title: 'Rulepack Loader (art28_v1)'
+gate: CONCERNS
+status_reason: 'Implementation is sound and meets core requirements. Unit tests cover the happy path and several error conditions. However, there is a test coverage gap identified in the story''s own QA Results and confirmed by this review: a specific unit test for handling unknown lexicon references is missing, though the logic to handle it is present. This represents a medium-severity risk to maintainability.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2025-08-29T22:30:00Z'
+
+top_issues:
+  - id: TECH-001
+    title: 'Schema Validation Rigidity'
+    severity: medium
+    description: 'The schema validation is strict. While good for consistency, it might be rigid for future rulepack variations.'
+    suggested_owner: dev
+  - id: MAINT-001
+    title: 'Missing Test for Unknown Lexicon Reference'
+    severity: medium
+    description: 'A unit test asserting failure on unknown lexicon reference is missing, as noted in story tasks and existing QA Results.'
+    suggested_owner: dev
+  - id: DOC-001
+    title: 'Environment Variable Naming Inconsistency'
+    severity: low
+    description: 'Story notes mention potential confusion between `RULES_DIR/RULEPACK_FILE` and `RULES_PATH`.'
+    suggested_owner: dev
+
+waiver: { active: false }
+
+quality_score: 85
+expires: '2025-09-12T22:30:00Z'
+
+evidence:
+  tests_reviewed: 7
+  risks_identified: 4
+  trace:
+    totals:
+      requirements: 3
+      full: 3
+      partial: 0
+      none: 0
+    planning_ref: 'qa.qaLocation/assessments/2.1-rulepack-loader-test-design-20250829.md'
+    uncovered: []
+    notes: 'See qa.qaLocation/assessments/2.1-rulepack-loader-trace-20250829.md'
+
+nfr_validation:
+  _assessed: [security, performance, reliability, maintainability]
+  security:
+    status: CONCERNS
+    notes: 'No specific security measures for rule loading mentioned. YAML loader should be checked for security best practices.'
+  performance:
+    status: PASS
+    notes: 'Loading at startup with caching is efficient.'
+  reliability:
+    status: PASS
+    notes: 'Error handling for invalid YAML/missing fields is implemented.'
+  maintainability:
+    status: CONCERNS
+    notes: 'Test coverage has a gap for unknown lexicon references.'
+
+recommendations:
+  immediate:
+    - action: 'Add unit test for unknown lexicon reference'
+      refs: ['apps/api/blackletter_api/tests/unit/test_rulepack_loader.py']
+    - action: 'Review YAML loading library for security (e.g., avoid arbitrary code execution)'
+      refs: ['apps/api/blackletter_api/services/rulepack_loader.py']
+  future:
+    - action: 'Consider more flexible schema validation if future extensibility is planned'
+      refs: ['apps/api/blackletter_api/services/rulepack_loader.py']
+    - action: 'Align documentation/env var naming (`RULES_DIR` + `RULEPACK_FILE` vs `RULES_PATH`)'
+      refs: ['apps/api/blackletter_api/services/rulepack_loader.py']

@@ -89,15 +89,29 @@ class ReportExport(BaseModel):
     options: ExportOptions
 
 
-class ExportOptions(BaseModel):
-    include_logo: bool = True
-    include_meta: bool = True
-    date_format: Literal["YMD", "DMY", "MDY"] = "YMD"
+# New models for Org Settings
+class OrgSettings(BaseModel):
+    """
+    Organization-level settings for LLM provider, OCR enablement, and data retention.
+    """
+    # LLM provider settings
+    llm_provider: Literal["none", "default"] = "none"
+    
+    # OCR enablement
+    ocr_enabled: bool = False
+    
+    # Retention policy (days)
+    retention_days: int = 30
+    
+    # Audit fields
+    updated_at: Optional[datetime] = None
+    updated_by: Optional[str] = None
 
 
-class ReportExport(BaseModel):
-    id: str
-    analysis_id: str
-    filename: str
-    created_at: str
-    options: ExportOptions
+class SettingsUpdateRequest(BaseModel):
+    """
+    Request model for updating organization settings.
+    """
+    llm_provider: Optional[Literal["none", "default"]] = None
+    ocr_enabled: Optional[bool] = None
+    retention_days: Optional[int] = None
