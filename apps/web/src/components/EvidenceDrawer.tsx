@@ -3,7 +3,6 @@
 import type { Finding } from "@/lib/types";
 import { anchorTermsFor } from "@/lib/anchors";
 import { useEffect, useRef } from "react";
-import { useFocusTrap } from "@/lib/useFocusTrap";
 
 type Props = {
   finding: Finding | null;
@@ -14,21 +13,15 @@ type Props = {
 export default function EvidenceDrawer({ finding, onClose, onMarkReviewed }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
-
-  const isOpen = finding !== null;
-  useFocusTrap(containerRef, isOpen);
-
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
     }
-    if (isOpen) {
-      window.addEventListener("keydown", onKey);
-      // focus close button on open for keyboard users
-      closeRef.current?.focus();
-    }
+    window.addEventListener("keydown", onKey);
+    // focus close button on open for keyboard users
+    closeRef.current?.focus();
     return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen, onClose]);
+  }, [onClose]);
 
   if (!finding) return null;
   return (
