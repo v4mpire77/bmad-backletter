@@ -62,7 +62,7 @@ export function getMockAnalysisSummary(id: string): AnalysisSummary {
 
 export function getMockFindings(id: string): Finding[] {
   const rng = seededRandom(hashStringToSeed(id) + 7);
-  return DETECTORS.map((det, idx) => {
+  return DETECTORS.map((det) => {
     const v = VERDICT_ORDER[Math.floor(rng() * VERDICT_ORDER.length)];
     const start = Math.floor(rng() * 2000);
     const end = start + Math.floor(120 + rng() * 200);
