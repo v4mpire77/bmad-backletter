@@ -2,7 +2,7 @@ markdownExploder: true
 qa:
   qaLocation: docs/qa
 prd:
-  prdFile: docs/prd.md
+  prdFile: 01 -John @ blackletter_PRD.md
   prdVersion: v4
   prdSharded: true
   prdShardedLocation: docs/prd
@@ -14,9 +14,12 @@ architecture:
   architectureShardedLocation: docs/architecture
 customTechnicalDocuments: null
 devLoadAlwaysFiles:
-  - docs/architecture/coding-standards.md
-  - docs/architecture/tech-stack.md
-  - docs/architecture/source-tree.md
+  - docs/architecture/coding_standards.md
+  - docs/architecture/tech_stack.md
+  - docs/architecture/source_tree.md
+  - .bmad-core/core-config.yaml
+  - apps/api/blackletter_api/rules/art28_v1.yaml
+  - apps/api/blackletter_api/rules/lexicons/weak_language.yaml
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad

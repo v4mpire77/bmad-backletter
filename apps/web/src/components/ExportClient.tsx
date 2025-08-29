@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import ExportDialog from "@/components/ExportDialog";
-import { addExport } from "@/lib/mockStore";
+// Lazy inline store for tests/demo
+const memoryExports: any[] = [];
+function addExport(rec: any) {
+  memoryExports.push(rec);
+}
 
 export default function ExportClient() {
   const [open, setOpen] = useState(false);

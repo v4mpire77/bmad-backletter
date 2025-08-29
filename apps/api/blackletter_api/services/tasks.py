@@ -69,7 +69,7 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
         a_dir = analysis_dir(analysis_id)
         source_path = a_dir / filename
         
-        write_analysis_json(analysis_id, filename=filename, size=size)
+        write_analysis_json(analysis_id, filename=filename, size=size, status="running")
         
         # Stage 1: Extraction
         t_start_ext = time.time()
@@ -86,6 +86,11 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
             log_extras["latency_ms"] = latency_ms
             logger.error(f"Extraction failed: {e}", extra=log_extras)
             set_status(job_id, JobState.error, error_reason=f"extraction_failed: {e}")
+            # Persist error state to analysis.json
+            try:
+                write_analysis_json(analysis_id, filename=filename, size=size, status="error", error=str(e))
+            except Exception:
+                pass
             return
 
         # Stage 2: Detection
@@ -105,6 +110,10 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
             return
 
         set_status(job_id, JobState.done)
+        try:
+            write_analysis_json(analysis_id, filename=filename, size=size, status="done")
+        except Exception:
+            pass
         logger.info("Job processing completed successfully", extra=log_extras)
 
     except Exception as e:

@@ -112,3 +112,47 @@ terms:
     assert data["name"] == "art28"
     assert data["detector_count"] == 1
     assert data["lexicons"] == ["weak_language"]
+
+
+def test_loader_unknown_lexicon_name_raises(tmp_path: Path):
+    rules_dir = tmp_path / "rules"
+    write_file(
+        rules_dir / "pack.yaml",
+        (
+            """
+name: art28
+version: v1
+detectors:
+  - id: missing_lx
+    type: lexicon
+    description: missing lexicon by name
+    lexicon: no_such_lexicon
+            """
+        ).strip(),
+    )
+
+    loader = RulepackLoader(rules_dir, rulepack_file="pack.yaml", app_env="dev")
+    with pytest.raises(RulepackError):
+        loader.load()
+
+
+def test_loader_unknown_lexicon_file_raises(tmp_path: Path):
+    rules_dir = tmp_path / "rules"
+    write_file(
+        rules_dir / "pack.yaml",
+        (
+            """
+name: art28
+version: v1
+detectors:
+  - id: missing_lx_file
+    type: lexicon
+    description: missing lexicon file
+    lexicon: no_such_lexicon.yaml
+            """
+        ).strip(),
+    )
+
+    loader = RulepackLoader(rules_dir, rulepack_file="pack.yaml", app_env="dev")
+    with pytest.raises(RulepackError):
+        loader.load()

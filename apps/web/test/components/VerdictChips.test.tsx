@@ -14,5 +14,20 @@ describe("VerdictChips", () => {
     expect(screen.getByLabelText("Missing: 0")).toBeInTheDocument();
     expect(screen.getByLabelText("Needs review: 3")).toBeInTheDocument();
   });
+
+  test("invokes onSelect and toggles active state", () => {
+    const onSelect = jest.fn();
+    render(
+      <VerdictChips
+        counts={{ pass_count: 2, weak_count: 1, missing_count: 0, needs_review_count: 3 }}
+        selected="all"
+        onSelect={onSelect}
+      />
+    );
+
+    const weakChip = screen.getByTestId("chip-weak");
+    weakChip.click();
+    expect(onSelect).toHaveBeenCalledWith("weak");
+  });
 });
 

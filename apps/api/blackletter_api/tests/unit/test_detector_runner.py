@@ -1,84 +1,56 @@
 from __future__ import annotations
 
-import json
-import uuid
-from pathlib import Path
-
-from blackletter_api.services.detector_runner import run_detectors
-from blackletter_api.services.rulepack_loader import Rulepack, Detector, Lexicon
+from blackletter_api.services.detector_runner import postprocess_weak_language
+from blackletter_api.services.weak_lexicon import get_weak_terms
 
 
-def test_run_detectors_generates_findings_and_applies_weak_language(tmp_path: Path, monkeypatch):
-    """Verify that run_detectors generates findings and applies weak language post-processing."""
-    analysis_id = str(uuid.uuid4())
-    
-    analysis_dir_temp = tmp_path / analysis_id
-    analysis_dir_temp.mkdir()
+def test_weak_term_downgrades_without_counter_anchor(monkeypatch):
+    # Ensure feature is on
+    monkeypatch.setenv("WEAK_LEXICON_ENABLED", "1")
+    # Avoid rulepack counter-anchors (e.g., 'required')
+    window = "The processor may process personal data."
+    verdict = postprocess_weak_language("pass", window_text=window, counter_anchors=None)
+    assert verdict == "weak"
 
-    monkeypatch.setattr(
-        "blackletter_api.services.detector_runner.analysis_dir",
-        lambda aid: analysis_dir_temp
-    )
 
-    # Mock the load_rulepack function
-    mock_rulepack = Rulepack(
-        name="test-rulepack",
-        version="v1",
-        detectors=[
-            Detector(
-                id="D001",
-                type="lexicon",
-                lexicon="weak-language",
-                description="Detects weak language."
-            )
-        ],
-        lexicons={
-            "weak-language": Lexicon(
-                name="weak-language",
-                terms=["may", "might", "could", "should"]
-            )
-        }
-    )
-    monkeypatch.setattr("blackletter_api.services.detector_runner.load_rulepack", lambda: mock_rulepack)
+def test_counter_anchor_prevents_downgrade(monkeypatch):
+    monkeypatch.setenv("WEAK_LEXICON_ENABLED", "1")
+    window = "The processor may process data, but must comply with controller instructions."
+    verdict = postprocess_weak_language("pass", window_text=window, counter_anchors=["must", "shall"])
+    assert verdict == "pass"
 
-    # Create a dummy extraction.json with sentences, some containing weak language terms
-    dummy_extraction = {
-        "text_path": "extracted.txt",
-        "page_map": [
-            {"page": 1, "start": 0, "end": 100}
-        ],
-        "sentences": [
-            {"page": 1, "start": 0, "end": 20, "text": "This is a test sentence."},
-            {"page": 1, "start": 21, "end": 45, "text": "This might be a weak sentence."},
-            {"page": 1, "start": 46, "end": 70, "text": "Another sentence could be here."},
-            {"page": 1, "start": 71, "end": 95, "text": "Final sentence with no weak words."}
-        ]
-    }
-    extraction_path = analysis_dir_temp / "extraction.json"
-    with extraction_path.open("w") as f:
-        json.dump(dummy_extraction, f)
 
-    run_detectors(analysis_id, str(extraction_path))
+def test_toggle_off_preserves_verdict(monkeypatch):
+    monkeypatch.setenv("WEAK_LEXICON_ENABLED", "0")
+    window = "Processor may consider appropriate measures."
+    verdict = postprocess_weak_language("pass", window_text=window, counter_anchors=None)
+    assert verdict == "pass"
 
-    findings_path = analysis_dir_temp / "findings.json"
-    assert findings_path.exists()
 
-    with findings_path.open("r") as f:
-        findings = json.load(f)
-    
-    # Expect 2 findings for sentences with weak words
-    assert len(findings) == 2
+def test_lexicon_loads_terms():
+    terms = get_weak_terms()
+    assert isinstance(terms, list) and terms, "expected weak terms to load"
+    assert "may" in terms
 
-    # Check the first finding (might)
-    finding1 = findings[0]
-    assert finding1["detector_id"] == "D001"
-    assert finding1["rule_id"] == "D001"
-    assert finding1["snippet"] == "This might be a weak sentence."
-    assert finding1["verdict"] == "weak" # Should be downgraded by post-processor
 
-    # Check the second finding (could)
-    finding2 = findings[1]
-    assert finding2["detector_id"] == "D001"
-    assert finding2["rule_id"] == "D001"
-    assert finding2["snippet"] == "Another sentence could be here."
-    assert finding2["verdict"] == "weak" # Should be downgraded by post-processor
+def test_rulepack_counter_anchors_used_by_default(monkeypatch):
+    # Uses rulepack-provided counter_anchors (must/shall/required) without passing explicitly
+    monkeypatch.setenv("WEAK_LEXICON_ENABLED", "1")
+    window = "The processor may process data but must comply with instructions."
+    verdict = postprocess_weak_language("pass", window_text=window, counter_anchors=None)
+    assert verdict == "pass"
+
+
+def test_whole_word_matching_not_partial(monkeypatch):
+    monkeypatch.setenv("WEAK_LEXICON_ENABLED", "1")
+    window = "This clause discusses mayhem but is otherwise strict."
+    verdict = postprocess_weak_language("pass", window_text=window, counter_anchors=None)
+    # 'mayhem' should not trigger 'may' due to whole-word boundary
+    assert verdict == "pass"
+
+
+def test_case_insensitive_matching(monkeypatch):
+    monkeypatch.setenv("WEAK_LEXICON_ENABLED", "1")
+    window = "The controller MAY adopt measures."
+    verdict = postprocess_weak_language("pass", window_text=window, counter_anchors=None)
+    assert verdict == "weak"

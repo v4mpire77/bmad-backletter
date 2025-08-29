@@ -8,4 +8,7 @@ terms:
   - consider
   - possibly
   - potentially
-
+counter_anchors:
+  - must
+  - shall
+  - required

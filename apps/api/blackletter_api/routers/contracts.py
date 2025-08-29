@@ -43,7 +43,7 @@ async def upload_contract(
             ext = ".docx"
     if ext is None:
         logger.warning("Unsupported file type attempted", extra={
-            "filename": file.filename,
+            "file_name": file.filename,
             "content_type": file.content_type
         })
         raise HTTPException(status_code=415, detail="unsupported_file_type")
@@ -61,7 +61,7 @@ async def upload_contract(
     except ValueError as e:
         if str(e) == "file_too_large":
             logger.warning("File too large rejected", extra={
-                "filename": file.filename,
+                "file_name": file.filename,
                 "size_bytes": getattr(file, 'size', 'unknown'),
                 "max_bytes": MAX_BYTES
             })
@@ -69,7 +69,7 @@ async def upload_contract(
         raise
     except OSError as e:
         logger.error("Disk I/O error during upload", extra={
-            "filename": file.filename,
+            "file_name": file.filename,
             "error": str(e)
         })
         raise HTTPException(status_code=500, detail="disk_io_error") from e
@@ -81,7 +81,7 @@ async def upload_contract(
     logger.info("Contract upload successful", extra={
         "job_id": job_id,
         "analysis_id": analysis_id,
-        "filename": safe_name,
+        "file_name": safe_name,
         "size_bytes": size,
         "upload_latency_ms": upload_time
     })

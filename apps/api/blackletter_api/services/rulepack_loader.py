@@ -17,6 +17,8 @@ class RulepackError(Exception):
 class Lexicon(BaseModel):
     name: str
     terms: List[str] = Field(default_factory=list)
+    # Optional list of counter-anchors that negate weak-language downgrade
+    counter_anchors: List[str] = Field(default_factory=list)
 
 
 class Detector(BaseModel):
@@ -127,7 +129,14 @@ class RulepackLoader:
                 terms = lx.get("terms") or []
                 if not isinstance(terms, list):
                     raise ValueError(f"Lexicon '{name}' terms must be a list")
-                return Lexicon(name=name, terms=[str(t) for t in terms])
+                counter_anchors = lx.get("counter_anchors") or []
+                if counter_anchors and not isinstance(counter_anchors, list):
+                    raise ValueError(f"Lexicon '{name}' counter_anchors must be a list if provided")
+                return Lexicon(
+                    name=name,
+                    terms=[str(t) for t in terms],
+                    counter_anchors=[str(a) for a in counter_anchors],
+                )
             elif isinstance(lx, list):
                 # allow list-of-terms without wrapper
                 name = Path(file_name).stem

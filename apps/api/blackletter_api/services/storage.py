@@ -55,14 +55,15 @@ def save_upload(file: UploadFile, dest: Path, max_bytes: int = 10 * 1024 * 1024)
     return total
 
 
-def write_analysis_json(analysis_id: str, filename: str, size: int) -> Path:
+def write_analysis_json(analysis_id: str, filename: str, size: int, *, status: str = "done", error: str | None = None) -> Path:
     d = analysis_dir(analysis_id)
     payload = {
         "id": analysis_id,
         "filename": filename,
         "size": size,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "status": "done",
+        "status": status,
+        "error": error,
     }
     p = d / "analysis.json"
     with p.open("w", encoding="utf-8") as f:
