@@ -1,7 +1,13 @@
 import pytest
+import sys
+import os
+
+# Add the parent directory to the path so we can import the app
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
 from fastapi.testclient import TestClient
-from ...main import app
-from ...orchestrator.state import orchestrator
+from blackletter_api.main import app
+from blackletter_api.orchestrator.state import orchestrator
 
 client = TestClient(app)
 

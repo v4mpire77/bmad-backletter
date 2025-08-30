@@ -8,6 +8,12 @@ How to use in Codex
 - In chat, activate agents using star-commands like `*dev`, `*qa`, `*bmad-orchestrator`.
 - Follow each agent’s help to list tasks (always with `*` prefix) and proceed.
 
+Quickstart (project scripts)
+- `npm run codex:login`: log into Codex CLI.
+- `npm run codex:chat`: start an interactive Codex session rooted at the repo (`workspace-write`, approvals on-request).
+- `npm run codex:auto`: start Codex in low-friction mode (`--full-auto`) for local automation.
+- `npm run codex:apply`: apply the latest diff Codex proposed to your working tree.
+
 Keeping rules up to date
 - Rebuild from Gemini bundle if agents change:
   - PowerShell: `pwsh -NoProfile -Command "& { $src='.gemini/bmad-method/GEMINI.md'; $dstDir='.codex/bmad-method'; New-Item -ItemType Directory -Force -Path $dstDir | Out-Null; $dst=Join-Path $dstDir 'CODEX.md'; $hdr=@'# Codex Agent Bundle (BMad-Method)

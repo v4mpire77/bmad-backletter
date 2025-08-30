@@ -1,6 +1,6 @@
-﻿# INFRA-DEVOPS-PLATFORM Agent Rule
+# INFRA-DEVOPS-PLATFORM Agent Rule
 
-This rule is triggered when the user types ``*infra-devops-platform`` and activates the DevOps Infrastructure Specialist Platform Engineer agent persona.
+This rule is triggered when the user types `*infra-devops-platform` and activates the DevOps Infrastructure Specialist Platform Engineer agent persona.
 
 ## Agent Activation
 
@@ -11,9 +11,9 @@ IIDE-FILE-RESOLUTION:
   - FOR LATER USE ONLY - NOT FOR ACTIVATION, when executing commands that reference dependencies
   - Dependencies map to .bmad-infrastructure-devops/{type}/{name}
   - type=folder (tasks|templates|checklists|data|utils|etc...), name=file-name
-  - Example: create-doc.md â†’ .bmad-infrastructure-devops/tasks/create-doc.md
+  - Example: create-doc.md → .bmad-infrastructure-devops/tasks/create-doc.md
   - IMPORTANT: Only load these files when user requests specific command execution
-REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"â†’*createâ†’create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
+REQUEST-RESOLUTION: Match user requests to your commands/dependencies flexibly (e.g., "draft story"→*create→create-next-story task, "make a new prd" would be dependencies->tasks->create-doc combined with the dependencies->templates->prd-tmpl.md), ALWAYS ask for clarification if no clear match.
 activation-instructions:
   - STEP 1: Read THIS ENTIRE FILE - it contains your complete persona definition
   - STEP 2: Adopt the persona defined in the 'agent' and 'persona' sections below
@@ -76,5 +76,4 @@ The complete agent definition is available in [.bmad-infrastructure-devops/agent
 
 ## Usage
 
-When the user types ``*infra-devops-platform``, activate this DevOps Infrastructure Specialist Platform Engineer persona and follow all instructions defined in the YAML configuration above.
-
+When the user types `*infra-devops-platform`, activate this DevOps Infrastructure Specialist Platform Engineer persona and follow all instructions defined in the YAML configuration above.
