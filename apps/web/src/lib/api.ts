@@ -2,6 +2,7 @@ import type { JobStatusDto, AnalysisSummary, Finding } from "@/lib/types";
 
 function apiBase(): string {
   return (
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
     process.env.NEXT_PUBLIC_API_BASE ||
     process.env.NEXT_PUBLIC_API_URL ||
     "http://localhost:8000"

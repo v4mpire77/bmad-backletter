@@ -12,7 +12,7 @@ from ..models.entities import Analysis
 from ..models.schemas import JobStatus, JobState
 from ..services import storage
 from ..services.tasks import new_job, process_job
-from ..services.rulepack_loader import load_rulepack, RulepackError
+from ..services.rulepack_loader import get_rulepack_metadata, RulepackError
 
 
 router = APIRouter(tags=["contracts"])
@@ -49,9 +49,9 @@ async def upload_contract(
     # Resolve rulepack id/version for auditability. Fail-soft to default.
     rulepack_version = "art28_v1"
     try:
-        rp = load_rulepack()
-        if getattr(rp, "name", None) and getattr(rp, "version", None):
-            rulepack_version = f"{rp.name}_{rp.version}"
+        name, ver = get_rulepack_metadata()
+        if name and ver:
+            rulepack_version = f"{name}_{ver}"
     except RulepackError:
         # Keep default if loader fails; orchestration should not fail on RP metadata
         pass

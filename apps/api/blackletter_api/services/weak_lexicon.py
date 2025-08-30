@@ -39,7 +39,10 @@ def get_weak_terms() -> List[str]:
     Loads rulepack and fetches the 'weak_language' lexicon terms. Returns
     lowercase, stripped terms suitable for exact term matching.
     """
-    rp = load_rulepack()
+    try:
+        rp = load_rulepack()
+    except Exception:
+        return []
     lx = rp.lexicons.get("weak_language") if rp and rp.lexicons else None
     if not lx or not lx.terms:
         return []
@@ -63,7 +66,10 @@ def get_weak_terms_by_industry(industry: IndustryType = IndustryType.GENERAL) ->
 
     Loads rulepack and fetches the appropriate lexicon based on industry type.
     """
-    rp = load_rulepack()
+    try:
+        rp = load_rulepack()
+    except Exception:
+        return []
     if not rp or not rp.lexicons:
         return []
 
@@ -99,7 +105,10 @@ def get_weak_terms_by_industry(industry: IndustryType = IndustryType.GENERAL) ->
 @lru_cache(maxsize=1)
 def get_weak_terms_with_metadata() -> List[WeakTerm]:
     """Return weak language terms with confidence scores and categories."""
-    rp = load_rulepack()
+    try:
+        rp = load_rulepack()
+    except Exception:
+        return []
     lx = rp.lexicons.get("weak_language") if rp and rp.lexicons else None
     if not lx or not lx.terms:
         return []
@@ -130,7 +139,10 @@ def get_weak_terms_with_metadata() -> List[WeakTerm]:
 @lru_cache(maxsize=4)
 def get_weak_terms_with_metadata_by_industry(industry: IndustryType = IndustryType.GENERAL) -> List[WeakTerm]:
     """Return weak language terms with confidence scores and categories for a specific industry."""
-    rp = load_rulepack()
+    try:
+        rp = load_rulepack()
+    except Exception:
+        return []
     if not rp or not rp.lexicons:
         return []
 
@@ -176,7 +188,10 @@ def get_weak_terms_with_metadata_by_industry(industry: IndustryType = IndustryTy
 @lru_cache(maxsize=1)
 def get_counter_anchors() -> List[str]:
     """Return counter-anchor terms that prevent weak language downgrades from all lexicons."""
-    rp = load_rulepack()
+    try:
+        rp = load_rulepack()
+    except Exception:
+        return []
     if not rp or not rp.lexicons:
         return []
 

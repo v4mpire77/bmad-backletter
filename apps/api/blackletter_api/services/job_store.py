@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from ..models.job import Job, JobState
 
@@ -52,7 +52,23 @@ class InMemoryJobStore:
             self._jobs[job_id] = job
             return job
 
+    async def stats(self) -> dict:
+        async with self._lock:
+            counts = {s.value: 0 for s in JobState}
+            total = 0
+            durations: list[float] = []
+            for job in self._jobs.values():
+                counts[job.state.value] = counts.get(job.state.value, 0) + 1
+                total += 1
+                if job.state == JobState.completed:
+                    durations.append((job.updated_at - job.created_at).total_seconds())
+            avg = sum(durations) / len(durations) if durations else None
+            return {
+                "counts": counts,
+                "total_jobs": total,
+                "average_processing_seconds": avg,
+            }
+
 
 # Singleton-ish store for app lifetime
 job_store = InMemoryJobStore()
-
