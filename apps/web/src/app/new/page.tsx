@@ -30,6 +30,7 @@ export default function NewUploadPage() {
   const [stepIndex, setStepIndex] = useState(0);
   const [running, setRunning] = useState(false);
   const [canceled, setCanceled] = useState(false);
+  const cancelledRef = useRef(false);
   const timerRef = useRef<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -45,6 +46,7 @@ export default function NewUploadPage() {
     setFile(f);
     setStepIndex(0);
     setCanceled(false);
+    cancelledRef.current = false;
     setRunning(true);
     setError(null);
     setJobId(null);
@@ -107,6 +109,7 @@ export default function NewUploadPage() {
     const delay = 900;
 
     timerRef.current = window.setTimeout(() => {
+      if (cancelledRef.current) return;
       setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
     }, delay) as unknown as number;
 
@@ -116,7 +119,11 @@ export default function NewUploadPage() {
   }, [running, stepIndex, mockMode]);
 
   function cancel() {
-    if (timerRef.current) window.clearTimeout(timerRef.current);
+    cancelledRef.current = true;
+    if (timerRef.current) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
     setRunning(false);
     setCanceled(true);
   }
@@ -142,7 +149,7 @@ export default function NewUploadPage() {
       {!file && <DropZone onPick={pickFile} />}
 
       {file && (
-        <div className="space-y-4" aria-live="polite">
+        <div className="space-y-4" aria-live="polite" data-testid="state-machine" data-state={current}>
           <div className="border rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -278,6 +285,7 @@ function DropZone({ onPick }: { onPick: (f: File | null) => void }) {
         onChange={(e) => onPick(e.target.files?.[0] || null)}
         aria-hidden
         tabIndex={-1}
+        data-testid="file-input"
       />
     </div>
   );
