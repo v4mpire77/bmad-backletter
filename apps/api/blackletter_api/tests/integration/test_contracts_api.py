@@ -1,5 +1,3 @@
-import pytest
-import uuid
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -63,7 +61,7 @@ def test_upload_contract_success():
 
     # 2. Check the database state
     db = TestingSessionLocal()
-    analysis_record = db.query(Analysis).filter(Analysis.id == uuid.UUID(analysis_id)).first()
+    analysis_record = db.query(Analysis).filter(Analysis.id == analysis_id).first()
     db.close()
 
     assert analysis_record is not None

@@ -1,19 +1,12 @@
 import uuid
-from sqlalchemy import (
-    Column,
-    DateTime,
-    Integer,
-    String,
-    func,
-)
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, DateTime, Integer, String, func
 from ..database import Base
 
 
 class Analysis(Base):
     __tablename__ = "analyses"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     filename = Column(String, nullable=False)
     size_bytes = Column(Integer, nullable=False)
     mime_type = Column(String, nullable=False)
