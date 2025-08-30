@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import List
-
-import os
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
 
 from ..models.schemas import AnalysisSummary, Finding, VerdictCounts
@@ -63,18 +61,24 @@ def list_analyses(limit: int = Query(default=50, ge=1, le=200)) -> List[Analysis
 
 @router.get("/analyses/{analysis_id}", response_model=AnalysisSummary)
 def get_analysis_summary(analysis_id: str) -> AnalysisSummary:
-    rec = orchestrator.summary(analysis_id)
-    return AnalysisSummary(
-        id=rec.id,
-        filename=rec.filename,
-        created_at=datetime.now(timezone.utc).isoformat(),
-        size=0,
-        state=rec.state.value,
-        verdicts=VerdictCounts(),
-    )
+    try:
+        rec = orchestrator.summary(analysis_id)
+        return AnalysisSummary(
+            id=rec.id,
+            filename=rec.filename,
+            created_at=datetime.now(timezone.utc).isoformat(),
+            size=0,
+            state=rec.state.value,
+            verdicts=VerdictCounts(),
+        )
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Analysis not found")
 
 
 @router.get("/analyses/{analysis_id}/findings", response_model=List[Finding])
 def get_analysis_findings(analysis_id: str) -> List[Finding]:
-    rec_findings = orchestrator.findings(analysis_id)
-    return [Finding(**f) for f in rec_findings]
+    try:
+        rec_findings = orchestrator.findings(analysis_id)
+        return [Finding(**f) for f in rec_findings]
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Analysis not found")

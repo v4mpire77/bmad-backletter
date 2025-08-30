@@ -89,17 +89,3 @@ class ReportExport(BaseModel):
     filename: str
     created_at: str
     options: ExportOptions
-
-
-class ExportOptions(BaseModel):
-    include_logo: bool = True
-    include_meta: bool = True
-    date_format: Literal["YMD", "DMY", "MDY"] = "YMD"
-
-
-class ReportExport(BaseModel):
-    id: str
-    analysis_id: str
-    filename: str
-    created_at: str
-    options: ExportOptions

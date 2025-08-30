@@ -7,6 +7,7 @@ from uuid import uuid4
 from fastapi import APIRouter, status
 
 from ..models.schemas import ReportExport, ExportOptions
+from ..services.reports import generate_report
 
 router = APIRouter(tags=["reports"])
 
@@ -20,13 +21,7 @@ def list_reports() -> List[ReportExport]:
 
 @router.post("/reports/{analysis_id}", response_model=ReportExport, status_code=status.HTTP_201_CREATED)
 def create_report(analysis_id: str, opts: ExportOptions) -> ReportExport:
-    rec = ReportExport(
-        id=str(uuid4()),
-        analysis_id=analysis_id,
-        filename=f"{analysis_id.upper()}.pdf",
-        created_at=datetime.now(timezone.utc).isoformat(),
-        options=opts,
-    )
+    rec = generate_report(analysis_id, opts)
     _exports.insert(0, rec)
     del _exports[20:]
     return rec
