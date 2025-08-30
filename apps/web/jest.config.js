@@ -10,6 +10,12 @@ const config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  testPathIgnorePatterns: [
+    "<rootDir>/node_modules/",
+    "<rootDir>/.next/",
+    "<rootDir>/tests/e2e/",
+    "<rootDir>/tests/a11y/",
+  ],
 };
 
 module.exports = createJestConfig(config);

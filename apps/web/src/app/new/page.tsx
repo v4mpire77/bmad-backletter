@@ -31,8 +31,6 @@ export default function NewUploadPage() {
   const [running, setRunning] = useState(false);
   const [canceled, setCanceled] = useState(false);
   const timerRef = useRef<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [jobId, setJobId] = useState<string | null>(null);
   const lastAnalysisId = useRef<string | null>(null);
   const router = useRouter();
 
@@ -46,12 +44,9 @@ export default function NewUploadPage() {
     setStepIndex(0);
     setCanceled(false);
     setRunning(true);
-    setError(null);
-    setJobId(null);
     lastAnalysisId.current = null;
     if (!mockMode) {
-      startRealUpload(f).catch((e) => {
-        setError(e instanceof Error ? e.message : String(e));
+      startRealUpload(f).catch(() => {
         setRunning(false);
       });
     }
@@ -60,7 +55,6 @@ export default function NewUploadPage() {
   const startRealUpload = async (f: File) => {
     // 1) Upload
     const init = await uploadContract(f);
-    setJobId(init.id);
     if (init.analysis_id) lastAnalysisId.current = init.analysis_id;
     // queued
     setStepIndex(0);
@@ -79,7 +73,6 @@ export default function NewUploadPage() {
         done = true;
         break;
       } else if (j.status === "error") {
-        setError(j.error_reason || "job_error");
         setRunning(false);
         done = true;
         break;
@@ -95,7 +88,6 @@ export default function NewUploadPage() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Advance state machine on a timer when running (mock mode only)
@@ -127,8 +119,6 @@ export default function NewUploadPage() {
     setStepIndex(0);
     setCanceled(false);
     setRunning(false);
-    setError(null);
-    setJobId(null);
     lastAnalysisId.current = null;
   }
 
