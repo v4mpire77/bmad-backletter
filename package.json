@@ -19,7 +19,7 @@
     "micromatch": "^4.0.8"
   },
   "devDependencies": {
-    "@octokit/core": "5.2.0",
+    "@octokit/core": "^7.0.3",
     "@octokit/plugin-paginate-rest": "11.3.3",
     "eslint": "9.9.0",
     "prettier": "3.3.3",
