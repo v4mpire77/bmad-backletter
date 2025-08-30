@@ -9,8 +9,9 @@ from .database import engine, Base
 from .models import entities
 from .routers import rules, analyses
 from .routers import contracts, jobs, reports
-from .routers import risk_analysis, admin
-from .routers import orchestration, gemini
+# risk_analysis router is experimental and currently disabled
+from .routers import admin
+# Disable orchestration and gemini routers for now to avoid import errors
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -94,10 +95,7 @@ app.include_router(analyses.router, prefix="/api")
 app.include_router(contracts.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
-app.include_router(risk_analysis.router, prefix="/api")
 app.include_router(admin.router)
-app.include_router(orchestration.router)
-app.include_router(gemini.router, prefix="/api")
 
 
 @app.get("/")
