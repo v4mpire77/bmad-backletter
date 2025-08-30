@@ -8,10 +8,23 @@ from typing import List
 from .database import engine, Base
 from .models import entities
 from .routers import rules, analyses
-from .routers import contracts, jobs, reports
-from .routers import risk_analysis, admin
-from .routers import orchestration, gemini
-from .routers import document_qa
+try:  # optional routers with heavy dependencies
+    from .routers import contracts, jobs, reports
+except ModuleNotFoundError:  # pragma: no cover - optional deps
+    contracts = jobs = reports = None
+try:
+    from .routers import risk_analysis, admin
+except ModuleNotFoundError:  # pragma: no cover - optional deps
+    risk_analysis = admin = None
+try:
+    from .routers import orchestration, gemini
+except ModuleNotFoundError:  # pragma: no cover - optional deps
+    orchestration = gemini = None
+try:
+    from .routers import document_qa
+except ModuleNotFoundError:  # pragma: no cover - optional deps
+    document_qa = None
+from .routers import auth
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -92,14 +105,23 @@ app.add_middleware(
 
 app.include_router(rules.router, prefix="/api")
 app.include_router(analyses.router, prefix="/api")
-app.include_router(contracts.router, prefix="/api")
-app.include_router(jobs.router, prefix="/api")
-app.include_router(reports.router, prefix="/api")
-app.include_router(risk_analysis.router, prefix="/api")
-app.include_router(admin.router)
-app.include_router(orchestration.router)
-app.include_router(gemini.router, prefix="/api")
-app.include_router(document_qa.router, prefix="/api")
+if contracts:
+    app.include_router(contracts.router, prefix="/api")
+if jobs:
+    app.include_router(jobs.router, prefix="/api")
+if reports:
+    app.include_router(reports.router, prefix="/api")
+if risk_analysis:
+    app.include_router(risk_analysis.router, prefix="/api")
+if admin:
+    app.include_router(admin.router)
+if orchestration:
+    app.include_router(orchestration.router)
+if gemini:
+    app.include_router(gemini.router, prefix="/api")
+if document_qa:
+    app.include_router(document_qa.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
 
 
 @app.get("/")
