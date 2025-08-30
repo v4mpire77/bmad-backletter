@@ -10,7 +10,11 @@
     "format": "prettier -w .",
     "codex:bundle": "python tools/bmad/generate_codex_bundle.py",
     "codex:rules": "python tools/bmad/generate_codex_rules_from_cursor.py",
-    "codex:all": "npm run codex:bundle && npm run codex:rules"
+    "codex:all": "npm run codex:bundle && npm run codex:rules",
+    "codex:chat": "codex --cd . -a on-request -s workspace-write",
+    "codex:auto": "codex --cd . --full-auto",
+    "codex:apply": "codex apply",
+    "codex:login": "codex login"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",
