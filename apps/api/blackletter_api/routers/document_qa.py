@@ -36,3 +36,11 @@ async def document_question_answer(
         )
     # default simple
     return await service.answer_simple(document_id, payload.question)
+
+
+@router.post("/qa/{document_id}", response_model=QAResponse)
+async def question_answer(
+    document_id: str, payload: QuestionRequest
+) -> QAResponse:
+    """Alias route for document question-answering."""
+    return await document_question_answer(document_id, payload)
