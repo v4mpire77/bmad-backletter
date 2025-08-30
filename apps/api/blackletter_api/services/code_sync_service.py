@@ -54,8 +54,8 @@ class AgentStatus:
     """Represents the current status of an AI agent"""
     agent_id: str
     status: str  # 'active', 'idle', 'busy', 'error', 'offline'
-    current_task: Optional[str] = None
     last_activity: datetime
+    current_task: Optional[str] = None
     workload: float = 0.0  # 0.0 to 1.0
     capabilities: List[str] = None
     

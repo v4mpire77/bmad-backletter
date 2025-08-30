@@ -117,3 +117,12 @@ class RulesSummary(BaseModel):
     detector_count: int
     detectors: List[DetectorSummary]
     lexicons: List[str]
+
+
+class QuestionRequest(BaseModel):
+    question: str
+
+
+class AnswerResponse(BaseModel):
+    answer: str
+
