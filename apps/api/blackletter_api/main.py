@@ -4,8 +4,13 @@ import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .database import engine, Base
+from .models import entities
 from .routers import rules, analyses
 from .routers import contracts, jobs, reports
+
+# Create the database tables
+entities.Base.metadata.create_all(bind=engine)
 
 # --- Structured Logging Setup ---
 
