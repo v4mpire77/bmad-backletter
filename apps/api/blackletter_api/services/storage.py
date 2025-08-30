@@ -20,6 +20,12 @@ def analysis_dir(analysis_id: str) -> Path:
     return d
 
 
+def get_data_dir() -> Path:
+    """Return the base data directory used for analyses and artifacts."""
+    DATA_ROOT.mkdir(parents=True, exist_ok=True)
+    return DATA_ROOT
+
+
 def sanitize_filename(name: str) -> str:
     # Drop any directory components and strip dangerous characters
     base = os.path.basename(name).strip().replace("\x00", "")
