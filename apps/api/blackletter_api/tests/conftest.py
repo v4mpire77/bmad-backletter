@@ -10,10 +10,24 @@ from blackletter_api import database
 from blackletter_api.models import entities
 
 # Rebind engine to a known absolute path and ensure tables exist
-db_path = Path(__file__).resolve().parents[3] / "test.db"
+db_path = Path(__file__).resolve().parents[4] / "test.db"
 database.engine = create_engine(
     f"sqlite:///{db_path}", connect_args={"check_same_thread": False}
 )
 database.SessionLocal.configure(bind=database.engine)
 entities.Base.metadata.create_all(bind=database.engine)
+
+# Seed a sample document chunk for QA tests
+with database.SessionLocal() as session:
+    exists = session.query(entities.DocumentChunk).filter_by(document_id="doc-1").first()
+    if not exists:
+        session.add(
+            entities.DocumentChunk(
+                document_id="doc-1",
+                content="Example content for QA testing.",
+                page_number=1,
+                embedding="[]",
+            )
+        )
+        session.commit()
 
