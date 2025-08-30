@@ -14,13 +14,13 @@ def _include_optional_router(app: FastAPI, module_path: str, attr: str = "router
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Blackletter API")
-
-    # Core routers
-    _include_optional_router(app, "blackletter_api.routers.analyses")
-    _include_optional_router(app, "blackletter_api.routers.jobs")
-    _include_optional_router(app, "blackletter_api.routers.contracts")
-    _include_optional_router(app, "blackletter_api.routers.reports")
-    _include_optional_router(app, "blackletter_api.routers.rules")
+    # Import and include required core routers
+    from .routers import analyses, contracts, jobs, reports, rules  # type: ignore
+    app.include_router(analyses.router, prefix="/api")
+    app.include_router(contracts.router, prefix="/api")
+    app.include_router(jobs.router, prefix="/api")
+    app.include_router(reports.router, prefix="/api")
+    app.include_router(rules.router, prefix="/api")
 
     # Optional/extended routers (should not break tests if deps missing)
     _include_optional_router(app, "blackletter_api.routers.orchestration")

@@ -16,6 +16,7 @@ from .token_ledger import get_token_ledger, should_apply_token_capping, token_ca
 from .rulepack_loader import load_rulepack
 from ..models.schemas import Finding
 from .storage import analysis_dir
+from .evidence import build_window
 
 
 def weak_lexicon_enabled() -> bool:
@@ -126,6 +127,15 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
     rulepack = load_rulepack()
 
     processed_sentences = 0
+    # Evidence window sizing (default +/- 2 sentences)
+    try:
+        window_before = int(os.getenv("EVIDENCE_WINDOW_BEFORE", "2"))
+    except ValueError:
+        window_before = 2
+    try:
+        window_after = int(os.getenv("EVIDENCE_WINDOW_AFTER", "2"))
+    except ValueError:
+        window_after = 2
     for sentence_data in sentences:
         sentence_text = sentence_data.get("text", "")
         page = sentence_data.get("page", 1)
@@ -157,14 +167,23 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     anchors_any = [str(term) for term in lx.terms]
 
                 if _has_any(sentence_text.lower(), anchors_any):
+                    # Build evidence window around the sentence span (page-scoped)
+                    window = build_window(
+                        sentences=sentences,
+                        target_page=page,
+                        target_span=(start, end),
+                        before=window_before,
+                        after=window_after,
+                    )
+
                     finding = Finding(
                         detector_id=detector_id,
-                        rule_id=detector_id, # Use detector_id as rule_id for now
+                        rule_id=detector_id,  # Use detector_id as rule_id for now
                         verdict="pass",
-                        snippet=sentence_text,
-                        page=page,
-                        start=start,
-                        end=end,
+                        snippet=window.get("text", sentence_text),
+                        page=window.get("page", page),
+                        start=window.get("start", start),
+                        end=window.get("end", end),
                         rationale="Lexicon term found."
                     )
 

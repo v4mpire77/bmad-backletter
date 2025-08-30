@@ -69,16 +69,18 @@ def test_run_detectors_generates_findings_and_applies_weak_language(tmp_path: Pa
     # Expect 2 findings for sentences with weak words
     assert len(findings) == 2
 
-    # Check the first finding (might)
+    # Check the first finding (might) — snippet should be an evidence window containing the sentence
     finding1 = findings[0]
     assert finding1["detector_id"] == "D001"
     assert finding1["rule_id"] == "D001"
-    assert finding1["snippet"] == "This might be a weak sentence."
-    assert finding1["verdict"] == "weak" # Should be downgraded by post-processor
+    assert "might" in finding1["snippet"].lower()
+    assert len(finding1["snippet"]) >= len("This might be a weak sentence.")
+    assert finding1["verdict"] == "weak"  # Should be downgraded by post-processor
 
     # Check the second finding (could)
     finding2 = findings[1]
     assert finding2["detector_id"] == "D001"
     assert finding2["rule_id"] == "D001"
-    assert finding2["snippet"] == "Another sentence could be here."
-    assert finding2["verdict"] == "weak" # Should be downgraded by post-processor
+    assert "could" in finding2["snippet"].lower()
+    assert len(finding2["snippet"]) >= len("Another sentence could be here.")
+    assert finding2["verdict"] == "weak"  # Should be downgraded by post-processor
