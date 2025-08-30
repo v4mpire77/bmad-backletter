@@ -18,6 +18,8 @@ class Analysis(Base):
     size_bytes = Column(Integer, nullable=False)
     mime_type = Column(String, nullable=False)
     status = Column(String, nullable=False, default="queued")
+    # For auditability, persist the rulepack id/version used for this analysis (e.g., "art28_v1")
+    rulepack_version = Column(String, nullable=False, default="art28_v1")
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     # org_id is not used in MVP, but good to have for future multi-tenancy
     org_id = Column(String, nullable=True)

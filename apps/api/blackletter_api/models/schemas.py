@@ -72,6 +72,8 @@ class JobStatus(BaseModel):
     # Story 1.2 response compatibility: alias JSON key to `error`
     error_reason: Optional[str] = Field(default=None, serialization_alias="error")
     created_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
 
 
 class ExportOptions(BaseModel):

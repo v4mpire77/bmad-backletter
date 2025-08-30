@@ -14,8 +14,27 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass, asdict
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler, FileModifiedEvent, FileCreatedEvent, FileDeletedEvent
+try:
+    from watchdog.observers import Observer  # type: ignore
+    from watchdog.events import FileSystemEventHandler, FileModifiedEvent, FileCreatedEvent, FileDeletedEvent  # type: ignore
+    _WATCHDOG_AVAILABLE = True
+except Exception:  # ModuleNotFoundError or others
+    # Provide lightweight shims so imports don't fail in environments without watchdog
+    Observer = None  # type: ignore
+
+    class FileSystemEventHandler:  # type: ignore
+        pass
+
+    class FileModifiedEvent:  # type: ignore
+        pass
+
+    class FileCreatedEvent:  # type: ignore
+        pass
+
+    class FileDeletedEvent:  # type: ignore
+        pass
+
+    _WATCHDOG_AVAILABLE = False
 import hashlib
 import difflib
 
@@ -54,11 +73,11 @@ class AgentStatus:
     """Represents the current status of an AI agent"""
     agent_id: str
     status: str  # 'active', 'idle', 'busy', 'error', 'offline'
-    current_task: Optional[str] = None
     last_activity: datetime
+    current_task: Optional[str] = None
     workload: float = 0.0  # 0.0 to 1.0
     capabilities: List[str] = None
-    
+
     def __post_init__(self):
         if self.capabilities is None:
             self.capabilities = []
@@ -138,11 +157,15 @@ class CodeSyncService:
         
         logger.info("Starting code synchronization monitoring")
         
-        # Create file system observer
-        self.observer = Observer()
-        event_handler = CodeChangeHandler(self)
-        self.observer.schedule(event_handler, str(self.project_root), recursive=True)
-        self.observer.start()
+        # Create file system observer if watchdog is available; otherwise, no-op
+        if _WATCHDOG_AVAILABLE and Observer is not None:
+            self.observer = Observer()
+            event_handler = CodeChangeHandler(self)
+            self.observer.schedule(event_handler, str(self.project_root), recursive=True)
+            self.observer.start()
+        else:
+            self.observer = None
+            logger.info("watchdog not installed; running without filesystem monitoring")
         
         self.is_monitoring = True
         logger.info(f"Code synchronization monitoring started for {self.project_root}")

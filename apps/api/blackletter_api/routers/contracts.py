@@ -12,6 +12,7 @@ from ..models.entities import Analysis
 from ..models.schemas import JobStatus, JobState
 from ..services import storage
 from ..services.tasks import new_job, process_job
+from ..services.rulepack_loader import load_rulepack, RulepackError
 
 
 router = APIRouter(tags=["contracts"])
@@ -45,10 +46,21 @@ async def upload_contract(
         raise HTTPException(status_code=415, detail="unsupported_file_type")
 
     # Create the analysis record in the database
+    # Resolve rulepack id/version for auditability. Fail-soft to default.
+    rulepack_version = "art28_v1"
+    try:
+        rp = load_rulepack()
+        if getattr(rp, "name", None) and getattr(rp, "version", None):
+            rulepack_version = f"{rp.name}_{rp.version}"
+    except RulepackError:
+        # Keep default if loader fails; orchestration should not fail on RP metadata
+        pass
+
     analysis = Analysis(
         filename=file.filename or "untitled",
         size_bytes=0,  # We don't know the size until after saving
         mime_type=file.content_type or "application/octet-stream",
+        rulepack_version=rulepack_version,
     )
     db.add(analysis)
     db.commit()

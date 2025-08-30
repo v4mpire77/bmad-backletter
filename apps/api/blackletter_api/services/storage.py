@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import BinaryIO, List
+from typing import BinaryIO, List, Any, Dict
 
 from fastapi import UploadFile
 import json
@@ -68,6 +68,54 @@ def write_analysis_json(analysis_id: str, filename: str, size: int) -> Path:
     with p.open("w", encoding="utf-8") as f:
         json.dump(payload, f)
     return p
+
+
+def _load_extraction_json(analysis_id: str) -> Dict[str, Any] | None:
+    d = analysis_dir(analysis_id)
+    p = d / "extraction.json"
+    if not p.exists():
+        return None
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def get_analysis_text(analysis_id: str) -> str:
+    """Return the extracted plain text for an analysis.
+
+    Reads `<DATA_ROOT>/analyses/{id}/extraction.json` to locate `text_path`,
+    then returns the contents of that file. Returns an empty string if unavailable.
+    """
+    data = _load_extraction_json(analysis_id)
+    if not data:
+        return ""
+    text_rel = data.get("text_path")
+    if not text_rel:
+        return ""
+    p = analysis_dir(analysis_id) / str(text_rel)
+    try:
+        return p.read_text(encoding="utf-8")
+    except Exception:
+        return ""
+
+
+def get_analysis_findings(analysis_id: str) -> List[Dict[str, Any]]:
+    """Return persisted findings for an analysis as a list of dicts.
+
+    Looks for `<DATA_ROOT>/analyses/{id}/findings.json`. Returns an empty list if missing.
+    """
+    p = analysis_dir(analysis_id) / "findings.json"
+    if not p.exists():
+        return []
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+        # Ensure it's a list of objects
+        if isinstance(data, list):
+            return [d for d in data if isinstance(d, dict)]
+        return []
+    except Exception:
+        return []
 
 
 def _parse_iso(dt: str) -> float:

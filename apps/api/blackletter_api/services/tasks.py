@@ -24,6 +24,8 @@ class JobRecord:
     analysis_id: Optional[str]
     error_reason: Optional[str]
     created_at: datetime
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
 
 
 _JOBS: Dict[str, JobRecord] = {}
@@ -57,6 +59,11 @@ def set_status(job_id: str, status: JobState, error_reason: str | None = None) -
             return
         job.status = status
         job.error_reason = error_reason
+        now = datetime.now(timezone.utc)
+        if status == JobState.running and job.started_at is None:
+            job.started_at = now
+        if status in (JobState.done, JobState.error):
+            job.finished_at = now
 
 
 def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None:
