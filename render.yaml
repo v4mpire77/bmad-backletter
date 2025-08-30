@@ -16,6 +16,12 @@ services:
           type: web
           name: blackletter-web
           envVarKey: RENDER_EXTERNAL_URL
+      - key: PIP_CACHE_DIR
+        value: /cache/pip
+    disk:
+      name: pip-cache
+      mountPath: /cache/pip
+      sizeGB: 1
 
   - type: web
     name: blackletter-web
@@ -33,3 +39,9 @@ services:
           envVarKey: RENDER_EXTERNAL_URL
       - key: NEXT_PUBLIC_USE_MOCKS
         value: "0"
+      - key: NPM_CONFIG_CACHE
+        value: /cache/npm
+    disk:
+      name: npm-cache
+      mountPath: /cache/npm
+      sizeGB: 5
