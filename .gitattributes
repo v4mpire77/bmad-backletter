@@ -1,0 +1,17 @@
+* text=auto eol=lf
+
+# Windows scripts use CRLF
+*.ps1 eol=crlf
+*.bat eol=crlf
+
+# Common source files use LF
+*.py eol=lf
+*.ts eol=lf
+*.tsx eol=lf
+*.js eol=lf
+*.jsx eol=lf
+*.json eol=lf
+*.md eol=lf
+*.yaml eol=lf
+*.yml eol=lf
+*.sh eol=lf
