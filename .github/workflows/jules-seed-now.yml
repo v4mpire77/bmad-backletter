@@ -1,0 +1,37 @@
+name: Seed Jules Tasks Now
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "How many demo tasks?"
+        required: true
+        default: "5"
+permissions:
+  issues: write
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const n = parseInt(core.getInput('count', {required:true}), 10);
+            const titles = [
+              "Daily: Deps (api)",
+              "Daily: Deps (web)",
+              "Docs: Refresh README badges",
+              "Story 1.1 — Upload & Job Orchestration (scaffold)",
+              "Story 1.2 — Text Extraction (PDF/DOCX) (scaffold)",
+              "Story 1.3 — Evidence Window Builder (±2 sentences)",
+            ];
+            for (let i = 0; i < n; i++) {
+              const title = titles[i % titles.length] + ` #${Date.now()}-${i}`;
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: "Kick off with Jules. Keep scope tight.",
+                labels: ["jules","auto","low-risk"]
+              });
+            }
+            core.notice(`Opened ${n} Jules tasks`);
