@@ -10,7 +10,7 @@ from .models import entities
 from .routers import rules, analyses
 from .routers import contracts, jobs, reports
 from .routers import risk_analysis, admin
-from .routers import orchestration, gemini
+from .routers import orchestration, gemini, auth
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -98,6 +98,7 @@ app.include_router(risk_analysis.router, prefix="/api")
 app.include_router(admin.router)
 app.include_router(orchestration.router)
 app.include_router(gemini.router, prefix="/api")
+app.include_router(auth.router)
 
 
 @app.get("/")
