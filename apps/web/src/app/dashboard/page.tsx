@@ -1,31 +1,8 @@
 import { getAnalyses } from "@/lib/api";
-import { getMockAnalyses } from "@/lib/mocks";
 import DemoBanner from "@/components/DemoBanner";
-import VerdictBadge from "@/components/VerdictBadge";
-import type { AnalysisSummary } from "@/lib/types";
-
-async function fetchAnalyses(): Promise<AnalysisSummary[]> {
-  try {
-    // Try to fetch from real API first
-    return await getAnalyses(50);
-  } catch (error) {
-    console.warn("Failed to fetch from API, falling back to mocks:", error);
-    // Fallback to mocks if API is not available
-    const items = getMockAnalyses(10);
-    // Ensure the first item is ACME_DPA_MOCK.pdf with id mock-1
-    if (items.length) {
-      items[0] = {
-        ...items[0],
-        id: "mock-1",
-        filename: "ACME_DPA_MOCK.pdf",
-      };
-    }
-    return items;
-  }
-}
 
 export default async function DashboardPage() {
-  const analyses = await fetchAnalyses();
+  const analyses = await getAnalyses(10);
 
   if (!analyses.length) {
     return (
