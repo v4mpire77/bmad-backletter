@@ -41,6 +41,29 @@ class Orchestrator:
     def findings(self, analysis_id: str) -> List[Dict[str, Any]]:
         return self._store[analysis_id].findings
 
+    def advance(
+        self,
+        analysis_id: str,
+        new_state: AnalysisState,
+        finding: Dict[str, Any] | None = None,
+    ) -> AnalysisRecord:
+        """Update the state of an analysis and optionally append a finding.
+
+        Args:
+            analysis_id: Identifier returned by :meth:`intake`.
+            new_state: The next :class:`AnalysisState` to assign.
+            finding: Optional detail to add to the record's findings list.
+
+        Returns:
+            The updated :class:`AnalysisRecord` instance.
+        """
+
+        record = self._store[analysis_id]
+        record.state = new_state
+        if finding:
+            record.findings.append(finding)
+        return record
+
     def list_records(self, limit: int) -> List[AnalysisRecord]:
         return list(self._store.values())[:limit]
 
