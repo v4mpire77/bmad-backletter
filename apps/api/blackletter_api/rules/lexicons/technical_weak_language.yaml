@@ -1,0 +1,131 @@
+name: technical_weak_language
+description: "Technical and engineering-specific weak language terms"
+
+# Technical context weak terms - often acceptable in technical specifications
+# Lower confidence scores as technical terms may be appropriate in context
+
+terms:
+  # Technical aspirational terms
+  - confidence: 0.50
+    term: "ideally"
+    category: technical_aspirational
+  - confidence: 0.45
+    term: "preferably"
+    category: technical_aspirational
+  - confidence: 0.40
+    term: "recommended"
+    category: technical_aspirational
+  - confidence: 0.40
+    term: "suggested"
+    category: technical_aspirational
+  - confidence: 0.35
+    term: "best practice"
+    category: technical_aspirational
+  - confidence: 0.35
+    term: "should consider"
+    category: technical_aspirational
+
+  # Technical conditional terms
+  - confidence: 0.45
+    term: "if possible"
+    category: technical_conditional
+  - confidence: 0.45
+    term: "when possible"
+    category: technical_conditional
+  - confidence: 0.40
+    term: "where feasible"
+    category: technical_conditional
+  - confidence: 0.40
+    term: "if available"
+    category: technical_conditional
+  - confidence: 0.35
+    term: "depending on"
+    category: technical_conditional
+
+  # Technical performance qualifiers
+  - confidence: 0.55
+    term: "approximately"
+    category: technical_vague
+  - confidence: 0.50
+    term: "roughly"
+    category: technical_vague
+  - confidence: 0.45
+    term: "about"
+    category: technical_vague
+  - confidence: 0.45
+    term: "around"
+    category: technical_vague
+  - confidence: 0.40
+    term: "circa"
+    category: technical_vague
+  - confidence: 0.40
+    term: "estimated"
+    category: technical_vague
+
+  # Technical implementation terms
+  - confidence: 0.50
+    term: "may include"
+    category: technical_discretionary
+  - confidence: 0.45
+    term: "could include"
+    category: technical_discretionary
+  - confidence: 0.40
+    term: "might include"
+    category: technical_discretionary
+  - confidence: 0.45
+    term: "typically includes"
+    category: technical_discretionary
+  - confidence: 0.40
+    term: "generally includes"
+    category: technical_discretionary
+
+  # Technical compatibility terms
+  - confidence: 0.45
+    term: "compatible with"
+    category: technical_vague
+  - confidence: 0.40
+    term: "supports"
+    category: technical_vague
+  - confidence: 0.35
+    term: "may support"
+    category: technical_vague
+  - confidence: 0.40
+    term: "interoperable"
+    category: technical_vague
+
+  # Technical timing terms
+  - confidence: 0.50
+    term: "eventually"
+    category: technical_vague
+  - confidence: 0.45
+    term: "ultimately"
+    category: technical_vague
+  - confidence: 0.40
+    term: "in due course"
+    category: technical_vague
+  - confidence: 0.35
+    term: "when ready"
+    category: technical_vague
+
+# Technical-specific counter-anchors
+counter_anchors:
+  - "shall"
+  - "must"
+  - "will"
+  - "required"
+  - "mandatory"
+  - "compulsory"
+  - "enforce"
+  - "enforced"
+  - "implement"
+  - "implemented"
+  - "deploy"
+  - "deployed"
+  - "execute"
+  - "executed"
+  - "perform"
+  - "performed"
+  - "complete"
+  - "completed"
+  - "finish"
+  - "finished"

@@ -29,3 +29,39 @@ apps/web/.env.local
 
 # Windows reserved name artifact
 CON
+
+# Ignore all node_modules
+node_modules/
+
+# Ignore pycache files
+**/__pycache__
+**/*.pyc
+
+# Ignore .vscode settings
+.vscode/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore log files
+*.log
+
+# Ignore database files
+*.db
+*.sqlite
+
+# Ignore build artifacts
+dist/
+build/
+
+# Ignore IDE files
+.idea/
+*.swp
+*.swo
+
+# Ignore OS generated files
+ehthumbs_vista.db
+Icon?
+Thumbs.db

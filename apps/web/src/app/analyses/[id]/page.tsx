@@ -1,37 +1,30 @@
 import VerdictChips from "@/components/VerdictChips";
 import FindingsClient from "@/components/FindingsClient";
 import ExportClient from "@/components/ExportClient";
+import { getAnalysis, getFindings } from "@/lib/api";
 import { getMockAnalysisSummary, getMockFindings } from "@/lib/mocks";
 import type { AnalysisSummary, Finding } from "@/lib/types";
 import { Suspense } from "react";
 
 async function fetchSummary(id: string): Promise<AnalysisSummary | null> {
-  if (process.env.NEXT_PUBLIC_USE_MOCKS === "1") return getMockAnalysisSummary(id);
-  const base =
-    process.env.NEXT_PUBLIC_API_BASE ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:8000";
   try {
-    const res = await fetch(`${base}/api/analyses/${id}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return (await res.json()) as AnalysisSummary;
-  } catch {
-    return null;
+    // Try real API first
+    return await getAnalysis(id);
+  } catch (error) {
+    console.warn("Failed to fetch analysis from API, falling back to mocks:", error);
+    // Fallback to mocks
+    return getMockAnalysisSummary(id);
   }
 }
 
 async function fetchFindings(id: string): Promise<Finding[]> {
-  if (process.env.NEXT_PUBLIC_USE_MOCKS === "1") return getMockFindings(id);
-  const base =
-    process.env.NEXT_PUBLIC_API_BASE ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:8000";
   try {
-    const res = await fetch(`${base}/api/analyses/${id}/findings`, { cache: "no-store" });
-    if (!res.ok) return [];
-    return (await res.json()) as Finding[];
-  } catch {
-    return [];
+    // Try real API first
+    return await getFindings(id);
+  } catch (error) {
+    console.warn("Failed to fetch findings from API, falling back to mocks:", error);
+    // Fallback to mocks
+    return getMockFindings(id);
   }
 }
 

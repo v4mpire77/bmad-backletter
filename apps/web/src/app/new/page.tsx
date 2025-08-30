@@ -125,7 +125,7 @@ export default function NewUploadPage() {
   const progress = useMemo(() => ((stepIndex + 1) / STEPS.length) * 100, [stepIndex]);
 
   return (
-    <div className="mx-auto max-w-3xl p-8">
+    <div className="mx-auto max-w-6xl p-8">
       <DemoBanner />
       <h1 className="text-2xl font-semibold mb-4">New Analysis</h1>
 
@@ -184,9 +184,8 @@ export default function NewUploadPage() {
                   className="h-2 bg-black rounded"
                   style={{ width: `${progress}%`, transition: "width 300ms ease" }}
                   role="progressbar"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={Math.floor(progress)}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
                   aria-label={`Upload progress: ${Math.floor(progress)} percent`}
                 />
               </div>
@@ -225,6 +224,105 @@ export default function NewUploadPage() {
           )}
         </div>
       )}
+
+      {/* AI Risk Analysis Preview Section */}
+      <div className="mt-12 border-t pt-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            AI-Powered Risk Analysis Preview
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            See what happens after your contract analysis is complete. Our AI goes beyond GDPR compliance 
+            to provide comprehensive risk scoring across multiple dimensions.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Risk Categories Overview */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Risk Categories Analyzed</h3>
+            <div className="space-y-3">
+              {[
+                { name: "Compliance Risk", icon: "⚖️", desc: "GDPR violations, regulatory gaps" },
+                { name: "Financial Risk", icon: "💰", desc: "Cost overruns, penalty exposure" },
+                { name: "Operational Risk", icon: "⚙️", desc: "Process inefficiencies, delivery risks" },
+                { name: "Reputational Risk", icon: "🏢", desc: "Brand damage, stakeholder concerns" },
+                { name: "Legal Risk", icon: "📋", desc: "Contract enforceability, litigation exposure" }
+              ].map((category) => (
+                <div key={category.name} className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                  <span className="text-2xl">{category.icon}</span>
+                  <div>
+                    <div className="font-medium text-gray-900">{category.name}</div>
+                    <div className="text-sm text-gray-600">{category.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Live Analysis Features */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Real-Time Intelligence</h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">Live risk scoring updates</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">AI-powered recommendations</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">Urgent action alerts</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-700">Monitoring point tracking</span>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-white/60 rounded-lg">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 mb-1">5</div>
+                <div className="text-sm text-gray-600">Risk Dimensions</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sample Risk Analysis */}
+        <div className="bg-white border rounded-xl p-6 shadow-sm">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">Sample Risk Analysis Output</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">
+              <div className="text-2xl font-bold text-red-600">78</div>
+              <div className="text-sm text-red-700">Overall Risk Score</div>
+              <div className="text-xs text-red-600 mt-1">HIGH RISK</div>
+            </div>
+            <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div className="text-2xl font-bold text-yellow-600">3</div>
+              <div className="text-sm text-yellow-700">Urgent Actions</div>
+              <div className="text-xs text-yellow-600 mt-1">REQUIRED</div>
+            </div>
+            <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="text-2xl font-bold text-blue-600">12</div>
+              <div className="text-sm text-blue-700">Risk Factors</div>
+              <div className="text-xs text-blue-600 mt-1">IDENTIFIED</div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              Upload your contract to see your personalized AI risk analysis with real-time updates
+            </p>
+            <div className="inline-flex items-center gap-2 text-sm text-gray-500">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              AI analysis ready • Real-time updates • Actionable insights
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -266,8 +364,8 @@ function DropZone({ onPick }: { onPick: (f: File | null) => void }) {
         type="file"
         className="hidden"
         onChange={(e) => onPick(e.target.files?.[0] || null)}
-        aria-hidden
-        tabIndex={-1}
+        aria-label="File upload input"
+        accept=".pdf,.doc,.docx,.txt"
       />
     </div>
   );

@@ -1,0 +1,146 @@
+name: weak_language_technical
+description: "Technical industry-specific weak language terms for contract analysis"
+extends: weak_language
+
+# Technical-specific weak language terms with higher confidence in technical contexts
+terms:
+  # High confidence - Technical conditionals and qualifications
+  - confidence: 0.90
+    term: "if possible"
+    category: technical_conditional
+  - confidence: 0.90
+    term: "if feasible"
+    category: technical_conditional
+  - confidence: 0.90
+    term: "if practicable"
+    category: technical_conditional
+  - confidence: 0.85
+    term: "to the extent technically possible"
+    category: technical_conditional
+  - confidence: 0.85
+    term: "subject to technical limitations"
+    category: technical_conditional
+  - confidence: 0.85
+    term: "within technical constraints"
+    category: technical_conditional
+
+  # Medium confidence - Technical tentative terms
+  - confidence: 0.75
+    term: "we believe"
+    category: technical_tentative
+  - confidence: 0.75
+    term: "we expect"
+    category: technical_tentative
+  - confidence: 0.75
+    term: "we anticipate"
+    category: technical_tentative
+  - confidence: 0.75
+    term: "we intend"
+    category: technical_tentative
+  - confidence: 0.70
+    term: "potentially"
+    category: technical_tentative
+  - confidence: 0.70
+    term: "presumably"
+    category: technical_tentative
+  - confidence: 0.70
+    term: "presumptively"
+    category: technical_tentative
+  - confidence: 0.70
+    term: "theoretically"
+    category: technical_tentative
+
+  # Medium confidence - Technical discretionary terms
+  - confidence: 0.65
+    term: "at our discretion"
+    category: technical_discretionary
+  - confidence: 0.65
+    term: "at the discretion"
+    category: technical_discretionary
+  - confidence: 0.65
+    term: "may be modified"
+    category: technical_discretionary
+  - confidence: 0.65
+    term: "may be changed"
+    category: technical_discretionary
+  - confidence: 0.65
+    term: "may be updated"
+    category: technical_discretionary
+  - confidence: 0.65
+    term: "subject to change"
+    category: technical_discretionary
+
+  # Low confidence - Technical vague terms
+  - confidence: 0.45
+    term: "state of the art"
+    category: technical_vague
+  - confidence: 0.45
+    term: "industry standard"
+    category: technical_vague
+  - confidence: 0.45
+    term: "best practices"
+    category: technical_vague
+  - confidence: 0.45
+    term: "generally accepted"
+    category: technical_vague
+  - confidence: 0.45
+    term: "commonly used"
+    category: technical_vague
+  - confidence: 0.40
+    term: "as needed"
+    category: technical_vague
+  - confidence: 0.40
+    term: "when necessary"
+    category: technical_vague
+  - confidence: 0.40
+    term: "if required"
+    category: technical_vague
+  - confidence: 0.40
+    term: "upon request"
+    category: technical_vague
+
+  # Technical-specific terms
+  - confidence: 0.60
+    term: "work in progress"
+    category: technical_tentative
+  - confidence: 0.60
+    term: "under development"
+    category: technical_tentative
+  - confidence: 0.60
+    term: "experimental"
+    category: technical_tentative
+  - confidence: 0.60
+    term: "beta"
+    category: technical_tentative
+  - confidence: 0.60
+    term: "alpha"
+    category: technical_tentative
+  - confidence: 0.55
+    term: "deprecated"
+    category: technical_discretionary
+  - confidence: 0.55
+    term: "obsolete"
+    category: technical_discretionary
+  - confidence: 0.55
+    term: "legacy"
+    category: technical_discretionary
+
+# Additional technical counter-anchors
+counter_anchors:
+  - "shall implement"
+  - "must implement"
+  - "will implement"
+  - "required to implement"
+  - "mandatory implementation"
+  - "shall provide"
+  - "must provide"
+  - "will provide"
+  - "shall deliver"
+  - "must deliver"
+  - "will deliver"
+  - "shall maintain"
+  - "must maintain"
+  - "will maintain"
+  - "shall support"
+  - "must support"
+  - "will support"

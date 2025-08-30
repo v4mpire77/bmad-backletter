@@ -1,0 +1,141 @@
+name: weak_language_business
+description: "Business industry-specific weak language terms for contract analysis"
+extends: weak_language
+
+# Business-specific weak language terms with higher confidence in business contexts
+terms:
+  # High confidence - Business conditionals and qualifications
+  - confidence: 0.90
+    term: "subject to market conditions"
+    category: business_conditional
+  - confidence: 0.90
+    term: "subject to availability"
+    category: business_conditional
+  - confidence: 0.90
+    term: "subject to funding"
+    category: business_conditional
+  - confidence: 0.85
+    term: "pending approval"
+    category: business_conditional
+  - confidence: 0.85
+    term: "contingent on"
+    category: business_conditional
+  - confidence: 0.85
+    term: "dependent on"
+    category: business_conditional
+
+  # Medium confidence - Business tentative terms
+  - confidence: 0.75
+    term: "we aim to"
+    category: business_tentative
+  - confidence: 0.75
+    term: "we strive to"
+    category: business_tentative
+  - confidence: 0.75
+    term: "we endeavor to"
+    category: business_tentative
+  - confidence: 0.75
+    term: "we seek to"
+    category: business_tentative
+  - confidence: 0.70
+    term: "business objectives"
+    category: business_tentative
+  - confidence: 0.70
+    term: "strategic goals"
+    category: business_tentative
+  - confidence: 0.70
+    term: "target objectives"
+    category: business_tentative
+  - confidence: 0.70
+    term: "performance targets"
+    category: business_tentative
+
+  # Medium confidence - Business discretionary terms
+  - confidence: 0.65
+    term: "at management's discretion"
+    category: business_discretionary
+  - confidence: 0.65
+    term: "at executive discretion"
+    category: business_discretionary
+  - confidence: 0.65
+    term: "business judgment"
+    category: business_discretionary
+  - confidence: 0.65
+    term: "reasonable business judgment"
+    category: business_discretionary
+  - confidence: 0.65
+    term: "commercial discretion"
+    category: business_discretionary
+
+  # Low confidence - Business vague terms
+  - confidence: 0.45
+    term: "market rate"
+    category: business_vague
+  - confidence: 0.45
+    term: "competitive rate"
+    category: business_vague
+  - confidence: 0.45
+    term: "prevailing rate"
+    category: business_vague
+  - confidence: 0.45
+    term: "industry average"
+    category: business_vague
+  - confidence: 0.45
+    term: "standard terms"
+    category: business_vague
+  - confidence: 0.40
+    term: "mutually agreeable"
+    category: business_vague
+  - confidence: 0.40
+    term: "satisfactory to both parties"
+    category: business_vague
+  - confidence: 0.40
+    term: "acceptable terms"
+    category: business_vague
+  - confidence: 0.40
+    term: "fair terms"
+    category: business_vague
+
+  # Business-specific terms
+  - confidence: 0.60
+    term: "profit sharing"
+    category: business_committed
+  - confidence: 0.60
+    term: "revenue sharing"
+    category: business_committed
+  - confidence: 0.60
+    term: "performance bonus"
+    category: business_committed
+  - confidence: 0.60
+    term: "incentive compensation"
+    category: business_committed
+  - confidence: 0.55
+    term: "cost plus"
+    category: business_vague
+  - confidence: 0.55
+    term: "time and materials"
+    category: business_vague
+  - confidence: 0.55
+    term: "not to exceed"
+    category: business_conditional
+  - confidence: 0.55
+    term: "up to"
+    category: business_conditional
+
+# Additional business counter-anchors
+counter_anchors:
+  - "guaranteed"
+  - "warranted"
+  - "assured"
+  - "committed"
+  - "pledged"
+  - "firm commitment"
+  - "binding agreement"
+  - "contractual obligation"
+  - "legally binding"
+  - "enforceable"
+  - "irrevocable commitment"
+  - "unconditional guarantee"
+  - "absolute undertaking"
+  - "definite promise"
+  - "categorical assurance"

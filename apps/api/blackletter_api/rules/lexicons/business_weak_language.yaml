@@ -1,0 +1,163 @@
+name: business_weak_language
+description: "Business and commercial-specific weak language terms"
+
+# Business context weak terms - focused on commercial and operational language
+# Medium confidence scores appropriate for business communications
+
+terms:
+  # Business commitment qualifiers
+  - confidence: 0.55
+    term: "we will endeavor"
+    category: business_committed
+  - confidence: 0.50
+    term: "we aim to"
+    category: business_committed
+  - confidence: 0.45
+    term: "we strive to"
+    category: business_committed
+  - confidence: 0.40
+    term: "we plan to"
+    category: business_committed
+  - confidence: 0.40
+    term: "we intend to"
+    category: business_committed
+  - confidence: 0.35
+    term: "we hope to"
+    category: business_committed
+  - confidence: 0.35
+    term: "we expect to"
+    category: business_committed
+
+  # Business performance terms
+  - confidence: 0.60
+    term: "best efforts"
+    category: business_committed
+  - confidence: 0.55
+    term: "reasonable efforts"
+    category: business_committed
+  - confidence: 0.50
+    term: "commercially reasonable efforts"
+    category: business_committed
+  - confidence: 0.45
+    term: "good faith efforts"
+    category: business_committed
+  - confidence: 0.40
+    term: "diligent efforts"
+    category: business_committed
+
+  # Business conditional terms
+  - confidence: 0.50
+    term: "subject to approval"
+    category: business_conditional
+  - confidence: 0.45
+    term: "pending approval"
+    category: business_conditional
+  - confidence: 0.45
+    term: "contingent upon"
+    category: business_conditional
+  - confidence: 0.40
+    term: "depending on market conditions"
+    category: business_conditional
+  - confidence: 0.40
+    term: "subject to change"
+    category: business_conditional
+
+  # Business quality qualifiers
+  - confidence: 0.55
+    term: "high quality"
+    category: business_vague
+  - confidence: 0.50
+    term: "premium quality"
+    category: business_vague
+  - confidence: 0.45
+    term: "excellent service"
+    category: business_vague
+  - confidence: 0.45
+    term: "superior performance"
+    category: business_vague
+  - confidence: 0.40
+    term: "competitive pricing"
+    category: business_vague
+  - confidence: 0.40
+    term: "market leading"
+    category: business_vague
+
+  # Business timing terms
+  - confidence: 0.50
+    term: "shortly"
+    category: business_vague
+  - confidence: 0.45
+    term: "soon"
+    category: business_vague
+  - confidence: 0.45
+    term: "in the near future"
+    category: business_vague
+  - confidence: 0.40
+    term: "in due time"
+    category: business_vague
+  - confidence: 0.35
+    term: "at the earliest opportunity"
+    category: business_vague
+
+  # Business relationship terms
+  - confidence: 0.45
+    term: "partner with"
+    category: business_vague
+  - confidence: 0.40
+    term: "collaborate with"
+    category: business_vague
+  - confidence: 0.40
+    term: "work together"
+    category: business_vague
+  - confidence: 0.35
+    term: "explore opportunities"
+    category: business_vague
+  - confidence: 0.35
+    term: "consider partnership"
+    category: business_vague
+
+  # Business aspirational terms
+  - confidence: 0.50
+    term: "we believe"
+    category: business_aspirational
+  - confidence: 0.45
+    term: "we think"
+    category: business_aspirational
+  - confidence: 0.45
+    term: "we feel"
+    category: business_aspirational
+  - confidence: 0.40
+    term: "we anticipate"
+    category: business_aspirational
+  - confidence: 0.40
+    term: "we foresee"
+    category: business_aspirational
+
+# Business-specific counter-anchors
+counter_anchors:
+  - "shall"
+  - "must"
+  - "will"
+  - "required"
+  - "mandatory"
+  - "obligated"
+  - "binding"
+  - "compulsory"
+  - "commit"
+  - "committed"
+  - "promise"
+  - "promised"
+  - "guarantee"
+  - "guaranteed"
+  - "deliver"
+  - "delivered"
+  - "provide"
+  - "provided"
+  - "supply"
+  - "supplied"
+  - "complete"
+  - "completed"
+  - "achieve"
+  - "achieved"
+  - "accomplish"
+  - "accomplished"

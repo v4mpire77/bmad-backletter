@@ -772,6 +772,147 @@ export default function NewLandingPage() {
             margin-left: auto;
             margin-right: auto;
         }
+
+        /* AI Risk Analysis Section */
+        .ai-risk-analysis {
+            margin-bottom: 6rem;
+        }
+
+        .risk-categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .risk-category-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .risk-category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .risk-category-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .risk-category-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .risk-category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .risk-category-icon {
+            font-size: 2rem;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(244, 208, 63, 0.3);
+        }
+
+        .risk-category-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .risk-category-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .risk-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .risk-feature {
+            background: rgba(244, 208, 63, 0.1);
+            color: var(--accent-gold);
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(244, 208, 63, 0.2);
+        }
+
+        .ai-capabilities-highlight {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .ai-capabilities-content h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .ai-capabilities-content p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .ai-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .ai-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ai-metric-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-metric-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-links {
@@ -927,8 +1068,8 @@ export default function NewLandingPage() {
 
                   <div className="feature-card fade-in stagger-4">
                       <div className="feature-icon" aria-hidden="true">💰</div>
-                      <h3>Token-disciplined, cost-controlled</h3>
-                      <p>LLM usage is optional and snippet-only with hard caps. Deterministic rules do the heavy lifting.</p>
+                      <h3>AI-Powered Risk Analysis</h3>
+                      <p>Beyond GDPR: financial, operational, reputational, and legal risk scoring with real-time updates and actionable recommendations.</p>
                   </div>
 
                   <div className="feature-card fade-in stagger-5">
@@ -1007,6 +1148,102 @@ export default function NewLandingPage() {
                           <div className="metric-content">
                               <span className="metric-value">Cost ~ £0.10 / document</span>
                               <div className="metric-label">Pricing target</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+
+          {/* AI Risk Analysis Section */}
+          <section className="ai-risk-analysis">
+              <div className="section-header">
+                  <h2>AI-Powered Contract Risk Analysis</h2>
+                  <p className="text-lg text-gray-600 mt-2">Beyond GDPR compliance — comprehensive risk assessment across all contract dimensions</p>
+              </div>
+
+              <div className="risk-categories-grid">
+                  <div className="risk-category-card fade-in stagger-1">
+                      <div className="risk-category-header">
+                          <span className="risk-category-icon">🛡️</span>
+                          <h3>Compliance Risk</h3>
+                      </div>
+                      <p>GDPR Article 28(3) compliance gaps, regulatory obligations, and compliance posture scoring.</p>
+                      <div className="risk-features">
+                          <span className="risk-feature">Missing clauses detection</span>
+                          <span className="risk-feature">Weak language identification</span>
+                          <span className="risk-feature">Regulatory mapping</span>
+                      </div>
+                  </div>
+
+                  <div className="risk-category-card fade-in stagger-2">
+                      <div className="risk-category-header">
+                          <span className="risk-category-icon">💰</span>
+                          <h3>Financial Risk</h3>
+                      </div>
+                      <p>High-value contracts, penalty clauses, payment terms, and financial exposure assessment.</p>
+                      <div className="risk-features">
+                          <span className="risk-feature">Value threshold detection</span>
+                          <span className="risk-feature">Penalty clause analysis</span>
+                          <span className="risk-feature">Payment term review</span>
+                      </div>
+                  </div>
+
+                  <div className="risk-category-card fade-in stagger-3">
+                      <div className="risk-category-header">
+                          <span className="risk-category-icon">⚙️</span>
+                          <h3>Operational Risk</h3>
+                      </div>
+                      <p>Service level agreements, resource commitments, dependencies, and operational resilience.</p>
+                      <div className="risk-features">
+                          <span className="risk-feature">SLA requirement analysis</span>
+                          <span className="risk-feature">Resource commitment review</span>
+                          <span className="risk-feature">Dependency mapping</span>
+                      </div>
+                  </div>
+
+                  <div className="risk-category-card fade-in stagger-4">
+                      <div className="risk-category-header">
+                          <span className="risk-category-icon">🏢</span>
+                          <h3>Reputational Risk</h3>
+                      </div>
+                      <p>Confidentiality breaches, public disclosure obligations, and brand protection measures.</p>
+                      <div className="risk-features">
+                          <span className="risk-feature">Breach notification terms</span>
+                          <span className="risk-feature">Disclosure obligations</span>
+                          <span className="risk-feature">Crisis communication</span>
+                      </div>
+                  </div>
+
+                  <div className="risk-category-card fade-in stagger-5">
+                      <div className="risk-category-header">
+                          <span className="risk-category-icon">⚖️</span>
+                          <h3>Legal Risk</h3>
+                      </div>
+                      <p>Jurisdiction issues, dispute resolution mechanisms, and liability limitations.</p>
+                      <div className="risk-features">
+                          <span className="risk-feature">Governing law analysis</span>
+                          <span className="risk-feature">Dispute resolution review</span>
+                          <span className="risk-feature">Liability assessment</span>
+                      </div>
+                  </div>
+              </div>
+
+              <div className="ai-capabilities-highlight fade-in">
+                  <div className="ai-capabilities-content">
+                      <h3>Real-Time Risk Intelligence</h3>
+                      <p>Live WebSocket updates, instant risk scoring, and AI-powered recommendations that evolve as your analysis progresses.</p>
+                      <div className="ai-metrics">
+                          <div className="ai-metric">
+                              <span className="ai-metric-value">5 Risk Categories</span>
+                              <span className="ai-metric-label">Comprehensive coverage</span>
+                          </div>
+                          <div className="ai-metric">
+                              <span className="ai-metric-value">Real-Time Updates</span>
+                              <span className="ai-metric-label">Live WebSocket feeds</span>
+                          </div>
+                          <div className="ai-metric">
+                              <span className="ai-metric-value">AI Recommendations</span>
+                              <span className="ai-metric-label">Actionable insights</span>
                           </div>
                       </div>
                   </div>

@@ -1,16 +1,44 @@
 import os
 import logging
 import json
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 
 from .database import engine, Base
 from .models import entities
 from .routers import rules, analyses
 from .routers import contracts, jobs, reports
+from .routers import risk_analysis, admin
+from .routers import orchestration, gemini
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
+
+# --- WebSocket Connection Manager ---
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            try:
+                await connection.send_text(message)
+            except:
+                # Remove dead connections
+                self.active_connections.remove(connection)
+
+manager = ConnectionManager()
 
 # --- Structured Logging Setup ---
 
@@ -66,6 +94,10 @@ app.include_router(analyses.router, prefix="/api")
 app.include_router(contracts.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
+app.include_router(risk_analysis.router, prefix="/api")
+app.include_router(admin.router)
+app.include_router(orchestration.router)
+app.include_router(gemini.router, prefix="/api")
 
 
 @app.get("/")
@@ -76,3 +108,47 @@ def read_root():
 @app.get("/healthz")
 def healthz():
     return {"ok": True}
+
+
+@app.websocket("/ws/analysis/{analysis_id}")
+async def websocket_endpoint(websocket: WebSocket, analysis_id: str):
+    await manager.connect(websocket)
+    try:
+        # Send initial connection confirmation
+        await manager.send_personal_message(
+            json.dumps({
+                "type": "connection",
+                "analysis_id": analysis_id,
+                "message": "Connected to real-time analysis updates"
+            }), 
+            websocket
+        )
+        
+        # Keep connection alive and handle incoming messages
+        while True:
+            data = await websocket.receive_text()
+            # Echo back for now, could be used for control messages
+            await manager.send_personal_message(
+                json.dumps({
+                    "type": "echo",
+                    "analysis_id": analysis_id,
+                    "data": data
+                }), 
+                websocket
+            )
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        manager.disconnect(websocket)
+
+
+@app.get("/api/analysis/{analysis_id}/live")
+async def get_live_analysis_status(analysis_id: str):
+    """Get real-time status of an analysis with live updates capability"""
+    return {
+        "analysis_id": analysis_id,
+        "websocket_url": f"/ws/analysis/{analysis_id}",
+        "status": "live",
+        "message": "Connect to WebSocket for real-time updates"
+    }

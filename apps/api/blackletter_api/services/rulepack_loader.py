@@ -16,7 +16,9 @@ class RulepackError(Exception):
 
 class Lexicon(BaseModel):
     name: str
-    terms: List[str] = Field(default_factory=list)
+    description: Optional[str] = None
+    terms: List[Any] = Field(default_factory=list)  # Can be strings or dicts with confidence/category
+    counter_anchors: List[str] = Field(default_factory=list)
 
 
 class Detector(BaseModel):
@@ -124,10 +126,19 @@ class RulepackLoader:
                 lx = yaml.safe_load(f) or {}
             if isinstance(lx, dict) and "terms" in lx:
                 name = lx.get("name") or Path(file_name).stem
+                description = lx.get("description")
                 terms = lx.get("terms") or []
+                counter_anchors = lx.get("counter_anchors") or []
                 if not isinstance(terms, list):
                     raise ValueError(f"Lexicon '{name}' terms must be a list")
-                return Lexicon(name=name, terms=[str(t) for t in terms])
+                if not isinstance(counter_anchors, list):
+                    raise ValueError(f"Lexicon '{name}' counter_anchors must be a list")
+                return Lexicon(
+                    name=name,
+                    description=description,
+                    terms=terms,  # Keep as-is to preserve structure
+                    counter_anchors=[str(anchor) for anchor in counter_anchors]
+                )
             elif isinstance(lx, list):
                 # allow list-of-terms without wrapper
                 name = Path(file_name).stem

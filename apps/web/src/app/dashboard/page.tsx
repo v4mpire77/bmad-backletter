@@ -1,9 +1,16 @@
+import { getAnalyses } from "@/lib/api";
 import { getMockAnalyses } from "@/lib/mocks";
 import DemoBanner from "@/components/DemoBanner";
+import VerdictBadge from "@/components/VerdictBadge";
 import type { AnalysisSummary } from "@/lib/types";
 
 async function fetchAnalyses(): Promise<AnalysisSummary[]> {
-  if (process.env.NEXT_PUBLIC_USE_MOCKS === "1") {
+  try {
+    // Try to fetch from real API first
+    return await getAnalyses(50);
+  } catch (error) {
+    console.warn("Failed to fetch from API, falling back to mocks:", error);
+    // Fallback to mocks if API is not available
     const items = getMockAnalyses(10);
     // Ensure the first item is ACME_DPA_MOCK.pdf with id mock-1
     if (items.length) {
@@ -14,17 +21,6 @@ async function fetchAnalyses(): Promise<AnalysisSummary[]> {
       };
     }
     return items;
-  }
-  const base =
-    process.env.NEXT_PUBLIC_API_BASE ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:8000";
-  try {
-    const res = await fetch(`${base}/api/analyses?limit=50`, { cache: "no-store" });
-    if (!res.ok) return [];
-    return (await res.json()) as AnalysisSummary[];
-  } catch {
-    return [];
   }
 }
 
@@ -70,10 +66,28 @@ export default async function DashboardPage() {
                 <td className="p-3">{new Date(a.created_at).toLocaleString()}</td>
                 <td className="p-3">{Math.round(a.size / 1024)} KB</td>
                 <td className="p-3">
-                  <span aria-label="Pass" className="mr-2">P {a.verdicts.pass_count}</span>
-                  <span aria-label="Weak" className="mr-2">W {a.verdicts.weak_count}</span>
-                  <span aria-label="Missing" className="mr-2">M {a.verdicts.missing_count}</span>
-                  <span aria-label="Needs review">R {a.verdicts.needs_review_count}</span>
+                  <div className="flex flex-wrap gap-1">
+                    {a.verdicts.pass_count > 0 && (
+                      <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded">
+                        Pass: {a.verdicts.pass_count}
+                      </span>
+                    )}
+                    {a.verdicts.weak_count > 0 && (
+                      <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded">
+                        Weak: {a.verdicts.weak_count}
+                      </span>
+                    )}
+                    {a.verdicts.missing_count > 0 && (
+                      <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
+                        Missing: {a.verdicts.missing_count}
+                      </span>
+                    )}
+                    {a.verdicts.needs_review_count > 0 && (
+                      <span className="text-xs bg-sky-100 text-sky-800 px-2 py-1 rounded">
+                        Review: {a.verdicts.needs_review_count}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="p-3 text-right">
                   <a

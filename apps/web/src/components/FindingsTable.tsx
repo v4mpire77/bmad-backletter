@@ -2,25 +2,26 @@
 
 import { useMemo, useState } from "react";
 import type { Finding, Verdict } from "@/lib/types";
+import VerdictBadge from "@/components/VerdictBadge";
+
+type SortField = "detector_id" | "verdict" | "page" | "rationale";
+type SortDirection = "asc" | "desc";
 
 type Props = {
   findings: Finding[];
   onSelect: (f: Finding) => void;
 };
 
-const VERDICT_LABEL: Record<Verdict, string> = {
-  pass: "Pass",
-  weak: "Weak",
-  missing: "Missing",
-  needs_review: "Needs review",
-};
+
 
 export default function FindingsTable({ findings, onSelect }: Props) {
   const [query, setQuery] = useState("");
   const [verdict, setVerdict] = useState<Verdict | "all">("all");
+  const [sortField, setSortField] = useState<SortField>("detector_id");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const filtered = useMemo(() => {
-    return findings.filter((f) => {
+    const filteredFindings = findings.filter((f) => {
       const matchVerdict = verdict === "all" || f.verdict === verdict;
       const q = query.trim().toLowerCase();
       const matchQuery =
@@ -30,7 +31,52 @@ export default function FindingsTable({ findings, onSelect }: Props) {
         f.detector_id.toLowerCase().includes(q);
       return matchVerdict && matchQuery;
     });
-  }, [findings, query, verdict]);
+
+    // Sort the filtered findings
+    return filteredFindings.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      switch (sortField) {
+        case "detector_id":
+          aValue = a.detector_id.toLowerCase();
+          bValue = b.detector_id.toLowerCase();
+          break;
+        case "verdict":
+          aValue = a.verdict;
+          bValue = b.verdict;
+          break;
+        case "page":
+          aValue = a.page;
+          bValue = b.page;
+          break;
+        case "rationale":
+          aValue = a.rationale.toLowerCase();
+          bValue = b.rationale.toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [findings, query, verdict, sortField, sortDirection]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return "↕️";
+    return sortDirection === "asc" ? "↑" : "↓";
+  };
 
   return (
     <div className="space-y-4">
@@ -62,16 +108,49 @@ export default function FindingsTable({ findings, onSelect }: Props) {
         <table className="w-full text-sm" role="table">
           <thead className="bg-black/5">
             <tr>
-              <th scope="col" className="text-left p-3">Detector</th>
-              <th scope="col" className="text-left p-3">Verdict</th>
-              <th scope="col" className="text-left p-3">Rationale</th>
+              <th scope="col" className="text-left p-3">
+                <button
+                  className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
+                  onClick={() => handleSort("detector_id")}
+                  aria-label={`Sort by detector ${sortField === "detector_id" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
+                >
+                  Detector {getSortIcon("detector_id")}
+                </button>
+              </th>
+              <th scope="col" className="text-left p-3">
+                <button
+                  className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
+                  onClick={() => handleSort("verdict")}
+                  aria-label={`Sort by verdict ${sortField === "verdict" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
+                >
+                  Verdict {getSortIcon("verdict")}
+                </button>
+              </th>
+              <th scope="col" className="text-left p-3">
+                <button
+                  className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
+                  onClick={() => handleSort("rationale")}
+                  aria-label={`Sort by rationale ${sortField === "rationale" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
+                >
+                  Rationale {getSortIcon("rationale")}
+                </button>
+              </th>
+              <th scope="col" className="text-left p-3">
+                <button
+                  className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
+                  onClick={() => handleSort("page")}
+                  aria-label={`Sort by page ${sortField === "page" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
+                >
+                  Page {getSortIcon("page")}
+                </button>
+              </th>
               <th className="p-3" />
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-6 text-center text-gray-500">
+                <td colSpan={5} className="p-6 text-center text-gray-500">
                   No results. Try adjusting filters or search.
                 </td>
               </tr>
@@ -80,15 +159,13 @@ export default function FindingsTable({ findings, onSelect }: Props) {
               <tr key={`${f.detector_id}-${f.start}-${f.end}`} className="border-t">
                 <td className="p-3 font-medium">{f.detector_id}</td>
                 <td className="p-3">
-                  <span
-                    aria-label={`Verdict: ${VERDICT_LABEL[f.verdict]}`}
-                    className={badgeFor(f.verdict)}
-                  >
-                    {VERDICT_LABEL[f.verdict]}
-                  </span>
+                  <VerdictBadge verdict={f.verdict} size="sm" />
                 </td>
                 <td className="p-3 text-gray-600 dark:text-gray-300">
                   {f.rationale}
+                </td>
+                <td className="p-3 text-gray-600 dark:text-gray-300">
+                  {f.page}
                 </td>
                 <td className="p-3 text-right">
                   <button
@@ -107,15 +184,4 @@ export default function FindingsTable({ findings, onSelect }: Props) {
   );
 }
 
-function badgeFor(v: Verdict) {
-  switch (v) {
-    case "pass":
-      return "inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-200 text-emerald-800";
-    case "weak":
-      return "inline-flex items-center px-2 py-1 text-xs rounded bg-amber-200 text-amber-900";
-    case "missing":
-      return "inline-flex items-center px-2 py-1 text-xs rounded bg-red-200 text-red-900";
-    case "needs_review":
-      return "inline-flex items-center px-2 py-1 text-xs rounded bg-sky-200 text-sky-900";
-  }
-}
+

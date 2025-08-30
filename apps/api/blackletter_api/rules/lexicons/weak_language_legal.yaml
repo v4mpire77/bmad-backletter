@@ -1,0 +1,119 @@
+name: weak_language_legal
+description: "Legal industry-specific weak language terms for contract analysis"
+extends: weak_language
+
+# Legal-specific weak language terms with higher confidence in legal contexts
+terms:
+  # High confidence - Legal conditionals and qualifications
+  - confidence: 0.90
+    term: "subject to the terms"
+    category: legal_conditional
+  - confidence: 0.90
+    term: "subject to approval"
+    category: legal_conditional
+  - confidence: 0.90
+    term: "subject to consent"
+    category: legal_conditional
+  - confidence: 0.85
+    term: "without prejudice"
+    category: legal_conditional
+  - confidence: 0.85
+    term: "notwithstanding"
+    category: legal_conditional
+  - confidence: 0.85
+    term: "save as"
+    category: legal_conditional
+  - confidence: 0.85
+    term: "except as"
+    category: legal_conditional
+
+  # Medium confidence - Legal tentative terms
+  - confidence: 0.75
+    term: "it is understood"
+    category: legal_tentative
+  - confidence: 0.75
+    term: "it is agreed"
+    category: legal_tentative
+  - confidence: 0.75
+    term: "it is intended"
+    category: legal_tentative
+  - confidence: 0.75
+    term: "it is anticipated"
+    category: legal_tentative
+  - confidence: 0.70
+    term: "to the best of knowledge"
+    category: legal_tentative
+  - confidence: 0.70
+    term: "to the best knowledge"
+    category: legal_tentative
+  - confidence: 0.70
+    term: "believes"
+    category: legal_tentative
+  - confidence: 0.70
+    term: "understands"
+    category: legal_tentative
+
+  # Medium confidence - Legal discretionary terms
+  - confidence: 0.65
+    term: "at law"
+    category: legal_discretionary
+  - confidence: 0.65
+    term: "at equity"
+    category: legal_discretionary
+  - confidence: 0.65
+    term: "in the courts discretion"
+    category: legal_discretionary
+  - confidence: 0.65
+    term: "judicial discretion"
+    category: legal_discretionary
+  - confidence: 0.65
+    term: "discretion of the court"
+    category: legal_discretionary
+
+  # Low confidence - Legal vague terms
+  - confidence: 0.45
+    term: "fair and reasonable"
+    category: legal_vague
+  - confidence: 0.45
+    term: "reasonable endeavours"
+    category: legal_vague
+  - confidence: 0.45
+    term: "best endeavours"
+    category: legal_vague
+  - confidence: 0.45
+    term: "all reasonable efforts"
+    category: legal_vague
+  - confidence: 0.45
+    term: "commercially reasonable"
+    category: legal_vague
+  - confidence: 0.40
+    term: "material adverse effect"
+    category: legal_vague
+  - confidence: 0.40
+    term: "material adverse change"
+    category: legal_vague
+  - confidence: 0.40
+    term: "force majeure"
+    category: legal_vague
+  - confidence: 0.40
+    term: "act of god"
+    category: legal_vague
+
+# Additional legal counter-anchors
+counter_anchors:
+  - "hereby"
+  - "herein"
+  - "hereinafter"
+  - "witnesseth"
+  - "covenant"
+  - "covenants"
+  - "indemnify"
+  - "indemnifies"
+  - "indemnification"
+  - "liability"
+  - "liable"
+  - "jurisdiction"
+  - "governing law"
+  - "choice of law"
+  - "venue"
+  - "forum"

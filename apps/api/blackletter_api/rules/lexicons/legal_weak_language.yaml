@@ -1,0 +1,116 @@
+name: legal_weak_language
+description: "Legal-specific weak language terms for contract analysis"
+
+# Legal context weak terms with specialized confidence scoring
+# Higher thresholds for legal terms as they may be acceptable in legal drafting
+
+terms:
+  # Contractual discretion terms
+  - confidence: 0.65
+    term: "at its discretion"
+    category: legal_discretionary
+  - confidence: 0.65
+    term: "in its sole discretion"
+    category: legal_discretionary
+  - confidence: 0.60
+    term: "at the discretion"
+    category: legal_discretionary
+  - confidence: 0.60
+    term: "in its discretion"
+    category: legal_discretionary
+  - confidence: 0.55
+    term: "may choose"
+    category: legal_discretionary
+  - confidence: 0.55
+    term: "may elect"
+    category: legal_discretionary
+  - confidence: 0.55
+    term: "may decide"
+    category: legal_discretionary
+
+  # Conditional legal terms
+  - confidence: 0.70
+    term: "subject to"
+    category: legal_conditional
+  - confidence: 0.65
+    term: "pursuant to"
+    category: legal_conditional
+  - confidence: 0.60
+    term: "in accordance with"
+    category: legal_conditional
+  - confidence: 0.55
+    term: "as permitted by"
+    category: legal_discretionary
+  - confidence: 0.55
+    term: "at the option of"
+    category: legal_discretionary
+  - confidence: 0.50
+    term: "provided that"
+    category: legal_conditional
+  - confidence: 0.50
+    term: "in the event that"
+    category: legal_conditional
+
+  # Time-related legal vagueness
+  - confidence: 0.60
+    term: "reasonable time"
+    category: legal_vague
+  - confidence: 0.60
+    term: "reasonable period"
+    category: legal_vague
+  - confidence: 0.55
+    term: "within a reasonable time"
+    category: legal_vague
+  - confidence: 0.55
+    term: "promptly"
+    category: legal_vague
+  - confidence: 0.50
+    term: "as soon as practicable"
+    category: legal_vague
+  - confidence: 0.50
+    term: "as soon as possible"
+    category: legal_vague
+
+  # Performance standards
+  - confidence: 0.65
+    term: "best efforts"
+    category: legal_committed
+  - confidence: 0.60
+    term: "reasonable efforts"
+    category: legal_committed
+  - confidence: 0.55
+    term: "commercially reasonable efforts"
+    category: legal_committed
+  - confidence: 0.50
+    term: "good faith efforts"
+    category: legal_committed
+
+  # Notice and communication terms
+  - confidence: 0.55
+    term: "written notice"
+    category: legal_vague
+  - confidence: 0.50
+    term: "prior notice"
+    category: legal_vague
+  - confidence: 0.45
+    term: "advance notice"
+    category: legal_vague
+
+# Legal-specific counter-anchors (strong obligation terms)
+counter_anchors:
+  - "shall"
+  - "must"
+  - "will"
+  - "required"
+  - "mandatory"
+  - "obligated"
+  - "binding"
+  - "compulsory"
+  - "irrevocable"
+  - "unconditional"
+  - "absolute"
+  - "expressly"
+  - "explicitly"
+  - "specifically"
+  - "definitively"
+  - "conclusively"
