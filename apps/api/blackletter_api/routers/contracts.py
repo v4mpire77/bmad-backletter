@@ -4,8 +4,11 @@ import os
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
+from sqlalchemy.orm import Session
 
+from ..database import get_db
+from ..models.entities import Analysis
 from ..models.schemas import JobStatus, JobState
 from ..services import storage
 from ..services.tasks import new_job, process_job
@@ -25,6 +28,7 @@ MAX_BYTES = 10 * 1024 * 1024
 async def upload_contract(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    db: Session = Depends(get_db),
 ) -> JobStatus:
     # Validate type/extension
     ext = None
@@ -40,7 +44,17 @@ async def upload_contract(
     if ext is None:
         raise HTTPException(status_code=415, detail="unsupported_file_type")
 
-    analysis_id = str(uuid4())
+    # Create the analysis record in the database
+    analysis = Analysis(
+        filename=file.filename or "untitled",
+        size_bytes=0,  # We don't know the size until after saving
+        mime_type=file.content_type or "application/octet-stream",
+    )
+    db.add(analysis)
+    db.commit()
+    db.refresh(analysis)
+    analysis_id = str(analysis.id)
+
     target_dir = storage.analysis_dir(analysis_id)
     safe_name = storage.sanitize_filename(file.filename or f"upload{ext}")
     # Ensure extension matches allowed type inferred
@@ -50,6 +64,8 @@ async def upload_contract(
 
     try:
         size = storage.save_upload(file, target_path, max_bytes=MAX_BYTES)
+        analysis.size_bytes = size
+        db.commit()
     except ValueError as e:
         if str(e) == "file_too_large":
             raise HTTPException(status_code=413, detail="file_too_large")
