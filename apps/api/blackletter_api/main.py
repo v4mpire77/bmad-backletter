@@ -101,12 +101,12 @@ app.include_router(gemini.router, prefix="/api")
 
 
 @app.get("/")
-def read_root():
+def read_root() -> dict[str, bool | str]:
     return {"status": "ok"}
 
 
 @app.get("/healthz")
-def healthz():
+def healthz() -> dict[str, bool | str]:
     return {"ok": True}
 
 

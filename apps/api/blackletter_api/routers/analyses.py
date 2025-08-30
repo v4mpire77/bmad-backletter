@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import List
 
 import os
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from ..models.schemas import AnalysisSummary, Finding, VerdictCounts
@@ -63,7 +63,10 @@ def list_analyses(limit: int = Query(default=50, ge=1, le=200)) -> List[Analysis
 
 @router.get("/analyses/{analysis_id}", response_model=AnalysisSummary)
 def get_analysis_summary(analysis_id: str) -> AnalysisSummary:
-    rec = orchestrator.summary(analysis_id)
+    try:
+        rec = orchestrator.summary(analysis_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="not_found") from exc
     return AnalysisSummary(
         id=rec.id,
         filename=rec.filename,
@@ -76,5 +79,8 @@ def get_analysis_summary(analysis_id: str) -> AnalysisSummary:
 
 @router.get("/analyses/{analysis_id}/findings", response_model=List[Finding])
 def get_analysis_findings(analysis_id: str) -> List[Finding]:
-    rec_findings = orchestrator.findings(analysis_id)
+    try:
+        rec_findings = orchestrator.findings(analysis_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="not_found") from exc
     return [Finding(**f) for f in rec_findings]

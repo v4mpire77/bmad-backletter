@@ -75,10 +75,6 @@ class AnalysisBase(BaseModel):
                 raise ValueError("tags cannot contain empty strings")
             normalized.append(nv)
         return normalized
-        nv = v.strip()
-        if not nv:
-            raise ValueError("tags cannot contain empty strings")
-        return nv
 
 
 class AnalysisListItem(AnalysisBase):

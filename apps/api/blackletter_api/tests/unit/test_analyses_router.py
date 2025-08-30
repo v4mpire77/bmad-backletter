@@ -15,3 +15,17 @@ def test_list_analyses_empty():
     assert isinstance(body, list)
     assert body == []
 
+
+def test_analysis_summary_not_found():
+    orchestrator._store.clear()
+    res = client.get("/api/analyses/missing")
+    assert res.status_code == 404
+    assert res.json()["detail"] == "not_found"
+
+
+def test_analysis_findings_not_found():
+    orchestrator._store.clear()
+    res = client.get("/api/analyses/missing/findings")
+    assert res.status_code == 404
+    assert res.json()["detail"] == "not_found"
+
