@@ -6,7 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from io import BytesIO
 
 from blackletter_api.main import app
-from blackletter_api.database import Base, get_db
+from blackletter_api.database import get_db
+from blackletter_api.models import entities
 from blackletter_api.models.entities import Analysis
 
 # --- Test Database Setup ---
@@ -17,7 +18,7 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Create the tables in the test database
-Base.metadata.create_all(bind=engine)
+entities.Base.metadata.create_all(bind=engine)
 
 
 # --- Dependency Override ---
@@ -77,6 +78,6 @@ def teardown_module(module):
     Clean up the test database file after all tests in this module run.
     """
     import os
-    Base.metadata.drop_all(bind=engine)
+    entities.Base.metadata.drop_all(bind=engine)
     if os.path.exists("./test_temp.db"):
         os.remove("./test_temp.db")
