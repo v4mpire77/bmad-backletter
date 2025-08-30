@@ -117,3 +117,15 @@ class RulesSummary(BaseModel):
     detector_count: int
     detectors: List[DetectorSummary]
     lexicons: List[str]
+
+
+class QASource(BaseModel):
+    """Source citation for a Q&A response."""
+    page: int
+    content: str
+
+
+class QAResponse(BaseModel):
+    """Answer returned from the document Q&A endpoint."""
+    answer: str
+    sources: List[QASource] = Field(default_factory=list)

@@ -134,3 +134,13 @@ def list_analyses_summaries(limit: int = 50) -> List[AnalysisSummary]:
     # Sort by created_at desc if available
     items.sort(key=lambda x: _parse_iso(x.created_at), reverse=True)
     return items[: max(0, int(limit))]
+
+
+def get_analysis_text(analysis_id: str) -> str:
+    """Placeholder retrieval of analysis text."""
+    return ""
+
+
+def get_analysis_findings(analysis_id: str) -> list:
+    """Placeholder retrieval of analysis findings."""
+    return []
