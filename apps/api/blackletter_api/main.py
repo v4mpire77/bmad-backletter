@@ -69,10 +69,15 @@ app.include_router(reports.router, prefix="/api")
 
 
 @app.get("/")
-def read_root():
+def read_root() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
 @app.get("/healthz")
-def healthz():
+def healthz() -> dict[str, bool]:
     return {"ok": True}
