@@ -3,7 +3,7 @@ import logging
 import json
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, TypedDict
 
 from .database import engine, Base
 from .models import entities
@@ -100,13 +100,21 @@ app.include_router(orchestration.router)
 app.include_router(gemini.router, prefix="/api")
 
 
+class RootResponse(TypedDict):
+    status: str
+
+
+class HealthzResponse(TypedDict):
+    ok: bool
+
+
 @app.get("/")
-def read_root():
+def read_root() -> RootResponse:
     return {"status": "ok"}
 
 
 @app.get("/healthz")
-def healthz():
+def healthz() -> HealthzResponse:
     return {"ok": True}
 
 
