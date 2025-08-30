@@ -6,6 +6,8 @@
     "test:py": "node scripts/run_pytests.js",
     "test": "npm run test:py",
     "test:ui": "vitest",
+    "test:web": "npm --prefix apps/web run test",
+    "test:web:watch": "npm --prefix apps/web run test:watch",
     "lint": "eslint automation --ext .js",
     "format": "prettier -w .",
     "codex:bundle": "python tools/bmad/generate_codex_bundle.py",
