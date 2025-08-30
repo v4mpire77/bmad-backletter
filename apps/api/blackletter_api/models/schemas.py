@@ -89,15 +89,31 @@ class ReportExport(BaseModel):
     options: ExportOptions
 
 
-class ExportOptions(BaseModel):
-    include_logo: bool = True
-    include_meta: bool = True
-    date_format: Literal["YMD", "DMY", "MDY"] = "YMD"
+class ValidationResults(BaseModel):
+    gdpr_compliance: str
+    article_28_checks: str
+    data_processing_agreement: str
+    security_measures: str
 
 
-class ReportExport(BaseModel):
+class ContractValidationStatus(BaseModel):
+    job_id: str
+    status: str
+    validation_results: ValidationResults
+    recommendations: List[str]
+    timestamp: datetime
+
+
+class DetectorSummary(BaseModel):
     id: str
-    analysis_id: str
-    filename: str
-    created_at: str
-    options: ExportOptions
+    type: str
+    description: Optional[str] = None
+    lexicon: Optional[str] = None
+
+
+class RulesSummary(BaseModel):
+    name: str
+    version: str
+    detector_count: int
+    detectors: List[DetectorSummary]
+    lexicons: List[str]

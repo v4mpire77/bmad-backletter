@@ -1,15 +1,21 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from uuid import uuid4
+
+from datetime import datetime
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models.entities import Analysis
-from ..models.schemas import JobStatus, JobState
+from ..models.schemas import (
+    ContractValidationStatus,
+    JobStatus,
+    JobState,
+    ValidationResults,
+)
 from ..services import storage
 from ..services.tasks import new_job, process_job
 
@@ -91,26 +97,29 @@ async def upload_contract(
     )
 
 
-@router.get("/contracts/validation-status/{job_id}")
-async def get_contract_validation_status(job_id: str):
+@router.get(
+    "/contracts/validation-status/{job_id}",
+    response_model=ContractValidationStatus,
+)
+async def get_contract_validation_status(job_id: str) -> ContractValidationStatus:
     """
     Test endpoint for CWC demonstration - returns contract validation status
     This endpoint would be perfect for testing CWC integration
     """
-    return {
-        "job_id": job_id,
-        "status": "completed",
-        "validation_results": {
-            "gdpr_compliance": "pass",
-            "article_28_checks": "pass",
-            "data_processing_agreement": "pass",
-            "security_measures": "pass"
-        },
-        "recommendations": [
+    return ContractValidationStatus(
+        job_id=job_id,
+        status="completed",
+        validation_results=ValidationResults(
+            gdpr_compliance="pass",
+            article_28_checks="pass",
+            data_processing_agreement="pass",
+            security_measures="pass",
+        ),
+        recommendations=[
             "Contract meets GDPR Article 28 requirements",
             "All processor obligations are properly addressed",
-            "Security measures are adequate"
+            "Security measures are adequate",
         ],
-        "timestamp": "2024-01-15T10:30:00Z"
-    }
+        timestamp=datetime.fromisoformat("2024-01-15T10:30:00+00:00"),
+    )
 

@@ -40,3 +40,11 @@ def test_upload_too_large_triggers_413():
     assert res.status_code == 413
     assert res.json()["detail"] == "file_too_large"
 
+
+def test_contract_validation_status_schema():
+    res = client.get("/api/contracts/validation-status/job123")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["job_id"] == "job123"
+    assert data["validation_results"]["gdpr_compliance"] == "pass"
+

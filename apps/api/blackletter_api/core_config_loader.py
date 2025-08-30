@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict
 
+import logging
 import yaml
 
 
@@ -26,5 +27,6 @@ def load_core_config(path: str | None = None) -> CoreConfig:
             enable_weak_language=bool(data.get("enable_weak_language", True)),
         )
     except Exception as exc:  # noqa: BLE001
-        # On malformed config, fall back to defaults — detection should still run.
+        # On malformed config, log the error and fall back to defaults
+        logging.warning("Failed to load core config: %s", exc)
         return CoreConfig()

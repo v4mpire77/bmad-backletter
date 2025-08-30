@@ -5,9 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from io import BytesIO
 
-from apps.api.blackletter_api.main import app
-from apps.api.blackletter_api.database import Base, get_db
-from apps.api.blackletter_api.models.entities import Analysis
+from blackletter_api.main import app
+from blackletter_api.database import Base, get_db
+from blackletter_api.models.entities import Analysis
 
 # --- Test Database Setup ---
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_temp.db"
