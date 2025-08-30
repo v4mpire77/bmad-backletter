@@ -1,0 +1,15 @@
+# Node / Next
+node_modules/
+.next/
+out/
+.vscode/
+
+# Python
+__pycache__/
+.venv/
+.env
+.env.*
+
+# Supabase local
+supabase/.temp/
+docker/
