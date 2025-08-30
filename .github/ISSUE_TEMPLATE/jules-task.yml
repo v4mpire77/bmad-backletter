@@ -1,0 +1,10 @@
+name: "Jules Task"
+description: "Create a task executable by Jules"
+labels: ["jules"]
+body:
+  - type: textarea
+    id: brief
+    attributes:
+      label: Task brief
+      description: What should Jules do?
+      placeholder: Keep it specific and repo-scoped.

@@ -1,0 +1,101 @@
+title,label,body
+Daily: Deps (web) #1,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #2,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #3,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #4,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #5,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #6,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #7,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #8,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #9,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #10,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #11,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #12,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #13,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #14,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #15,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #16,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #17,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #18,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #19,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #20,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #21,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #22,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #23,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #24,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #25,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #26,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #27,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #28,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #29,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #30,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #31,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #32,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #33,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #34,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #35,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #36,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #37,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #38,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #39,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #40,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #41,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #42,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #43,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #44,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #45,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #46,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #47,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #48,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #49,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #50,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #51,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #52,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #53,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #54,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #55,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #56,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #57,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #58,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #59,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #60,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #61,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #62,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #63,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #64,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #65,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #66,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #67,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #68,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #69,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #70,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #71,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #72,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #73,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #74,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #75,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #76,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #77,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #78,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #79,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #80,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #81,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #82,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #83,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #84,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #85,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #86,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #87,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #88,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #89,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #90,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #91,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #92,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #93,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #94,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #95,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
+Daily: Deps (web) #96,"jules,auto,low-risk",Upgrade minor/patch deps in apps/web; fix tests; update CHANGELOG.
+Daily: Deps (api) #97,"jules,auto,low-risk",Upgrade minor/patch deps in apps/api; fix tests; update CHANGELOG.
+Sync: ESLint rules #98,"jules,auto,low-risk",Align ESLint/Prettier with coding-standards.md; small diffs only.
+Docs: README badges #99,"jules,auto,low-risk","Refresh badges, versions.lock.md snippets."
+Rules audit: A28(3)(a) #100,"jules,auto,review",Run rulepack health check; no diff unless clearly wrong.
