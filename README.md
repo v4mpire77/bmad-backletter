@@ -37,6 +37,13 @@ npm install
 npm run dev
 ```
 
+Copy `.env.example` to `.env` and set the Supabase credentials:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
 ## 🎯 **Next Development Priorities**
 
 ### Ready to Start (Epic 2 Completion)
