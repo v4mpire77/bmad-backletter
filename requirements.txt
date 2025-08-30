@@ -35,12 +35,12 @@ numpy==2.3.1
 opencv-python==4.11.0.86
 packaging==25.0
 paragraphs==1.0.1
-pillow==11.3.1
-pydantic==2.11.7
-pydantic_core==2.33.2
+pillow==11.3.0
+pydantic==2.9.2
+pydantic_core==2.23.4
 pydub==0.25.1
 Pygments==2.19.2
-PyMuPDF==1.26.3
+PyMuPDF==1.24.14
 pyrsistent==0.20.0
 jsonschema==4.23.0
 pytesseract==0.3.13
