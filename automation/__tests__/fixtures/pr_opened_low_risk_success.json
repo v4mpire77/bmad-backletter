@@ -1,0 +1,11 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 101,
+    "title": "Jules: daily deps (api)",
+    "user": { "login": "jules[bot]" },
+    "labels": [{ "name": "low-risk" }],
+    "head": { "sha": "abc123" },
+    "draft": false
+  }
+}

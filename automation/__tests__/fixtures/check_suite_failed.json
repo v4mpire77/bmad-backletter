@@ -1,0 +1,7 @@
+{
+  "action": "completed",
+  "check_suite": {
+    "conclusion": "failure",
+    "workflow_run": { "id": 777 }
+  }
+}

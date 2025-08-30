@@ -1,0 +1,32 @@
+{
+  "rules": [
+    {
+      "if_labels_any": ["low-risk","auto"],
+      "if_author_any": ["jules[bot]","google-jules-bot"],
+      "if_checks": "all_green",
+      "action": "approve_and_comment",
+      "comment": "Approved by policy: low-risk & all checks green. Proceed."
+    },
+    {
+      "if_labels_any": ["review"],
+      "if_diff_stats": { "max_files": 12, "max_lines": 300 },
+      "if_changed_paths_not_contains": ["apps/api/blackletter_api/services/detection.py"],
+      "action": "approve_with_note",
+      "comment": "Looks safe by policy (small diff/no core detector logic). Proceed."
+    },
+    {
+      "if_changed_paths_contains": ["apps/api/blackletter_api/services/detection.py","apps/api/blackletter_api/rules/"],
+      "action": "escalate",
+      "comment": "Core detection/rules modified — requesting human review."
+    },
+    {
+      "if_checks": "red",
+      "action": "request_changes",
+      "comment": "Checks failing — please fix or retry. Policy blocks approval."
+    }
+  ],
+  "merge": {
+    "allow_on": ["low-risk"],
+    "method": "squash"
+  }
+}

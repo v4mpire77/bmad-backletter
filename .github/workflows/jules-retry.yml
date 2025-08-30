@@ -1,0 +1,44 @@
+name: Retry Failing Jules PRs Once
+on:
+  check_suite:
+    types: [completed]
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    if: github.event.check_suite.conclusion == 'failure'
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', head: undefined
+            });
+            for (const pr of prs) {
+              if (pr.user.login !== 'jules[bot]') continue;
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number
+              });
+              const alreadyRetried = comments.data.some(c => /Retry triggered by policy/.test(c.body||''));
+              if (!alreadyRetried) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number,
+                  body: "Retry triggered by policy."
+                });
+                // Close & re-open to retrigger, or ask Jules to re-push by re-running workflows
+                await github.rest.actions.reRunWorkflow({
+                  owner: context.repo.owner, repo: context.repo.repo, run_id: context.payload.check_suite.run_id
+                }).catch(()=>{});
+              } else {
+                // escalate to a tracking issue
+                await github.rest.issues.create({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  title: `Escalation: ${pr.title}`,
+                  body: `PR #${pr.number} failed twice. Human review required.`,
+                  labels: ['jules','escalation']
+                });
+              }
+            }

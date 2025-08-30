@@ -1,0 +1,11 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 102,
+    "title": "Jules: risky detector change",
+    "user": { "login": "jules[bot]" },
+    "labels": [{ "name": "low-risk" }],
+    "head": { "sha": "def456" },
+    "draft": false
+  }
+}

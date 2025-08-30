@@ -1,0 +1,59 @@
+name: Schedule 100 Jules Tasks Daily
+on:
+  schedule:
+    - cron: "0 6 * * *"   # 06:00 London, once daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: chunks
+        run: |
+          python - << 'PY'
+import csv, json, math
+rows = list(csv.DictReader(open('.github/jules-tasks.csv', encoding='utf-8')))
+waves = 5
+size = math.ceil(len(rows)/waves)
+parts = [rows[i*size:(i+1)*size] for i in range(waves)]
+print('waves=' + json.dumps(parts))
+PY
+      - name: Create issues in waves
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const waves = JSON.parse(process.env.waves || '[]');
+            const delay = ms => new Promise(r => setTimeout(r, ms));
+            for (let w=0; w<waves.length; w++){
+              const batch = waves[w];
+              for (const r of batch){
+                // Idempotent: search existing open issue by title
+                const existing = await github.paginate(github.rest.issues.listForRepo, {
+                  owner: context.repo.owner, repo: context.repo.repo, state: 'open'
+                });
+                const found = existing.find(i => i.title === r.title);
+                if (!found) {
+                  await github.rest.issues.create({
+                    owner: context.repo.owner, repo: context.repo.repo,
+                    title: r.title, body: r.body || '',
+                    labels: (r.label || '').split(',').map(s => s.trim()).filter(Boolean)
+                  });
+                } else {
+                  // Touch the issue to re-run Jules if needed
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner, repo: context.repo.repo, issue_number: found.number,
+                    body: "Re-run daily automation."
+                  });
+                }
+                await delay(800); // gentle pacing
+              }
+              // wave spacer (avoid rate/concurrency spikes)
+              await delay(15000);
+            }
+        env:
+          waves: ${{ steps.chunks.outputs.waves }}

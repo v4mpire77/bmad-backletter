@@ -1,0 +1,8 @@
+{
+  "action": "labeled",
+  "issue": {
+    "number": 42,
+    "title": "Story 1.1 — Upload & Job Orchestration",
+    "labels": [{ "name": "jules" }, { "name": "auto" }]
+  }
+}

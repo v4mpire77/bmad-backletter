@@ -1,0 +1,3 @@
+# Core detector logic & rules need human eyes
+/apps/api/blackletter_api/services/detection.py  @v4mpire77
+/apps/api/blackletter_api/rules/**              @v4mpire77

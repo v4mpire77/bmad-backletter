@@ -1,0 +1,9 @@
+name: "Jules Task"
+description: "Kick off a Jules task"
+labels: ["jules","auto"]
+body:
+  - type: textarea
+    id: brief
+    attributes:
+      label: What should Jules do?
+      placeholder: Be specific. One change only.
