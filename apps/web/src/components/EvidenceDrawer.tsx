@@ -47,7 +47,7 @@ export default function EvidenceDrawer({ finding, onClose, onMarkReviewed }: Pro
       >
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 id="evidence-title" className="text-lg font-semibold">{finding.detector_id}</h2>
+            <h2 id="evidence-title" className="text-lg font-semibold">{finding.rule_name}</h2>
             <p className="text-xs text-gray-500">Rule: {finding.rule_id}</p>
           </div>
           <button
@@ -62,54 +62,42 @@ export default function EvidenceDrawer({ finding, onClose, onMarkReviewed }: Pro
         <div className="space-y-3">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium">Snippet</h3>
+              <h3 className="text-sm font-medium">Evidence</h3>
               <div className="flex gap-2">
                 <button
                   className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded transition-colors"
-                  onClick={() => {
-                    const contextSnippet = getSnippetWithContext(finding);
-                    navigator.clipboard.writeText(contextSnippet);
-                    // Could add a toast notification here
-                  }}
-                  aria-label="Copy snippet with context"
-                  title="Copy snippet with surrounding context"
+                  onClick={() => navigator.clipboard.writeText(finding.evidence)}
+                  aria-label="Copy exact evidence"
+                  title="Copy exact evidence text"
                 >
-                  Copy with Context
-                </button>
-                <button
-                  className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded transition-colors"
-                  onClick={() => navigator.clipboard.writeText(finding.snippet)}
-                  aria-label="Copy exact snippet"
-                  title="Copy exact snippet text"
-                >
-                  Copy Exact
+                  Copy
                 </button>
               </div>
             </div>
             <div className="relative">
               <pre className="whitespace-pre-wrap text-sm bg-black/5 dark:bg-white/10 p-3 rounded border">
-                {highlightTerms(finding.snippet, anchorTermsFor(finding.detector_id))}
+                {highlightTerms(finding.evidence, anchorTermsFor(finding.rule_id))}
               </pre>
               <button
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                onClick={() => navigator.clipboard.writeText(finding.snippet)}
-                aria-label="Copy snippet to clipboard"
+                onClick={() => navigator.clipboard.writeText(finding.evidence)}
+                aria-label="Copy evidence to clipboard"
                 title="Copy to clipboard"
               >
                 📋
               </button>
             </div>
             <div className="text-xs text-gray-500 mt-1 flex items-center justify-between">
-              <span>page {finding.page} • offsets {finding.start}–{finding.end}</span>
+              <span>offsets {finding.start}–{finding.end}</span>
               <span className="text-gray-400">
-                {finding.snippet.length} characters
+                {finding.evidence.length} characters
               </span>
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-medium">Why</h3>
+            <h3 className="text-sm font-medium">Text</h3>
             <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-200">
-              <li>{finding.rationale}</li>
+              <li>{finding.text}</li>
             </ul>
           </div>
           <div className="flex gap-2 items-center">
@@ -135,16 +123,6 @@ export default function EvidenceDrawer({ finding, onClose, onMarkReviewed }: Pro
       </div>
     </div>
   );
-}
-
-function getSnippetWithContext(finding: Finding): string {
-  // Create a contextual snippet with metadata
-  const metadata = `[Page ${finding.page}, Position ${finding.start}-${finding.end}]
-Detector: ${finding.detector_id}
-Verdict: ${finding.verdict.toUpperCase()}
-
-`;
-  return metadata + finding.snippet;
 }
 
 function highlightTerms(text: string, terms: string[]) {

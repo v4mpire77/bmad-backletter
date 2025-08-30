@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { Finding, Verdict } from "@/lib/types";
 import VerdictBadge from "@/components/VerdictBadge";
 
-type SortField = "detector_id" | "verdict" | "page" | "rationale";
+type SortField = "rule_name" | "category" | "severity";
 type SortDirection = "asc" | "desc";
 
 type Props = {
@@ -12,24 +12,21 @@ type Props = {
   onSelect: (f: Finding) => void;
 };
 
-
-
 export default function FindingsTable({ findings, onSelect }: Props) {
   const [query, setQuery] = useState("");
-  const [verdict, setVerdict] = useState<Verdict | "all">("all");
-  const [sortField, setSortField] = useState<SortField>("detector_id");
+  const [severity, setSeverity] = useState<Verdict | "all">("all");
+  const [sortField, setSortField] = useState<SortField>("rule_name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const filtered = useMemo(() => {
     const filteredFindings = findings.filter((f) => {
-      const matchVerdict = verdict === "all" || f.verdict === verdict;
+      const matchSeverity = severity === "all" || f.severity === severity;
       const q = query.trim().toLowerCase();
       const matchQuery =
         !q ||
-        f.snippet.toLowerCase().includes(q) ||
-        f.rationale.toLowerCase().includes(q) ||
-        f.detector_id.toLowerCase().includes(q);
-      return matchVerdict && matchQuery;
+        f.evidence.toLowerCase().includes(q) ||
+        f.rule_name.toLowerCase().includes(q);
+      return matchSeverity && matchQuery;
     });
 
     // Sort the filtered findings
@@ -38,21 +35,17 @@ export default function FindingsTable({ findings, onSelect }: Props) {
       let bValue: any;
 
       switch (sortField) {
-        case "detector_id":
-          aValue = a.detector_id.toLowerCase();
-          bValue = b.detector_id.toLowerCase();
+        case "rule_name":
+          aValue = a.rule_name.toLowerCase();
+          bValue = b.rule_name.toLowerCase();
           break;
-        case "verdict":
-          aValue = a.verdict;
-          bValue = b.verdict;
+        case "category":
+          aValue = a.category.toLowerCase();
+          bValue = b.category.toLowerCase();
           break;
-        case "page":
-          aValue = a.page;
-          bValue = b.page;
-          break;
-        case "rationale":
-          aValue = a.rationale.toLowerCase();
-          bValue = b.rationale.toLowerCase();
+        case "severity":
+          aValue = a.severity;
+          bValue = b.severity;
           break;
         default:
           return 0;
@@ -62,7 +55,7 @@ export default function FindingsTable({ findings, onSelect }: Props) {
       if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [findings, query, verdict, sortField, sortDirection]);
+  }, [findings, query, severity, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -82,18 +75,18 @@ export default function FindingsTable({ findings, onSelect }: Props) {
     <div className="space-y-4">
       <div className="flex gap-2 items-center">
         <input
-          aria-label="Search snippets"
-          placeholder="Search snippets or rationale"
+          aria-label="Search evidence"
+          placeholder="Search evidence or rule name"
           className="border rounded-md px-3 py-2 text-sm w-full"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <select
-          aria-label="Filter by verdict"
+          aria-label="Filter by severity"
           className="border rounded-md px-2 py-2 text-sm"
-          value={verdict}
+          value={severity}
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            setVerdict(e.target.value as Verdict | "all")
+            setSeverity(e.target.value as Verdict | "all")
           }
         >
           <option value="all">All</option>
@@ -111,38 +104,32 @@ export default function FindingsTable({ findings, onSelect }: Props) {
               <th scope="col" className="text-left p-3">
                 <button
                   className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
-                  onClick={() => handleSort("detector_id")}
-                  aria-label={`Sort by detector ${sortField === "detector_id" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
+                  onClick={() => handleSort("rule_name")}
+                  aria-label={`Sort by rule name ${sortField === "rule_name" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
-                  Detector {getSortIcon("detector_id")}
+                  Rule {getSortIcon("rule_name")}
                 </button>
               </th>
               <th scope="col" className="text-left p-3">
                 <button
                   className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
-                  onClick={() => handleSort("verdict")}
-                  aria-label={`Sort by verdict ${sortField === "verdict" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
+                  onClick={() => handleSort("category")}
+                  aria-label={`Sort by category ${sortField === "category" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
-                  Verdict {getSortIcon("verdict")}
+                  Category {getSortIcon("category")}
                 </button>
               </th>
               <th scope="col" className="text-left p-3">
                 <button
                   className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
-                  onClick={() => handleSort("rationale")}
-                  aria-label={`Sort by rationale ${sortField === "rationale" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
+                  onClick={() => handleSort("severity")}
+                  aria-label={`Sort by severity ${sortField === "severity" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
-                  Rationale {getSortIcon("rationale")}
+                  Severity {getSortIcon("severity")}
                 </button>
               </th>
               <th scope="col" className="text-left p-3">
-                <button
-                  className="flex items-center gap-1 hover:bg-black/10 px-2 py-1 rounded"
-                  onClick={() => handleSort("page")}
-                  aria-label={`Sort by page ${sortField === "page" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
-                >
-                  Page {getSortIcon("page")}
-                </button>
+                Evidence
               </th>
               <th className="p-3" />
             </tr>
@@ -156,16 +143,16 @@ export default function FindingsTable({ findings, onSelect }: Props) {
               </tr>
             )}
             {filtered.map((f) => (
-              <tr key={`${f.detector_id}-${f.start}-${f.end}`} className="border-t">
-                <td className="p-3 font-medium">{f.detector_id}</td>
+              <tr key={f.finding_id} className="border-t">
+                <td className="p-3 font-medium">{f.rule_name}</td>
+                <td className="p-3 text-gray-600 dark:text-gray-300">
+                  {f.category}
+                </td>
                 <td className="p-3">
-                  <VerdictBadge verdict={f.verdict} size="sm" />
+                  <VerdictBadge verdict={f.severity} size="sm" />
                 </td>
                 <td className="p-3 text-gray-600 dark:text-gray-300">
-                  {f.rationale}
-                </td>
-                <td className="p-3 text-gray-600 dark:text-gray-300">
-                  {f.page}
+                  {f.evidence}
                 </td>
                 <td className="p-3 text-right">
                   <button

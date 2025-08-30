@@ -3,14 +3,15 @@ import EvidenceDrawer from "@/components/EvidenceDrawer";
 import type { Finding } from "@/lib/types";
 
 const baseFinding: Finding = {
-  detector_id: "A28_3_g_deletion_return",
+  finding_id: "finding1",
   rule_id: "art28_v1.A28_3_g_deletion_return",
-  verdict: "pass",
-  snippet: "Processor shall delete or return all the personal data upon termination.",
-  page: 1,
+  rule_name: "Deletion/Return",
+  category: "GDPR",
+  severity: "pass",
+  text: "Processor shall delete or return all the personal data upon termination.",
   start: 10,
   end: 80,
-  rationale: "anchor present; no red flags",
+  evidence: "The processor shall, at the choice of the controller, delete or return all the personal data to the controller after the end of the provision of services relating to processing, and delete existing copies unless Union or Member State law requires storage of the personal data.",
   reviewed: false,
 };
 

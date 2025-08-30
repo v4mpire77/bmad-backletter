@@ -16,15 +16,16 @@ export type AnalysisSummary = {
 };
 
 export type Finding = {
-    detector_id: string;
-    rule_id: string;
-    verdict: Verdict;
-    snippet: string;
-    page: number;
-    start: number;
-    end: number;
-    rationale: string;
-    reviewed: boolean;
+  finding_id: string;
+  rule_id: string;
+  rule_name: string;
+  category: string;
+  severity: Verdict;
+  text: string;
+  start: number;
+  end: number;
+  evidence: string;
+  reviewed?: boolean;
 };
 
 export type ExportOptions = {
