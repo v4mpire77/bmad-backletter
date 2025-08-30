@@ -27,6 +27,33 @@ class DocumentQAService:
     should integrate a vector store and large language model.
     """
 
+    def _extract_sources(
+        self, document_chunks: Iterable[dict], top_k: int = 3
+    ) -> List[QASource]:
+        """Build a sorted list of :class:`QASource` from raw search results.
+
+        Args:
+            document_chunks: Iterable of dictionaries containing ``page``,
+                ``content`` and an optional ``score`` field.
+            top_k: Maximum number of sources to return.
+
+        Returns:
+            List of sources ordered by descending score. Entries missing the
+            required fields are ignored.
+        """
+
+        sorted_chunks = sorted(
+            document_chunks, key=lambda c: c.get("score", 0), reverse=True
+        )
+        sources: List[QASource] = []
+        for chunk in sorted_chunks[:top_k]:
+            page = chunk.get("page")
+            content = chunk.get("content")
+            if page is None or content is None:
+                continue
+            sources.append(QASource(page=page, content=content))
+        return sources
+
     async def answer_simple(self, document_id: str, question: str) -> QAResponse:
         """Version 1: basic retrieval augmented generation."""
         return QAResponse(answer="This is a placeholder answer.", sources=[])
