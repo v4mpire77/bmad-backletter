@@ -3,13 +3,12 @@ from __future__ import annotations
 from typing import Dict, List, Literal, Optional, Tuple
 from enum import Enum
 from datetime import datetime
-from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 
 class ExtractionArtifact(BaseModel):
-    analysis_id: UUID
+    analysis_id: str
     text_path: str
     page_map_path: str  # JSON or pickle path with {page: [start, end]}
     sentence_idx_path: str  # JSON or pickle path with [[start, end], ...]
