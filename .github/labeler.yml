@@ -1,0 +1,20 @@
+area:api:
+  - apps/api/**/*
+area:web:
+  - apps/web/**/*
+area:infra:
+  - infra/**/*
+
+codex:codegen:
+  - '**/*.ts'
+  - '**/*.tsx'
+  - '**/*.py'
+codex:docs:
+  - docs/**/*
+
+size:S:
+  - changed-files: 1..50
+size:M:
+  - changed-files: 51..300
+size:L:
+  - changed-files: 301..
