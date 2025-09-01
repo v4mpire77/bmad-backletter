@@ -13,7 +13,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent, FileCreatedEvent, FileDeletedEvent
 import hashlib
@@ -55,7 +55,7 @@ class AgentStatus:
     agent_id: str
     status: str  # 'active', 'idle', 'busy', 'error', 'offline'
     current_task: Optional[str] = None
-    last_activity: datetime
+    last_activity: datetime = field(default_factory=datetime.now)
     workload: float = 0.0  # 0.0 to 1.0
     capabilities: List[str] = None
     

@@ -1,0 +1,64 @@
+MUTUAL NON-DISCLOSURE AGREEMENT
+
+THIS AGREEMENT is made on 12 August 2025
+
+BETWEEN:
+
+(1) AI INNOVATIONS LTD of 56 Silicon Roundabout, London EC1V 9EZ ("Party A")
+
+AND
+
+(2) DATA DYNAMICS PLC of 23 Cambridge Science Park, Cambridge CB4 0FZ ("Party B")
+
+1. DEFINITIONS
+1.1 "Confidential Information" means all information relating to either party's:
+    (a) business methods and plans
+    (b) technical specifications and data
+    (c) software and algorithms
+    (d) customer and supplier details
+    (e) financial information
+    whether marked confidential or not.
+
+2. OBLIGATIONS
+2.1 Each party undertakes:
+    (a) to keep the other's Confidential Information secret
+    (b) to use it only for evaluating potential business collaboration
+    (c) to disclose it only to employees who need to know
+    (d) to apply appropriate security measures
+
+3. EXCLUSIONS
+3.1 These obligations do not apply to information which:
+    (a) is public knowledge
+    (b) was known before disclosure
+    (c) is independently developed
+    (d) must be disclosed by law
+
+4. TERM
+4.1 This Agreement shall continue for 3 years from the date above.
+4.2 The confidentiality obligations survive termination.
+
+5. INTELLECTUAL PROPERTY
+5.1 No rights in Confidential Information are granted except as stated.
+5.2 All Confidential Information remains the discloser's property.
+
+6. RETURN OF INFORMATION
+6.1 On termination each party shall:
+    (a) return all Confidential Information
+    (b) destroy all copies and notes
+    (c) certify compliance in writing
+
+7. REMEDIES
+7.1 Money damages may not be sufficient remedy.
+7.2 Injunctive relief shall be available.
+
+8. GOVERNING LAW
+8.1 This Agreement is governed by English law.
+8.2 The courts of England have exclusive jurisdiction.
+
+EXECUTED by the parties:
+
+For AI INNOVATIONS LTD
+Director: _________________
+
+For DATA DYNAMICS PLC
+Director: _________________

@@ -1,0 +1,7 @@
+# Install these only if you enable OCR features.
+# Note: pytesseract needs the `tesseract-ocr` system binary at runtime.
+# On Render, use a Docker image and `apt-get install -y tesseract-ocr libtesseract-dev`.
+
+Pillow==10.4.0
+pdfplumber==0.11.4
+pytesseract==0.3.10

@@ -1,7 +1,16 @@
+"""Blackletter API - Main application entrypoint (Sprint 1 vertical slice)
+
+This file sets up a minimal FastAPI application with structured logging,
+request metrics middleware, and simple health/readiness endpoints.
+"""
+
 import os
+import uuid
 import logging
+import time
 import json
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 
@@ -11,6 +20,8 @@ from .routers import rules, analyses
 from .routers import contracts, jobs, reports
 from .routers import risk_analysis, admin
 from .routers import orchestration, gemini
+from .routers import document_qa
+from .routers import auth
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -72,42 +83,58 @@ logger.addHandler(logHandler)
 # --- End Logging Setup ---
 
 
-app = FastAPI(title="Blackletter API", version="0.1.0")
-
-# CORS configuration (allow frontends to call the API)
-cors_origins = os.getenv("CORS_ORIGINS", "*")
-if cors_origins == "*":
-    allow_origins = ["*"]
-else:
-    allow_origins = [o.strip() for o in cors_origins.split(",") if o.strip()]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allow_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
+app = FastAPI(
+    title="Blackletter Systems API",
+    description="API for GDPR contract analysis.",
+    version="0.1.0"
 )
 
-app.include_router(rules.router, prefix="/api")
-app.include_router(analyses.router, prefix="/api")
-app.include_router(contracts.router, prefix="/api")
-app.include_router(jobs.router, prefix="/api")
-app.include_router(reports.router, prefix="/api")
-app.include_router(risk_analysis.router, prefix="/api")
-app.include_router(admin.router)
-app.include_router(orchestration.router)
-app.include_router(gemini.router, prefix="/api")
+
+@app.middleware("http")
+async def add_process_time_header_and_logging(request: Request, call_next):
+    """
+    Middleware to add a correlation ID, log requests, and measure latency.
+    This fulfills parts of E4 (Metrics & Observability) for Sprint 1.
+    """
+    start_time = time.time()
+    correlation_id = str(uuid.uuid4())
+
+    response = await call_next(request)
+
+    process_time = (time.time() - start_time) * 1000
+
+    logger.info(
+        f'{{"correlation_id": "{correlation_id}", "method": "{request.method}", '
+        f'"path": "{request.url.path}", "status_code": {response.status_code}, '
+        f'"duration_ms": {process_time:.2f}}}'
+    )
+
+    response.headers["X-Correlation-ID"] = correlation_id
+    return response
+
+
+# E4: Health and Readiness Endpoints
+@app.get("/healthz", tags=["Health"])
+async def get_health():
+    """
+    Simple health check. Returns OK if the server is running.
+    """
+    return JSONResponse(content={"ok": True})
+
+
+@app.get("/readyz", tags=["Health"])
+async def get_readiness():
+    """
+    Readiness check. In a real app, this would check DB connections, etc.
+    For Sprint 1, it's a simple check.
+    """
+    # TODO: Check database connection
+    return JSONResponse(content={"ok": True, "db": "ok", "migrations": "ok"})
 
 
 @app.get("/")
-def read_root():
+def read_root() -> dict[str, bool | str]:
     return {"status": "ok"}
-
-
-@app.get("/healthz")
-def healthz():
-    return {"ok": True}
 
 
 @app.websocket("/ws/analysis/{analysis_id}")
@@ -152,3 +179,14 @@ async def get_live_analysis_status(analysis_id: str):
         "status": "live",
         "message": "Connect to WebSocket for real-time updates"
     }
+app.include_router(rules.router, prefix="/api")
+app.include_router(analyses.router, prefix="/api")
+app.include_router(contracts.router, prefix="/api")
+app.include_router(jobs.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
+app.include_router(risk_analysis.router, prefix="/api")
+app.include_router(admin.router)
+app.include_router(orchestration.router)
+app.include_router(gemini.router, prefix="/api")
+app.include_router(document_qa.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")

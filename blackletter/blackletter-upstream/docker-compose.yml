@@ -1,0 +1,256 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: blackletter
+      POSTGRES_PASSWORD: blackletter
+      POSTGRES_DB: blackletter
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: adminadmin
+    volumes:
+      - minio_data:/data
+    ports: ["9000:9000", "9001:9001"]
+
+  weaviate:
+    image: semitechnologies/weaviate:1.25.7
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: /var/lib/weaviate
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    ports: ["8081:8080"]
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data
+    ports: ["7700:7700"]
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    command: ["gotenberg", "--chromium-disable-javascript=true"]
+    ports: ["3001:3000"]
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports: ["5678:5678"]
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: adminadmin
+
+  backend:
+    build: ./src/backend
+    env_file: .env
+    ports: ["8000:8000"]
+    depends_on: [db, minio, weaviate]
+
+  frontend:
+    build: ./frontend
+    env_file: .env
+    ports: ["3000:3000"]
+    depends_on: [backend]
+
+volumes: { db_data: {}, minio_data: {}, weaviate_data: {}, meili_data: {}, n8n_data: {} }
+>>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: blackletter_frontend
+    env_file:
+      - ./frontend/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: blackletter_backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - supabase-db
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+      - /app/venv
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: blackletter_celery
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - backend
+      - redis
+    command: celery -A celery_worker.celery worker --loglevel=info
+    volumes:
+      - ./backend:/app
+      - /app/venv
+    environment:
+      - CELERY_WORKER=true
+
+  redis:
+    image: redis:7-alpine
+    container_name: blackletter_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  supabase-db:
+    image: supabase/postgres:15.1.0.63
+    container_name: blackletter_supabase_db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "54322:5432"
+    volumes:
+      - supabase_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  supabase-auth:
+    image: supabase/gotrue:v2.57.1
+    container_name: blackletter_supabase_auth
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    environment:
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:yourpassword@supabase-db:5432/postgres
+      GOTRUE_SITE_URL: http://localhost:3000
+      GOTRUE_JWT_SECRET: supersecret
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_API_HOST: 0.0.0.0
+    ports:
+      - "9999:9999"
+
+volumes:
+  redis_data:
+    driver: local
+  supabase_data:
+    driver: local
+
+networks:
+  default:
+    name: blackletter_network
+    driver: bridge
+=======
+version: "3.8"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: blackletter
+      POSTGRES_PASSWORD: blackletter
+      POSTGRES_DB: blackletter
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports: ["5432:5432"]
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: adminadmin
+    volumes:
+      - minio_data:/data
+    ports: ["9000:9000", "9001:9001"]
+
+  weaviate:
+    image: semitechnologies/weaviate:1.25.7
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: /var/lib/weaviate
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    ports: ["8081:8080"]
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data
+    ports: ["7700:7700"]
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    command: ["gotenberg", "--chromium-disable-javascript=true"]
+    ports: ["3001:3000"]
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports: ["5678:5678"]
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: adminadmin
+
+  backend:
+    build: ./src/backend
+    env_file: .env
+    ports: ["8000:8000"]
+    depends_on: [db, minio, weaviate]
+
+  frontend:
+    build: ./frontend
+    env_file: .env
+    ports: ["3000:3000"]
+    depends_on: [backend]
+
+volumes: { db_data: {}, minio_data: {}, weaviate_data: {}, meili_data: {}, n8n_data: {} }
+>>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a

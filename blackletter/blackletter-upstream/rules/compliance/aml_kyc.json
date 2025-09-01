@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "jurisdiction": ["UK"],
+  "meta": {
+    "generated_at": null,
+    "purpose": "AML/KYC compliance",
+    "scoring": {
+      "weights": { "critical": 5, "high": 4, "medium": 3, "low": 1 },
+      "pass_threshold": 0.8
+    }
+  },
+  "rules": [
+    {
+      "id": "aml-001",
+      "name": "AML reference",
+      "article": null,
+      "severity": "medium",
+      "description": "Document should reference anti-money laundering",
+      "checks": [
+        {
+          "type": "regex_any",
+          "patterns": ["anti-money laundering", "know your customer"]
+        }
+      ],
+      "messages": { "fail": "Missing AML/KYC reference" },
+      "remediation": "Add AML and KYC procedures"
+    }
+  ]
+}

@@ -7,12 +7,12 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
+.env
+*.db
+*.sqlite
 
-# Data/artifacts
-.data/
-tmp/
-
-# Node/Next.js (apps/web)
+# Node/Next.js
+node_modules/
 apps/web/node_modules/
 apps/web/.next/
 apps/web/.turbo/
@@ -20,48 +20,13 @@ apps/web/coverage/
 apps/web/playwright-report/
 apps/web/test-results/
 
-# Env
-.env
-apps/web/.env.local
+# Build outputs
+build/
+dist/
 
 # Logs
 *.log
 
-# Windows reserved name artifact
-CON
-
-# Ignore all node_modules
-node_modules/
-
-# Ignore pycache files
-**/__pycache__
-**/*.pyc
-
-# Ignore .vscode settings
+# IDE
 .vscode/
-
-# Ignore system files
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Ignore log files
-*.log
-
-# Ignore database files
-*.db
-*.sqlite
-
-# Ignore build artifacts
-dist/
-build/
-
-# Ignore IDE files
 .idea/
-*.swp
-*.swo
-
-# Ignore OS generated files
-ehthumbs_vista.db
-Icon?
-Thumbs.db

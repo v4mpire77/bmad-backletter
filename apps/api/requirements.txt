@@ -1,2 +1,2 @@
-# Reference root requirements for Render build
--r ../../requirements.txt
+fastapi
+uvicorn

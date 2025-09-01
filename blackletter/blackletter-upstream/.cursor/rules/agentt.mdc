@@ -1,0 +1,304 @@
+# Blackletter Systems - Agent Rules (DEPRECATED)
+
+## 🚨 CRITICAL: All AI agents MUST follow these rules when working on this repository
+
+## 🔄 MANDATORY: Context Engineering Workflow
+
+**ALL AGENTS MUST FOLLOW THE CONTEXT ENGINEERING WORKFLOW FOR EVERY TASK. THIS IS NOT OPTIONAL.**
+
+### Context Engineering Workflow Sequence (ALWAYS FOLLOW THIS ORDER):
+
+1. **CONTEXT ASSESSMENT (ALWAYS FIRST)**
+   - Review Implementation Plan (`docs/Implementation.md`)
+   - Examine Project Structure (`docs/project_structure.md`)
+   - Check UI/UX Guidelines (`docs/UI_UX_doc.md`) - for frontend tasks
+   - Review Bug Tracking (`docs/Bug_tracking.md`)
+
+2. **IMPLEMENTATION PLAN**
+   - Create detailed implementation plan based on context
+   - Identify dependencies and prerequisites
+   - Plan testing strategy
+
+3. **IMPLEMENTATION**
+   - Follow established patterns and architecture
+   - Write quality, testable code
+   - Use existing components and utilities
+
+4. **DOCUMENTATION (CONCURRENT)**
+   - Update docstrings and documentation
+   - Maintain changelog
+   - Document design decisions
+
+5. **VERIFICATION**
+   - Check against quality standards
+   - Verify workflow compliance
+   - Run tests and validation
+
+### Your Response MUST Follow This Structure:
+1. **Context Assessment** - What documentation you reviewed and why
+2. **Implementation Plan** - Your detailed plan based on the context
+3. **Implementation** - Your code implementation
+4. **Documentation** - What documentation you updated
+5. **Verification** - How you verified against the checklist
+
+### NEVER Skip Context Assessment
+- ❌ **NEVER** start coding without reviewing documentation
+- ❌ **NEVER** ignore the established project structure
+- ❌ **NEVER** implement without understanding the broader context
+
+## 📋 Core Principles
+
+1. **Context Engineering First**: ALWAYS follow the Context Engineering workflow before any implementation
+2. **Legal Domain Expertise**: This is a legal technology platform. Always consider legal implications, compliance requirements, and professional standards.
+3. **Security First**: Legal documents contain sensitive information. Security and privacy are paramount.
+4. **Quality Over Speed**: Legal analysis must be accurate and reliable. Never sacrifice quality for speed.
+5. **Documentation Required**: Every change must be properly documented for legal compliance and audit trails.
+
+## 🔒 Security & Privacy Rules
+
+### MANDATORY Security Practices
+- **NEVER** hardcode API keys, passwords, or sensitive data in code
+- **ALWAYS** use environment variables for configuration
+- **NEVER** log or expose legal document content in plain text
+- **ALWAYS** implement proper input validation and sanitization
+- **NEVER** commit test files containing real legal documents
+- **ALWAYS** use HTTPS for all external communications
+- **NEVER** store sensitive data in client-side code or browser storage
+
+### Data Handling
+- Legal documents must be encrypted at rest and in transit
+- Implement proper access controls and authentication
+- Use secure file upload validation
+- Implement audit logging for all document access
+- Follow GDPR and data protection regulations
+
+## 🏗️ Code Quality Standards
+
+### Code Structure
+- Follow PEP 8 for Python code
+- Use TypeScript for all frontend code
+- Implement comprehensive error handling
+- Write self-documenting code with clear variable names
+- Use dependency injection and SOLID principles
+
+### Testing Requirements
+- **MANDATORY**: Write unit tests for all new functionality
+- **MANDATORY**: Write integration tests for API endpoints
+- **MANDATORY**: Test with real legal document formats
+- Maintain minimum 80% code coverage
+- Test edge cases and error conditions
+
+### Performance Standards
+- API responses must complete within 30 seconds
+- File uploads must support up to 10MB documents
+- Implement proper caching strategies
+- Use async/await for I/O operations
+- Optimize database queries
+
+## 📚 Documentation Rules
+
+### Code Documentation
+- **MANDATORY**: Document all public APIs and functions
+- **MANDATORY**: Include usage examples
+- **MANDATORY**: Document legal implications and compliance notes
+- Use clear, professional language suitable for legal professionals
+- Include parameter validation requirements
+
+### Architecture Documentation
+- Update architecture diagrams when making structural changes
+- Document data flow and security measures
+- Maintain deployment and configuration guides
+- Document legal compliance features
+
+## 🔧 Project-Specific Rules
+
+### Legal Analysis Features
+- **NEVER** make definitive legal recommendations
+- **ALWAYS** include disclaimers about AI analysis limitations
+- **ALWAYS** provide confidence scores for analysis results
+- **NEVER** replace professional legal advice
+- Implement proper risk assessment methodologies
+
+### AI/ML Components
+- Use established, well-tested models for legal analysis
+- Implement proper model versioning and rollback capabilities
+- Monitor model performance and accuracy
+- Provide explainability for AI decisions
+- Implement human-in-the-loop validation where appropriate
+
+### API Design
+- Follow RESTful principles
+- Implement proper HTTP status codes
+- Use consistent error response formats
+- Include rate limiting and throttling
+- Provide comprehensive API documentation
+
+## 🚀 Development Workflow
+
+### Context Engineering Workflow (MANDATORY)
+1. **ALWAYS** start with Context Assessment using the Context Engineering tools
+2. **ALWAYS** generate context summary for complex tasks
+3. **ALWAYS** use workflow templates for implementation
+4. **ALWAYS** validate your response against the workflow requirements
+
+### Available Context Engineering Tools
+- **`tools/context_engineering_automation.py`** - Generate context summaries and workflow templates
+- **`tools/context_engineering_validator.py`** - Validate responses against workflow requirements
+- **`tools/context_engineering.ps1`** - Windows PowerShell interface for the tools
+
+### Before Making Changes
+1. **ALWAYS** follow the Context Engineering workflow first
+2. **ALWAYS** read and understand the existing codebase
+3. **ALWAYS** check for existing issues or PRs
+4. **ALWAYS** understand the legal implications of changes
+5. **ALWAYS** test changes in a development environment
+
+### During Development
+1. **ALWAYS** follow the established project structure
+2. **ALWAYS** use meaningful commit messages
+3. **ALWAYS** implement proper error handling
+4. **ALWAYS** consider backward compatibility
+5. **ALWAYS** test with real legal documents
+
+### Before Submitting
+1. **ALWAYS** validate your response against the Context Engineering workflow
+2. **ALWAYS** run all tests and ensure they pass
+3. **ALWAYS** check for security vulnerabilities
+4. **ALWAYS** update relevant documentation
+5. **ALWAYS** verify legal compliance requirements
+6. **ALWAYS** test with multiple document formats
+
+### Workflow Validation
+Use the Context Engineering validator to ensure compliance:
+```bash
+# Validate your response
+python tools/context_engineering_validator.py your_response.txt
+
+# Or use PowerShell on Windows
+.\tools\context_engineering.ps1 -Action validate -Task your_response.txt
+```
+
+**Your response must score 80%+ to be considered compliant.**
+
+## 🎯 Quality Assurance
+
+### Code Review Checklist
+- [ ] Context Engineering workflow followed
+- [ ] Context Assessment completed
+- [ ] Implementation Plan created
+- [ ] Security review completed
+- [ ] Legal compliance verified
+- [ ] Tests written and passing
+- [ ] Documentation updated
+- [ ] Performance impact assessed
+- [ ] Error handling implemented
+- [ ] API compatibility maintained
+
+### Context Engineering Checklist
+- [ ] All required documentation reviewed (`docs/Implementation.md`, `docs/project_structure.md`, etc.)
+- [ ] Context summary generated for complex tasks
+- [ ] Workflow template used for implementation
+- [ ] Response validated against workflow requirements (80%+ score)
+- [ ] All workflow steps completed (Context → Implementation → Documentation → Verification)
+
+### Legal Compliance Checklist
+- [ ] GDPR requirements met
+- [ ] Data protection measures implemented
+- [ ] Audit logging in place
+- [ ] Access controls configured
+- [ ] Encryption implemented
+- [ ] Privacy policy considerations addressed
+
+## 🚫 Prohibited Actions
+
+### NEVER Do These
+- Skip security reviews
+- Ignore legal compliance requirements
+- Remove existing security measures
+- Use untested third-party libraries without vetting
+- Implement features without proper documentation
+- Make changes that could compromise data privacy
+- Use hardcoded credentials or sensitive data
+- Implement features that could provide incorrect legal advice
+
+## 📞 Escalation Procedures
+
+### When to Escalate
+- Security vulnerabilities discovered
+- Legal compliance issues identified
+- Performance degradation beyond acceptable limits
+- Data privacy concerns
+- Integration failures with legal systems
+
+### How to Escalate
+1. Document the issue thoroughly
+2. Assess the potential impact
+3. Create a detailed report
+4. Notify relevant stakeholders
+5. Implement immediate mitigations if necessary
+
+## 🔄 Continuous Improvement
+
+### Regular Reviews
+- Monthly security audits
+- Quarterly legal compliance reviews
+- Performance monitoring and optimization
+- User feedback analysis
+- Technology stack updates
+
+### Learning and Adaptation
+- Stay updated on legal technology trends
+- Monitor regulatory changes
+- Learn from user feedback and issues
+- Continuously improve AI model accuracy
+- Enhance security measures based on threats
+
+## 🔧 Context Engineering Tools Reference
+
+### Quick Start Commands
+
+#### Generate Context Summary
+```bash
+# Python
+python tools/context_engineering_automation.py "Your task description"
+
+# PowerShell (Windows)
+.\tools\context_engineering.ps1 -Task "Your task description" -Action summary
+```
+
+#### Generate Workflow Template
+```bash
+# Python
+python tools/context_engineering_automation.py "Your task description" --template
+
+# PowerShell (Windows)
+.\tools\context_engineering.ps1 -Task "Your task description" -Action template
+```
+
+#### Validate Response
+```bash
+# Python
+python tools/context_engineering_validator.py your_response.txt
+
+# PowerShell (Windows)
+.\tools\context_engineering.ps1 -Action validate -Task your_response.txt
+```
+
+### Tool Documentation
+- **Complete Tool Guide**: `tools/README.md`
+- **Python Tools**: `tools/context_engineering_automation.py`, `tools/context_engineering_validator.py`
+- **PowerShell Script**: `tools/context_engineering.ps1`
+
+## 📋 Agent Acknowledgment
+
+By working on this repository, I acknowledge that I have read, understood, and will follow all the rules outlined above, including the mandatory Context Engineering workflow. I understand that this is a legal technology platform and that the quality, security, and compliance of my work directly impacts legal professionals and their clients.
+
+**Remember**: When in doubt, prioritize Context Engineering workflow, security, legal compliance, and code quality over speed or convenience.
+
+---
+
+*Last Updated: January 2025*
+*Version: 2.0 - Updated with Context Engineering Framework*
+*Applicable to: All AI agents working on Blackletter Systems repository*
+
+**NOTE: This file is deprecated. Please refer to `AGENT_RULES.md` for the most up-to-date agent rules.**
