@@ -13,7 +13,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, field, asdict
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileModifiedEvent, FileCreatedEvent, FileDeletedEvent
 import hashlib
@@ -31,11 +31,7 @@ class CodeChange:
     file_hash: str
     previous_hash: Optional[str] = None
     conflict_level: str = 'low'  # 'low', 'medium', 'high', 'critical'
-    affected_agents: List[str] = None
-    
-    def __post_init__(self):
-        if self.affected_agents is None:
-            self.affected_agents = []
+    affected_agents: List[str] = field(default_factory=list)
 
 @dataclass
 class CodeConflict:
@@ -54,14 +50,10 @@ class AgentStatus:
     """Represents the current status of an AI agent"""
     agent_id: str
     status: str  # 'active', 'idle', 'busy', 'error', 'offline'
+    last_activity: datetime = field(default_factory=datetime.now)
     current_task: Optional[str] = None
-    last_activity: datetime
     workload: float = 0.0  # 0.0 to 1.0
-    capabilities: List[str] = None
-    
-    def __post_init__(self):
-        if self.capabilities is None:
-            self.capabilities = []
+    capabilities: List[str] = field(default_factory=list)
 
 class CodeSyncService:
     """

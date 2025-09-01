@@ -1,0 +1,41 @@
+name: Codex • PR autopilot
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize, labeled]
+jobs:
+  summon:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: profile
+        run: |
+          # default profile
+          P="automation/codex/profile.review.v1.md"
+          # switch by label
+          for L in $(jq -r '.pull_request.labels[].name' <<< '${{ toJson(github.event) }}'); do
+            case "$L" in
+              codex:codegen) P="automation/codex/profile.codegen.v1.md" ;;
+              codex:docs)    P="automation/codex/profile.docs.v1.md" ;;
+              codex:explain) P="automation/codex/profile.explain.v1.md" ;;
+            esac
+          done
+          echo "path=$P" >> "$GITHUB_OUTPUT"
+          echo "body<<'EOF'" >> $GITHUB_OUTPUT
+          echo "@codex" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          cat "$P" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "**Repo:** $GITHUB_REPOSITORY  **PR:** #${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "Branch: \`${{ github.event.pull_request.head.ref }}\` → Base: \`${{ github.event.pull_request.base.ref }}\`" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Post @codex with agent profile
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `${{ steps.profile.outputs.body }}`
+            })

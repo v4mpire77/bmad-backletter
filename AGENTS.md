@@ -42,3 +42,11 @@
 ## Dev Agent Notes
 - See `web-bundles/agents/dev.txt`. Implement stories strictly via the “develop-story” flow; update only the allowed Dev Agent Record sections in story files; present numbered options when offering choices.
 
+
+## Automation Pack Baseline
+
+- Tests & lint must pass before merge.
+- No secrets/plaintext keys. Never commit .env or certs.
+- PR title format: [Area] summary; labels area:* size:* risk:*
+- Always mention @codex on PRs (workflow auto-injects).
+- Merge: squash after green + CODEOWNER approval.

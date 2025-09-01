@@ -1,0 +1,26 @@
+name: Codex • Guards
+on: [pull_request]
+jobs:
+  branch-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const ref = context.payload.pull_request.head.ref;
+            if (!/^codex\/[a-z0-9._-]+$/i.test(ref)) core.setFailed(`Branch must be 'codex/{feature}', got '${ref}'`);
+  size-limit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const files = await github.paginate(github.rest.pulls.listFiles, {owner:context.repo.owner, repo:context.repo.repo, pull_number:context.payload.pull_request.number});
+            const total = files.reduce((n,f)=>n+(f.changes||0),0);
+            if (total > 1500) core.setFailed(`PR too large (${total} LOC changed). Split it.`);
+  secret-skim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          ! git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E '\.env|\.pem|\.pfx|id_rsa' && echo "ok" || (echo "Secret-like files detected"; exit 1)
