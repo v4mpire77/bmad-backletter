@@ -28,6 +28,21 @@ class Rulepack(BaseModel):
     shared_lexicon: Dict[str, List[str]] = Field(default_factory=dict)
 
 
+class DetectorSummary(BaseModel):
+    id: str
+    type: str
+    description: Optional[str] = None
+    lexicon: Optional[str] = None
+
+
+class RulesSummary(BaseModel):
+    name: str
+    version: str
+    detector_count: int
+    detectors: List[DetectorSummary]
+    lexicons: List[str]
+
+
 class Finding(BaseModel):
     detector_id: str
     rule_id: str

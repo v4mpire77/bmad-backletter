@@ -3,26 +3,30 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 # Ensure `apps/api` is on sys.path so `blackletter_api` can be imported
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
-from blackletter_api.main import app  # type: ignore
-from blackletter_api.services.rulepack_loader import (  # type: ignore
-    RulepackError,
-    RulepackLoader,
-)
+from blackletter_api.models.schemas import RulesSummary  # type: ignore
+from blackletter_api.routers.rules import router as rules_router  # type: ignore
 
 
-def write_file(p: Path, content: str):
+def write_file(p: Path, content: str) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(content, encoding="utf-8")
 
 
-def test_loader_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_loader_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from blackletter_api.services.rulepack_loader import (  # type: ignore
+        RulepackError,
+        RulepackLoader,
+    )
+
     rules_dir = tmp_path / "rules"
     lex_dir = rules_dir / "lexicons"
     write_file(
@@ -59,7 +63,12 @@ terms:
     assert "may" in rp.lexicons["weak_language"].terms
 
 
-def test_loader_invalid_missing_detectors(tmp_path: Path):
+def test_loader_invalid_missing_detectors(tmp_path: Path) -> None:
+    from blackletter_api.services.rulepack_loader import (  # type: ignore
+        RulepackError,
+        RulepackLoader,
+    )
+
     rules_dir = tmp_path / "rules"
     write_file(
         rules_dir / "pack.yaml",
@@ -74,41 +83,30 @@ version: v1
         loader.load()
 
 
-def test_api_rules_summary(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    rules_dir = tmp_path / "rules"
-    lex_dir = rules_dir / "lexicons"
-    write_file(
-        rules_dir / "pack.yaml",
-        """
-name: art28
-version: v1
-detectors:
-  - id: weak_language
-    type: lexicon
-    description: Flags weak words
-    lexicon: weak_language.yaml
-lexicons:
-  - file: weak_language.yaml
-        """.strip(),
+def test_api_rules_summary(monkeypatch: pytest.MonkeyPatch) -> None:
+    dummy_rp = SimpleNamespace(
+        name="art28",
+        version="v1",
+        detectors=[
+            SimpleNamespace(
+                id="weak_language",
+                type="lexicon",
+                description="Flags weak words",
+                lexicon="weak_language",
+            )
+        ],
+        lexicons={"weak_language": object()},
     )
-    write_file(
-        lex_dir / "weak_language.yaml",
-        """
-terms:
-  - could
-  - might
-        """.strip(),
+    monkeypatch.setattr(
+        "blackletter_api.routers.rules.load_rulepack", lambda: dummy_rp
     )
 
-    # Configure env for default loader used by router
-    monkeypatch.setenv("RULES_DIR", str(rules_dir))
-    monkeypatch.setenv("RULEPACK_FILE", "pack.yaml")
-    monkeypatch.setenv("APP_ENV", "dev")
-
+    app = FastAPI()
+    app.include_router(rules_router, prefix="/api")
     client = TestClient(app)
     resp = client.get("/api/rules/summary")
     assert resp.status_code == 200, resp.text
-    data = resp.json()
-    assert data["name"] == "art28"
-    assert data["detector_count"] == 1
-    assert data["lexicons"] == ["weak_language"]
+    data = RulesSummary(**resp.json())
+    assert data.name == "art28"
+    assert data.detector_count == 1
+    assert data.lexicons == ["weak_language"]
