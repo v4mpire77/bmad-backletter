@@ -45,9 +45,9 @@ export async function getJob(jobId: string): Promise<JobStatusDto> {
   } as JobStatusDto;
 }
 
-export async function getAnalyses(limit = 50): Promise<AnalysisSummary[]> {
+export async function getAnalyses(limit: number): Promise<AnalysisSummary[]> {
   const res = await fetch(`${apiBase()}/api/analyses?limit=${limit}`, {
-    cache: "no-store"
+    cache: "no-store",
   });
   if (!res.ok) {
     const detail = await safeDetail(res);
