@@ -24,3 +24,13 @@ bash .devcontainer/setup-devcontainer.sh
 ```
 
 If you want additional tools installed on Codespaces, edit `devcontainer.json` and add them under `features` or update the setup script.
+
+Gemini CLI / IDE companion
+
+If you use the Gemini CLI, it may require an IDE companion extension inside Codespaces. After the devcontainer finishes you can install it by running:
+
+```bash
+gemini /ide install
+```
+
+If that command fails, open the VS Code Extensions view (Ctrl+Shift+X) and search for the Gemini or "IDE companion" extension and install it manually, then reload the window.
