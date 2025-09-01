@@ -12,6 +12,7 @@
     "coverage": "jest --coverage"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
     "framer-motion": "^11.3.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
