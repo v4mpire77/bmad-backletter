@@ -1,0 +1,14 @@
+{
+  "name": "BMAD Backletter Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {},
+  "postCreateCommand": "npm install -g bmad-method && npx bmad-method install --yes",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "chat.agent.enabled": true,
+        "github.copilot.chat.agent.runTasks": true
+      }
+    }
+  }
+}
