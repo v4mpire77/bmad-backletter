@@ -37,6 +37,19 @@ fi
 # Install repo global CLIs that are safe to install
 echo "[devcontainer setup] Installing recommended global CLIs if available: bmad-method"
 if command -v npm >/dev/null 2>&1; then
+  # Configure a user-local npm prefix to avoid permission errors when installing global packages
+  NPM_PREFIX="${HOME}/.npm-global"
+  mkdir -p "$NPM_PREFIX"
+  npm config set prefix "$NPM_PREFIX" || true
+  # Ensure PATH includes npm global bin for current session and future shells
+  export PATH="$NPM_PREFIX/bin:$PATH"
+  if ! grep -q "${NPM_PREFIX}/bin" "$HOME/.profile" 2>/dev/null; then
+    printf "\n# Add npm user bin to PATH\nexport PATH=\"%s/bin:\$PATH\"\n" "$NPM_PREFIX" >> "$HOME/.profile"
+  fi
+  if ! grep -q "${NPM_PREFIX}/bin" "$HOME/.bashrc" 2>/dev/null; then
+    printf "\n# Add npm user bin to PATH\nexport PATH=\"%s/bin:\$PATH\"\n" "$NPM_PREFIX" >> "$HOME/.bashrc"
+  fi
+
   npm install -g bmad-method || echo "[devcontainer setup] npm global install bmad-method failed — continuing"
 else
   echo "[devcontainer setup] npm not available — skipping global npm installs"
