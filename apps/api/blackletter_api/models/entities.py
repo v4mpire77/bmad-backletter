@@ -24,3 +24,29 @@ class Analysis(Base):
 
     def __repr__(self):
         return f"<Analysis(id={self.id}, filename='{self.filename}', status='{self.status}')>"
+
+
+# Minimal Document model with tenancy scope
+class Document(Base):
+    __tablename__ = "documents"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    filename = Column(String, nullable=False)
+    org_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+
+    def __repr__(self):
+        return f"<Document(id={self.id}, filename='{self.filename}')>"
+
+
+# Minimal Finding model with tenancy scope
+class Finding(Base):
+    __tablename__ = "findings"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    analysis_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    org_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    rule = Column(String, nullable=False)
+    detail = Column(String, nullable=True)
+
+    def __repr__(self):
+        return f"<Finding(id={self.id}, rule='{self.rule}')>"
