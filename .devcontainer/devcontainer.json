@@ -1,13 +1,25 @@
 {
   "name": "BMAD Backletter Dev Container",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "features": {},
-  "postCreateCommand": "npm install -g bmad-method && npx bmad-method install --yes",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup-devcontainer.sh",
+  "postStartCommand": "echo 'Dev container ready — Python venv created at .venv and interpreter set for VS Code.'",
+  "containerEnv": {
+    "PIP_DISABLE_PIP_VERSION_CHECK": "1",
+    "PIP_NO_CACHE_DIR": "1"
+  },
   "customizations": {
     "vscode": {
       "settings": {
         "chat.agent.enabled": true,
-        "github.copilot.chat.agent.runTasks": true
+        "github.copilot.chat.agent.runTasks": true,
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+        "python.terminal.activateEnvironment": true
       }
     }
   }
