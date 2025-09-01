@@ -1,0 +1,55 @@
+# Global owners
+* @blackletter-systems/core-team
+
+# Backend specific
+/src/backend/ @blackletter-systems/backend-team
+/src/backend/app/ @blackletter-systems/backend-team
+/src/backend/tests/ @blackletter-systems/backend-team
+/src/backend/requirements.txt @blackletter-systems/backend-team
+
+# Frontend specific
+/frontend/ @blackletter-systems/frontend-team
+/frontend/app/ @blackletter-systems/frontend-team
+/frontend/components/ @blackletter-systems/frontend-team
+/frontend/package.json @blackletter-systems/frontend-team
+
+# Documentation
+/docs/ @blackletter-systems/docs-team
+*.md @blackletter-systems/docs-team
+ARCHITECTURE.md @blackletter-systems/docs-team
+API_DOCUMENTATION.md @blackletter-systems/docs-team
+DEPLOYMENT.md @blackletter-systems/docs-team
+CONTRIBUTING.md @blackletter-systems/docs-team
+
+# Infrastructure and deployment
+/.github/ @blackletter-systems/devops-team
+/docker/ @blackletter-systems/devops-team
+/k8s/ @blackletter-systems/devops-team
+/terraform/ @blackletter-systems/devops-team
+docker-compose.yml @blackletter-systems/devops-team
+Dockerfile* @blackletter-systems/devops-team
+
+# Security and compliance
+/SECURITY.md @blackletter-systems/security-team
+/.github/SECURITY.md @blackletter-systems/security-team
+/security/ @blackletter-systems/security-team
+
+# Configuration files
+/.env* @blackletter-systems/devops-team
+/config/ @blackletter-systems/devops-team
+*.yaml @blackletter-systems/devops-team
+*.yml @blackletter-systems/devops-team
+
+# Scripts and utilities
+/scripts/ @blackletter-systems/core-team
+/tools/ @blackletter-systems/core-team
+
+# Tests and quality assurance
+/tests/ @blackletter-systems/qa-team
+/.github/workflows/ @blackletter-systems/qa-team
+jest.config.js @blackletter-systems/qa-team
+pytest.ini @blackletter-systems/qa-team
+
+# Legal and licensing
+/LICENSE @blackletter-systems/legal-team
+/legal/ @blackletter-systems/legal-team

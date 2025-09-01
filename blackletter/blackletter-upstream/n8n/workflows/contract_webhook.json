@@ -1,0 +1,310 @@
+{
+  "name": "Contract Upload Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contract-uploaded",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract data from webhook payload\nconst data = $input.item.json.data;\n\n// Prepare job payload\nconst jobPayload = {\n  documentKey: data.document_key,\n  summaryKey: data.summary_key,\n  reviewKey: data.review_key,\n  redlinedKey: data.redlined_key,\n  issuesCount: data.issues_count,\n  timestamp: new Date().toISOString()\n};\n\nreturn {json: jobPayload};"
+      },
+      "name": "Prepare Job Payload",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.BACKEND_URL}}/process/contract",
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "documentKey",
+              "value": "={{ $json.documentKey }}"
+            },
+            {
+              "name": "summaryKey",
+              "value": "={{ $json.summaryKey }}"
+            },
+            {
+              "name": "reviewKey",
+              "value": "={{ $json.reviewKey }}"
+            },
+            {
+              "name": "redlinedKey",
+              "value": "={{ $json.redlinedKey }}"
+            }
+          ]
+        }
+      },
+      "name": "Process Contract",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "seconds"
+      },
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        850,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.success }}",
+              "operation": "equals",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "name": "Success?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1050,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@blackletter.systems",
+        "toEmail": "={{ $env.NOTIFICATION_EMAIL }}",
+        "subject": "Contract Processing Complete: {{ $json.documentKey }}",
+        "text": "=Contract processing has been completed successfully.\n\nDocument Key: {{ $json.documentKey }}\nSummary Key: {{ $json.summaryKey }}\nReview Key: {{ $json.reviewKey }}\nRedlined Key: {{ $json.redlinedKey }}\n\nIssues Found:\n- Critical: {{ $json.issuesCount.critical }}\n- High: {{ $json.issuesCount.high }}\n- Medium: {{ $json.issuesCount.medium }}\n- Low: {{ $json.issuesCount.low }}\n\nTimestamp: {{ $json.timestamp }}"
+      },
+      "name": "Send Success Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "webhookUrl": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "text": "=✅ Contract processing complete for {{ $json.documentKey }}",
+        "attachments": [
+          {
+            "color": "#00ff00",
+            "fields": [
+              {
+                "title": "Document",
+                "value": "={{ $json.documentKey }}"
+              },
+              {
+                "title": "Issues",
+                "value": "=Critical: {{ $json.issuesCount.critical }}, High: {{ $json.issuesCount.high }}, Medium: {{ $json.issuesCount.medium }}, Low: {{ $json.issuesCount.low }}"
+              }
+            ]
+          }
+        ],
+        "otherOptions": {}
+      },
+      "name": "Send Slack Success",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        1450,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@blackletter.systems",
+        "toEmail": "={{ $env.NOTIFICATION_EMAIL }}",
+        "subject": "Contract Processing Failed: {{ $json.documentKey }}",
+        "text": "=There was an error processing the contract.\n\nDocument Key: {{ $json.documentKey }}\nError: {{ $json.error }}\n\nTimestamp: {{ $json.timestamp }}"
+      },
+      "name": "Send Error Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        1250,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "webhookUrl": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "text": "=❌ Contract processing failed for {{ $json.documentKey }}",
+        "attachments": [
+          {
+            "color": "#ff0000",
+            "fields": [
+              {
+                "title": "Document",
+                "value": "={{ $json.documentKey }}"
+              },
+              {
+                "title": "Error",
+                "value": "={{ $json.error }}"
+              }
+            ]
+          }
+        ],
+        "otherOptions": {}
+      },
+      "name": "Send Slack Error",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        1450,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Store artifacts index in database or file\n// This is a placeholder for actual storage logic\n\nconst artifacts = {\n  documentKey: $input.item.json.documentKey,\n  summaryKey: $input.item.json.summaryKey,\n  reviewKey: $input.item.json.reviewKey,\n  redlinedKey: $input.item.json.redlinedKey,\n  issuesCount: $input.item.json.issuesCount,\n  timestamp: $input.item.json.timestamp\n};\n\nreturn {json: {success: true, message: 'Artifacts stored', artifacts}};"
+      },
+      "name": "Store Artifacts Index",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1650,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Job Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Job Payload": {
+      "main": [
+        [
+          {
+            "node": "Process Contract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Contract": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Success?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success?": {
+      "main": [
+        [
+          {
+            "node": "Send Success Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Error Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Success Email": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Success": {
+      "main": [
+        [
+          {
+            "node": "Store Artifacts Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Error Email": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Error": {
+      "main": [
+        [
+          {
+            "node": "Store Artifacts Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+- id: ukics-001
+  title: Marketing permissions
+  pattern: "marketing"
+  severity: low
+  guidance: Keep records of marketing permissions.
+  citations:
+    - UK ICO PECR
+- id: ukics-002
+  title: Child data consent
+  keywords: ["child", "consent"]
+  severity: high
+  guidance: Obtain parental consent for processing children's data.
+  citations:
+    - UK GDPR Art. 8
+- id: ukics-003
+  title: Right to object
+  keywords: ["object", "processing"]
+  severity: medium
+  guidance: Provide a clear right to object to processing.
+  citations:
+    - UK GDPR Art. 21
+- id: ukics-004
+  title: Security measures
+  pattern: "encryption|secure"
+  severity: medium
+  guidance: Implement appropriate technical security measures.
+  citations:
+    - UK GDPR Art. 32
+- id: ukics-005
+  title: Data Protection Officer
+  keywords: ["data protection officer"]
+  severity: low
+  guidance: Appoint a DPO when required.
+  citations:
+    - UK GDPR Art. 37
