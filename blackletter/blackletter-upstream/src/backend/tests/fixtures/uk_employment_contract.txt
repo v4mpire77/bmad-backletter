@@ -1,0 +1,63 @@
+EMPLOYMENT AGREEMENT
+
+THIS AGREEMENT is made on 12 August 2025
+
+BETWEEN:
+
+(1) FINTECH SOLUTIONS LTD, a company registered in England and Wales (Company Number: 98765432) whose registered office is at 45 Canary Wharf, London E14 5AB ("the Employer")
+
+AND
+
+(2) JANE SMITH of 789 Liverpool Street, London N1 2CD ("the Employee")
+
+1. APPOINTMENT
+1.1 The Employer appoints the Employee as Senior Software Engineer.
+1.2 The Employment shall commence on 1 September 2025 ("the Commencement Date").
+
+2. SALARY AND BENEFITS
+2.1 The Employee's salary shall be £85,000 per annum, payable monthly in arrears.
+2.2 The Employee shall be eligible for an annual performance bonus of up to 20% of base salary.
+2.3 The Employee shall be entitled to participate in the Employer's share option scheme.
+
+3. WORKING HOURS AND PLACE OF WORK
+3.1 Standard working hours shall be 37.5 hours per week.
+3.2 The Employee's normal place of work shall be the Employer's London office.
+3.3 The Employee may be required to work remotely as reasonably requested.
+
+4. HOLIDAYS
+4.1 The Employee shall be entitled to 25 days' paid holiday per year plus UK bank holidays.
+4.2 Holiday must be taken at times agreed with the Employer.
+
+5. INTELLECTUAL PROPERTY
+5.1 All intellectual property rights created during the Employment shall belong to the Employer.
+5.2 The Employee hereby assigns all such rights to the Employer.
+
+6. CONFIDENTIALITY
+6.1 The Employee shall not during or after Employment disclose any confidential information.
+6.2 Confidential information includes but is not limited to trade secrets, customer data, and source code.
+
+7. NON-COMPETITION
+7.1 For 12 months after termination, the Employee shall not:
+    (a) compete with the Employer's business
+    (b) solicit or deal with the Employer's customers
+    (c) solicit or employ any of the Employer's employees
+
+8. TERMINATION
+8.1 Either party may terminate this Agreement by giving 3 months' written notice.
+8.2 The Employer may terminate immediately for gross misconduct.
+
+9. DATA PROTECTION
+9.1 The Employee consents to the Employer processing personal data in accordance with GDPR.
+9.2 The Employee shall comply with the Employer's data protection policies.
+
+10. GOVERNING LAW
+This Agreement shall be governed by English law.
+
+Signed by:
+For and on behalf of FINTECH SOLUTIONS LTD
+Director: _________________
+
+Signed by:
+JANE SMITH: _________________
+
+Date: _________________

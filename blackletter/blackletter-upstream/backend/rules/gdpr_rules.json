@@ -1,0 +1,345 @@
+{
+  "version": "1.0",
+  "jurisdiction": ["UK", "EU"],
+  "meta": {
+    "generated_at": "2024-01-15T10:00:00Z",
+    "purpose": "GDPR vendor contract compliance checking",
+    "scoring": {
+      "weights": {
+        "critical": 4,
+        "high": 3,
+        "medium": 2,
+        "low": 1
+      },
+      "pass_threshold": 0.7
+    }
+  },
+  "rules": [
+    {
+      "id": "R01",
+      "name": "Data Processing Lawful Basis",
+      "article": "GDPR Article 6",
+      "severity": "critical",
+      "description": "Contract must specify lawful basis for personal data processing",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "lawful basis",
+            "Article 6\\(1\\)\\([a-f]\\)",
+            "legitimate interest",
+            "contractual necessity",
+            "consent.*processing",
+            "legal obligation.*processing",
+            "vital interests.*processing"
+          ],
+          "min_hits": 1
+        }
+      ],
+      "messages": {
+        "fail": "No clear lawful basis for data processing identified",
+        "warn": "Lawful basis mentioned but may need clarification",
+        "pass": "Clear lawful basis for data processing specified"
+      },
+      "remediation": "Add clause: 'Data processing is necessary for performance of this contract pursuant to GDPR Article 6(1)(b)'"
+    },
+    {
+      "id": "R02", 
+      "name": "Data Subject Rights",
+      "article": "GDPR Articles 15-22",
+      "severity": "high",
+      "description": "Contract must address data subject rights (access, rectification, erasure, etc.)",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "right of access",
+            "right to rectification",
+            "right to erasure",
+            "right to be forgotten",
+            "data portability",
+            "right to object",
+            "data subject rights"
+          ],
+          "min_hits": 2
+        }
+      ],
+      "messages": {
+        "fail": "Data subject rights not adequately addressed",
+        "warn": "Some data subject rights mentioned but incomplete coverage",
+        "pass": "Comprehensive data subject rights provisions included"
+      },
+      "remediation": "Add comprehensive data subject rights clause covering Articles 15-22"
+    },
+    {
+      "id": "R03",
+      "name": "Data Protection Officer Contact",
+      "article": "GDPR Article 37-39",
+      "severity": "medium",
+      "description": "Contract should include DPO contact details where applicable",
+      "required": false,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "data protection officer",
+            "DPO",
+            "privacy officer",
+            "data protection contact"
+          ]
+        }
+      ],
+      "messages": {
+        "fail": "No Data Protection Officer contact information provided",
+        "pass": "Data Protection Officer contact details included"
+      },
+      "remediation": "Include DPO contact: 'Data Protection Officer contact: dpo@company.com'"
+    },
+    {
+      "id": "R04",
+      "name": "International Data Transfers",
+      "article": "GDPR Chapter V",
+      "severity": "critical",
+      "description": "Contracts involving international transfers must have adequate safeguards",
+      "required": true,
+      "checks": [
+        {
+          "type": "conditional_pass",
+          "field": "full_text",
+          "condition": "if_international_transfer_then_safeguards"
+        },
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "adequacy decision",
+            "standard contractual clauses",
+            "binding corporate rules",
+            "certification mechanism",
+            "approved codes of conduct",
+            "international transfer.*safeguards"
+          ]
+        }
+      ],
+      "messages": {
+        "fail": "International data transfers lack adequate safeguards",
+        "warn": "Transfer safeguards mentioned but may need strengthening",
+        "pass": "Adequate safeguards for international transfers in place"
+      },
+      "remediation": "Add standard contractual clauses or adequacy decision reference for international transfers"
+    },
+    {
+      "id": "R05",
+      "name": "Data Breach Notification",
+      "article": "GDPR Article 33-34",
+      "severity": "high",
+      "description": "Contract must specify data breach notification procedures and timelines",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "data breach.*notification",
+            "personal data breach",
+            "72 hours?.*notification",
+            "breach.*supervisory authority",
+            "incident response.*data"
+          ]
+        },
+        {
+          "type": "negation_regex",
+          "field": "full_text",
+          "pattern": "reasonable time.*breach|prompt.*breach",
+          "must_not_match": true
+        }
+      ],
+      "messages": {
+        "fail": "Data breach notification procedures not specified or contain vague timing",
+        "warn": "Breach notification mentioned but timeline unclear",
+        "pass": "Clear data breach notification procedures with specific timelines"
+      },
+      "remediation": "Add: 'Processor shall notify Controller within 72 hours of becoming aware of any personal data breach'"
+    },
+    {
+      "id": "R06",
+      "name": "Data Minimization Principle",
+      "article": "GDPR Article 5(1)(c)",
+      "severity": "medium",
+      "description": "Processing should be limited to what is necessary for specified purposes",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "data minimi[sz]ation",
+            "necessary.*purpose",
+            "adequate.*relevant.*limited",
+            "purpose limitation",
+            "specified purposes?"
+          ]
+        }
+      ],
+      "messages": {
+        "fail": "Data minimization principle not addressed",
+        "pass": "Data minimization and purpose limitation addressed"
+      },
+      "remediation": "Add: 'Processing shall be limited to data adequate, relevant and necessary for the specified purposes'"
+    },
+    {
+      "id": "R07",
+      "name": "Retention Periods",
+      "article": "GDPR Article 5(1)(e)",
+      "severity": "high",
+      "description": "Contract must specify data retention periods and deletion procedures",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "retention period",
+            "delete.*data.*[0-9]+.*(?:days?|months?|years?)",
+            "data retention.*policy",
+            "storage limitation",
+            "automatic deletion"
+          ]
+        },
+        {
+          "type": "flag_if_only_vague",
+          "field": "full_text",
+          "patterns": [
+            "reasonable period",
+            "appropriate time",
+            "as long as necessary"
+          ],
+          "flag": "warn"
+        }
+      ],
+      "messages": {
+        "fail": "No specific data retention periods or deletion procedures",
+        "warn": "Retention mentioned but periods are vague",
+        "pass": "Clear data retention periods and deletion procedures specified"
+      },
+      "remediation": "Specify exact retention periods: 'Personal data will be deleted within 30 days of contract termination'"
+    },
+    {
+      "id": "R08",
+      "name": "Data Processing Agreement",
+      "article": "GDPR Article 28",
+      "severity": "critical",
+      "description": "Processor contracts must include Article 28 requirements",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "data processing agreement",
+            "Article 28",
+            "processor.*obligations",
+            "sub-processor",
+            "processing.*instructions",
+            "technical.*organisational.*measures"
+          ],
+          "min_hits": 3
+        }
+      ],
+      "messages": {
+        "fail": "Missing Article 28 data processing agreement requirements",
+        "warn": "Some Article 28 requirements present but incomplete",
+        "pass": "Comprehensive Article 28 data processing agreement"
+      },
+      "remediation": "Include full Article 28 data processing agreement with processor obligations"
+    },
+    {
+      "id": "R09",
+      "name": "Security Measures",
+      "article": "GDPR Article 32",
+      "severity": "high",
+      "description": "Contract must specify technical and organizational security measures",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "technical.*organi[sz]ational.*measures",
+            "encryption.*personal data",
+            "pseudonymisation",
+            "access controls?",
+            "security.*incident",
+            "ISO 27001",
+            "SOC 2"
+          ],
+          "min_hits": 2
+        }
+      ],
+      "messages": {
+        "fail": "Insufficient technical and organizational security measures",
+        "warn": "Some security measures mentioned but may need enhancement",
+        "pass": "Comprehensive technical and organizational security measures"
+      },
+      "remediation": "Specify detailed security measures including encryption, access controls, and incident response"
+    },
+    {
+      "id": "R10",
+      "name": "Supervisory Authority Cooperation",
+      "article": "GDPR Article 31",
+      "severity": "medium",
+      "description": "Contract should address cooperation with supervisory authorities",
+      "required": false,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "supervisory authority",
+            "data protection authority",
+            "ICO.*cooperation",
+            "regulatory.*investigation",
+            "audit.*compliance"
+          ]
+        }
+      ],
+      "messages": {
+        "fail": "No provisions for supervisory authority cooperation",
+        "pass": "Supervisory authority cooperation addressed"
+      },
+      "remediation": "Add: 'Parties shall cooperate with supervisory authorities in accordance with GDPR Article 31'"
+    },
+    {
+      "id": "R11",
+      "name": "Liability and Indemnification",
+      "article": "GDPR Article 82",
+      "severity": "high",
+      "description": "Contract must address GDPR liability and compensation provisions",
+      "required": true,
+      "checks": [
+        {
+          "type": "regex_any",
+          "field": "full_text",
+          "patterns": [
+            "GDPR.*liability",
+            "data protection.*liability",
+            "compensation.*data subject",
+            "indemnif.*GDPR",
+            "Article 82"
+          ]
+        }
+      ],
+      "messages": {
+        "fail": "GDPR liability and compensation provisions missing",
+        "warn": "Liability mentioned but GDPR-specific provisions unclear",
+        "pass": "Clear GDPR liability and compensation provisions"
+      },
+      "remediation": "Include GDPR Article 82 liability provisions and data subject compensation mechanisms"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+# Updated: 2025-08-24 - Fixed backend module path and deployment configuration
+services:
+  # Static Site (Frontend)
+  - type: static_site
+    name: blackletter-frontend
+    buildCommand: cd frontend && npm ci && npm run build
+    publishPath: ./frontend/out
+    envVars:
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true
+    domains:
+      - blackletter.onrender.com
+
+  # API service (Backend) - No custom domain, will use auto-generated URL
+  - type: web
+    name: blackletter-api
+    runtime: python
+    buildCommand: pip install -r src/backend/requirements.txt
+    startCommand: cd src/backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: OPENAI_API_KEY
+        sync: false
+    autoDeploy: true
+    plan: free
+
+# Database
+databases:
+  - name: blackletter-db
+    plan: free
+    databaseName: blackletter
+    user: blackletter

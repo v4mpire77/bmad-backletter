@@ -1,0 +1,24 @@
+name: RAG Eval
+
+on:
+  pull_request:
+    paths:
+      - "rag/**"
+      - ".github/workflows/rag_eval.yml"
+
+jobs:
+  rag-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run RAG eval
+        run: |
+          python - << 'PY'
+          import json
+          from rag.eval.evaluate import run_eval
+          print(json.dumps(run_eval()))
+          PY

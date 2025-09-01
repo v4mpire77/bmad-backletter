@@ -1,0 +1,76 @@
+{
+  "version": "1.0",
+  "purpose": "Vague language detection in vendor contracts",
+  "patterns": {
+    "temporal_vague": [
+      "as soon as (?:reasonably )?practicable",
+      "within a reasonable time",
+      "promptly",
+      "in due course",
+      "without undue delay",
+      "expeditiously",
+      "in a timely manner",
+      "as quickly as possible"
+    ],
+    "effort_vague": [
+      "reasonable efforts?",
+      "best efforts?",
+      "commercially reasonable efforts?",
+      "good faith efforts?",
+      "diligent efforts?",
+      "all reasonable efforts?",
+      "use reasonable endeavours?",
+      "reasonable endeavours?"
+    ],
+    "scope_vague": [
+      "to the extent (?:reasonably )?(?:possible|practicable)",
+      "where appropriate",
+      "if applicable",
+      "as may be required",
+      "to the extent necessary",
+      "where reasonably required",
+      "as circumstances permit",
+      "subject to availability"
+    ],
+    "performance_vague": [
+      "satisfactory performance",
+      "adequate service",
+      "industry standard",
+      "reasonable standard",
+      "acceptable quality",
+      "appropriate measures",
+      "sufficient resources"
+    ],
+    "liability_vague": [
+      "reasonable care",
+      "due care",
+      "ordinary care",
+      "appropriate precautions",
+      "reasonable precautions",
+      "adequate safeguards"
+    ],
+    "notification_vague": [
+      "reasonable notice",
+      "adequate notice",
+      "appropriate notice",
+      "sufficient notice",
+      "prior notice where practicable"
+    ]
+  },
+  "severity_mapping": {
+    "temporal_vague": "medium",
+    "effort_vague": "high",
+    "scope_vague": "medium", 
+    "performance_vague": "high",
+    "liability_vague": "critical",
+    "notification_vague": "medium"
+  },
+  "remediation_templates": {
+    "temporal_vague": "Specify exact timeframes (e.g., 'within 30 calendar days')",
+    "effort_vague": "Define measurable obligations and success criteria",
+    "scope_vague": "List specific conditions, thresholds, or criteria",
+    "performance_vague": "Reference industry standards or define KPIs",
+    "liability_vague": "Specify duty of care standards and compliance requirements",
+    "notification_vague": "Set minimum notice periods (e.g., '30 days written notice')"
+  }
+}

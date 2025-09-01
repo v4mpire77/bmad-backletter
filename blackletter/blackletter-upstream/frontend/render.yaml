@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: blackletter-frontend
+    buildCommand: npm ci --only=production && npm run build
+    staticPublishPath: ./out
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://your-backend-url.onrender.com

@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "jurisdiction": ["EU"],
+  "meta": {
+    "generated_at": null,
+    "purpose": "GDPR compliance",
+    "scoring": {
+      "weights": { "critical": 5, "high": 4, "medium": 3, "low": 1 },
+      "pass_threshold": 0.8
+    }
+  },
+  "rules": [
+    {
+      "id": "gdpr-001",
+      "name": "Consent requirement",
+      "article": "7",
+      "severity": "high",
+      "description": "Document should mention consent",
+      "checks": [{ "type": "regex_any", "patterns": ["consent"] }],
+      "messages": { "fail": "Missing consent statement" },
+      "remediation": "Include explicit consent clause"
+    }
+  ]
+}

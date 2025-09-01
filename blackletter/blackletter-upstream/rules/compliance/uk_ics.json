@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "jurisdiction": ["UK"],
+  "meta": {
+    "generated_at": null,
+    "purpose": "UK ICS compliance",
+    "scoring": {
+      "weights": { "critical": 5, "high": 4, "medium": 3, "low": 1 },
+      "pass_threshold": 0.8
+    }
+  },
+  "rules": [
+    {
+      "id": "ukics-001",
+      "name": "Safety reference",
+      "article": null,
+      "severity": "low",
+      "description": "Document should mention safety protocols",
+      "checks": [{ "type": "regex_any", "patterns": ["safety"] }],
+      "messages": { "fail": "Missing safety reference" },
+      "remediation": "Include safety procedures"
+    }
+  ]
+}
