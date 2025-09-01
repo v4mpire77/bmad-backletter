@@ -50,15 +50,56 @@ if command -v npm >/dev/null 2>&1; then
     printf "\n# Add npm user bin to PATH\nexport PATH=\"%s/bin:\$PATH\"\n" "$NPM_PREFIX" >> "$HOME/.bashrc"
   fi
 
-  npm install -g bmad-method || echo "[devcontainer setup] npm global install bmad-method failed — continuing"
+  # Helper to retry npm global install
+  retry_npm_install() {
+    local pkg="$1"
+    local tries=0
+    local max=3
+    until [ $tries -ge $max ]
+    do
+      tries=$((tries+1))
+      echo "[devcontainer setup] npm attempt $tries to install $pkg"
+      npm install -g "$pkg" && return 0 || sleep 1
+    done
+    return 1
+  }
+
+  echo "[devcontainer setup] Installing required CLI: bmad-method"
+  if retry_npm_install bmad-method; then
+    echo "[devcontainer setup] bmad-method installed via npm global"
+  else
+    echo "[devcontainer setup] npm global install bmad-method failed — attempting npx fallback"
+    if command -v npx >/dev/null 2>&1; then
+      npx --yes bmad-method install --yes && echo "[devcontainer setup] bmad-method installed via npx (install step executed)" || echo "[devcontainer setup] npx bmad-method fallback failed"
+    else
+      echo "[devcontainer setup] npx not available — cannot run fallback for bmad-method"
+    fi
+  fi
 else
   echo "[devcontainer setup] npm not available — skipping global npm installs"
 fi
 
 # Optional: try to install gemini CLI if npm is present (best-effort)
 if command -v npm >/dev/null 2>&1; then
-  echo "[devcontainer setup] Attempting best-effort install of @google/gemini-cli (optional)"
-  npm install -g @google/gemini-cli || echo "[devcontainer setup] gemini CLI install failed — it's optional"
+  echo "[devcontainer setup] Installing optional CLI: @google/gemini-cli"
+  if retry_npm_install @google/gemini-cli; then
+    echo "[devcontainer setup] @google/gemini-cli installed"
+  else
+    echo "[devcontainer setup] @google/gemini-cli install failed — continuing"
+  fi
+
+  # Verify installed CLIs (print versions if available)
+  if command -v bmad-method >/dev/null 2>&1; then
+    echo "[devcontainer setup] bmad-method -> $(bmad-method --version 2>/dev/null || echo 'version unknown')"
+  else
+    echo "[devcontainer setup] bmad-method binary not found in PATH; you can run 'npx bmad-method' or reopen the terminal to pick up PATH changes"
+  fi
+
+  if command -v gemini >/dev/null 2>&1; then
+    echo "[devcontainer setup] gemini -> $(gemini --version 2>/dev/null || echo 'version unknown')"
+  else
+    echo "[devcontainer setup] gemini binary not found in PATH"
+  fi
 fi
 
 # Create a .vscode devcontainer recommended workspace settings if missing
