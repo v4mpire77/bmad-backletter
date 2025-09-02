@@ -1,7 +1,5 @@
 import time
 from io import BytesIO
-
-import fakeredis
 from fastapi.testclient import TestClient
 
 from blackletter_api.main import app
@@ -19,7 +17,6 @@ def _post_upload_ok():
 def test_job_polling_async_success(monkeypatch):
     tasks.celery_app.conf.task_always_eager = True
     tasks.celery_app.conf.task_eager_propagates = True
-    monkeypatch.setattr(tasks, "redis_client", fakeredis.FakeRedis(decode_responses=True))
 
     resp = _post_upload_ok()
     assert resp.status_code == 201, resp.text
@@ -49,7 +46,6 @@ def test_job_polling_error(monkeypatch):
     # Force synchronous execution and simulate extraction failure
     tasks.celery_app.conf.task_always_eager = True
     tasks.celery_app.conf.task_eager_propagates = True
-    monkeypatch.setattr(tasks, "redis_client", fakeredis.FakeRedis(decode_responses=True))
 
     def boom(*args, **kwargs):  # noqa: ANN001
         raise RuntimeError("boom")

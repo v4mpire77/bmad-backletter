@@ -45,6 +45,22 @@ class Analysis(Base):
         return f"<Analysis(id={self.id}, filename='{self.filename}', status='{self.status}')>"
 
 
+class Job(Base):
+    __tablename__ = "jobs"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    analysis_id = Column(UUID(as_uuid=True), nullable=True, index=True)
+    status = Column(String, nullable=False, default="queued")
+    error_reason = Column(String, nullable=True)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    updated_at = Column(
+        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
+    def __repr__(self):
+        return f"<Job(id={self.id}, status='{self.status}')>"
+
+
 # Minimal Document model with tenancy scope
 class Document(Base):
     __tablename__ = "documents"

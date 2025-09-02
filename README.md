@@ -34,6 +34,15 @@ uvicorn blackletter_api.main:app --reload
 > remains process-local. Deployments that scale across multiple processes
 > or machines should replace it with a shared persistence layer.
 
+### Background Worker
+
+Start the Celery worker to process jobs asynchronously:
+
+```bash
+cd apps/api
+celery -A blackletter_api.services.tasks.celery_app worker --loglevel=info
+```
+
 ### Frontend (Ready for Development)
 ```bash
 cd apps/web

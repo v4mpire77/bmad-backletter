@@ -75,7 +75,7 @@ async def upload_contract(
     except OSError as e:
         raise HTTPException(status_code=500, detail="disk_io_error") from e
 
-    job_id = new_job(analysis_id=analysis_id)
+    job_id = new_job(db, analysis_id=analysis_id)
     process_job.delay(job_id, analysis_id, safe_name, size)
 
     return JobStatus(
