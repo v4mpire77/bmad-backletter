@@ -46,44 +46,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20.x
           cache: 'pnpm'
 
-      - name: Install root dependencies
-        run: pnpm install
+      - run: corepack enable && corepack prepare pnpm@latest-10 --activate
 
-      - name: Install web dependencies
-        working-directory: ./apps/web
-        run: pnpm install
+      - run: pnpm install --frozen-lockfile
 
-      - name: Lint (if available)
-        working-directory: ./apps/web
-        run: |
-          if [ "$(pnpm run lint --dry-run 2>&1 | grep 'No lint')" ]; then
-            echo "Linting disabled - skipping"
-          else
-            pnpm run lint || echo "Lint completed with warnings"
-          fi
-
-      - name: Run tests
-        working-directory: ./apps/web
-        run: |
-          if [ -f "vitest.config.ts" ] || [ -f "vitest.config.js" ]; then
-            pnpm test -- --run || echo "Tests completed"
-          else
-            echo "No test configuration found - skipping tests"
-          fi
-
-      - name: Type check
-        working-directory: ./apps/web
-        run: pnpm run typecheck || echo "Type check completed with warnings"
-
-      - name: Build
-        working-directory: ./apps/web
-        run: pnpm run build
+      - run: pnpm -r lint && pnpm -r typecheck && pnpm -r test
