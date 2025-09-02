@@ -80,9 +80,20 @@ it('updates progress based on websocket messages', async () => {
     static instances: MockWebSocket[] = [];
     onmessage: ((ev: any) => void) | null = null;
     onerror: ((ev: any) => void) | null = null;
+    onopen: ((ev: any) => void) | null = null;
+    onclose: ((ev: any) => void) | null = null;
+    readyState = WebSocket.OPEN;
     close = vi.fn();
+    send = vi.fn();
+    
     constructor(url: string) {
       MockWebSocket.instances.push(this);
+      // Simulate WebSocket opening
+      setTimeout(() => {
+        if (this.onopen) {
+          this.onopen({});
+        }
+      }, 0);
     }
   }
   (global as any).WebSocket = MockWebSocket as any;

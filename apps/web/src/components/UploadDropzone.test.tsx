@@ -65,7 +65,7 @@ describe("UploadDropzone", () => {
       open() {}
       send() {
         setTimeout(() => {
-          this.onerror();
+          this.onerror(new Error('Upload failed'));
         }, 0);
       }
     }
