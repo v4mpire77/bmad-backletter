@@ -4,8 +4,8 @@ Use this as your quick‑start and navigation map. It outlines agent flows, the 
 
 ## Quick Commands
 
-- Web dev: `cd apps/web && npm install && npm run dev` (open http://localhost:3000)
-- Web lint/tests: `npm run lint` • `npm run test` • `npm run coverage`
+- Web dev: `cd apps/web && pnpm install && pnpm dev` (open http://localhost:3000)
+- Web lint/tests: `pnpm lint` • `pnpm test` • `pnpm coverage`
 - Demo mode: copy `apps/web/.env.example` to `.env.local` and keep `NEXT_PUBLIC_USE_MOCKS=1`
 - API dev: `cd apps/api && uvicorn blackletter_api.main:app --reload`
 - API tests: `pytest apps/api/blackletter_api/tests -q`

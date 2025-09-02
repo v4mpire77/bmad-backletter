@@ -53,9 +53,11 @@ pwsh -NoProfile -File tools/windows/dev.ps1 -Web # web only
 ### Frontend (Ready for Development)
 ```bash
 cd apps/web
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
+
+> **Note**: These commands assume a `pnpm-workspace.yaml` exists at the repository root to enable pnpm workspace features.
 
 ### Demo Mode
 
