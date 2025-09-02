@@ -1,0 +1,33 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Rust
+        run: |
+          export CARGO_HOME=$HOME/.cargo
+          export RUSTUP_HOME=$HOME/.rustup
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          source $HOME/.cargo/env
+          rustc --version
+
+      - name: Upgrade Pip
+        run: pip install --upgrade pip
+
+      - name: Install Dependencies
+        run: pip install -r backend/requirements.txt

@@ -1,0 +1,27 @@
+# Blackletter Full-Stack Agent Orchestration Guide
+
+## Purpose
+Provides a high-level sequence for coordinating Blackletter's AI agents. Each step references existing project documentation so the orchestrator can shard context to the appropriate agent.
+
+## Workflow Sequence
+1. **Start Orchestrator**
+   - Initialize context and determine task scope.
+2. **Development Agent**
+   - Reference: docs/Development_Agent_Workflow.md
+   - Responsibilities: code generation, framework compliance, tests.
+3. **RAG Analysis Agent**
+   - Reference: docs/RAG_INTEGRATION_PLAN.md
+   - Responsibilities: document ingestion, vector store updates.
+4. **Compliance Agent**
+   - Reference: rules/ and docs/Risk_Management_Framework.md
+   - Responsibilities: GDPR and legal checks.
+5. **Quality Assurance Agent**
+   - Reference: docs/FRAMEWORK_CHECKLIST.md
+   - Responsibilities: testing and coverage validation.
+6. **End Orchestrator**
+   - Aggregate outputs and prepare results for stakeholders.
+
+## Sharding Notes
+- Each agent operates on a distinct documentation shard for efficient retrieval.
+- Maintain small, focused documents to keep embeddings precise.
+- Orchestrator must pass only the relevant shard to each agent.

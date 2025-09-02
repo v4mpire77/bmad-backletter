@@ -1,0 +1,18 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Add any custom Next.js configuration here
+  // For example, to enable React strict mode:
+  // reactStrictMode: true,
+  
+  // To enable image optimization for external URLs:
+  // images: {
+  //   domains: ['example.com'],
+  // },
+  
+  // To enable experimental features:
+  // experimental: {
+  //   appDir: true,
+  // },
+};
+
+module.exports = nextConfig;

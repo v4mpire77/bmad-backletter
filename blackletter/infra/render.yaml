@@ -1,0 +1,62 @@
+services:
+  - type: web
+    name: blackletter-api
+    env: python
+    rootDir: backend
+    buildCommand: |
+      pip install -r requirements.txt
+      echo "no migrations"
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blackletter-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: blackletter-redis
+          type: redis
+          property: connectionString
+      - key: SUPABASE_URL
+      - key: SUPABASE_ANON_KEY
+      - key: SUPABASE_SERVICE_ROLE_KEY
+      - key: CORS_ALLOW_ORIGIN
+        value: "*"
+      - key: OPENAI_API_KEY
+      - key: GEMINI_API_KEY
+    healthCheckPath: /healthz
+    autoDeploy: true
+    plan: starter
+    region: frankfurt
+
+  - type: worker
+    name: blackletter-worker
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A app.worker worker --loglevel=info
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blackletter-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: blackletter-redis
+          type: redis
+          property: connectionString
+      - key: SUPABASE_URL
+      - key: SUPABASE_SERVICE_ROLE_KEY
+      - key: SECRET_KEY
+        sync: false
+
+  - type: redis
+    name: blackletter-redis
+    ipAllowList: []
+
+databases:
+  - name: blackletter-db
+    plan: starter
+    region: frankfurt

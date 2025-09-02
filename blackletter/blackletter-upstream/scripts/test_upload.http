@@ -1,0 +1,12 @@
+### Test contract review endpoint
+POST http://localhost:8000/api/review
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+------WebKitFormBoundary
+Content-Disposition: form-data; name="file"; filename="test.pdf"
+Content-Type: application/pdf
+
+< ../backend/tests/fixtures/uk_nda.pdf
+------WebKitFormBoundary--
+
+### Test health check
+GET http://localhost:8000/health
