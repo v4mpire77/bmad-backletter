@@ -9,7 +9,13 @@ import uuid
 import logging
 import time
 import json
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    Request,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -18,12 +24,13 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .database import engine, Base
 from .models import entities
-from .routers import rules, analyses
+from .routers import rules, analyses, findings, analysis
 from .routers import contracts, jobs, reports
+from .routers import docs, exports
 from .routers import risk_analysis, admin
 from .routers import orchestration, gemini
 from .routers import document_qa
-from .routers import auth, devtools, settings
+from .routers import auth, devtools, settings, organizations
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -94,6 +101,18 @@ app = FastAPI(
     description="API for GDPR contract analysis.",
     version="0.1.0"
 )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    """Return errors in a consistent JSON envelope."""
+
+    if isinstance(exc.detail, dict):
+        return JSONResponse(status_code=exc.status_code, content=exc.detail)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"code": "error", "message": str(exc.detail)},
+    )
 
 
 @app.middleware("http")
@@ -190,6 +209,8 @@ async def get_live_analysis_status(analysis_id: str):
     }
 app.include_router(rules.router, prefix="/api")
 app.include_router(analyses.router, prefix="/api")
+app.include_router(findings.router, prefix="/api")
+app.include_router(analysis.router, prefix="/api")
 app.include_router(contracts.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
@@ -201,3 +222,9 @@ app.include_router(document_qa.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
 app.include_router(devtools.router, prefix="/api/dev")
 app.include_router(settings.router)
+app.include_router(organizations.router, prefix="/api")
+
+# V1 prefixed routes
+app.include_router(contracts.router, prefix="/v1")
+app.include_router(docs.router, prefix="/v1")
+app.include_router(exports.router, prefix="/v1")

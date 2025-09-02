@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-core/folder/filename.md ====================`
-- `==================== END: .bmad-core/folder/filename.md ====================`
+- `====== START: .bmad-core/folder/filename.md ======`
+- `====== END: .bmad-core/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-core/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-core/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `====== START: .bmad-core/utils/template-format.md ======`
+- `tasks: create-story` → Look for `====== START: .bmad-core/tasks/create-story.md ======`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -39,7 +39,7 @@ These references map directly to bundle sections:
 ---
 
 
-==================== START: .bmad-core/agents/qa.md ====================
+====== START: .bmad-core/agents/qa.md ======
 # qa
 
 CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
@@ -108,9 +108,9 @@ dependencies:
     - qa-gate-tmpl.yaml
     - story-tmpl.yaml
 ```
-==================== END: .bmad-core/agents/qa.md ====================
+====== END: .bmad-core/agents/qa.md ======
 
-==================== START: .bmad-core/tasks/nfr-assess.md ====================
+====== START: .bmad-core/tasks/nfr-assess.md ======
 <!-- Powered by BMAD™ Core -->
 
 # nfr-assess
@@ -456,9 +456,9 @@ performance_deep_dive:
 ```
 
 </details>
-==================== END: .bmad-core/tasks/nfr-assess.md ====================
+====== END: .bmad-core/tasks/nfr-assess.md ======
 
-==================== START: .bmad-core/tasks/qa-gate.md ====================
+====== START: .bmad-core/tasks/qa-gate.md ======
 <!-- Powered by BMAD™ Core -->
 
 # qa-gate
@@ -622,9 +622,9 @@ Gate: CONCERNS → qa.qaLocation/gates/{epic}.{story}-{slug}.yml
 - Always write to standard path
 - Always update story with gate reference
 - Clear, actionable findings
-==================== END: .bmad-core/tasks/qa-gate.md ====================
+====== END: .bmad-core/tasks/qa-gate.md ======
 
-==================== START: .bmad-core/tasks/review-story.md ====================
+====== START: .bmad-core/tasks/review-story.md ======
 <!-- Powered by BMAD™ Core -->
 
 # review-story
@@ -941,9 +941,9 @@ After review:
 3. Recommend status: "Ready for Done" or "Changes Required" (owner decides)
 4. If files were modified, list them in QA Results and ask Dev to update File List
 5. Always provide constructive feedback and actionable recommendations
-==================== END: .bmad-core/tasks/review-story.md ====================
+====== END: .bmad-core/tasks/review-story.md ======
 
-==================== START: .bmad-core/tasks/risk-profile.md ====================
+====== START: .bmad-core/tasks/risk-profile.md ======
 <!-- Powered by BMAD™ Core -->
 
 # risk-profile
@@ -1299,9 +1299,9 @@ Risk profile: qa.qaLocation/assessments/{epic}.{story}-risk-{YYYYMMDD}.md
 - Link risks to specific test requirements
 - Track residual risk after mitigation
 - Update risk profile as story evolves
-==================== END: .bmad-core/tasks/risk-profile.md ====================
+====== END: .bmad-core/tasks/risk-profile.md ======
 
-==================== START: .bmad-core/tasks/test-design.md ====================
+====== START: .bmad-core/tasks/test-design.md ======
 <!-- Powered by BMAD™ Core -->
 
 # test-design
@@ -1478,9 +1478,9 @@ Before finalizing, verify:
 - **Efficient coverage**: Test once at the right level
 - **Maintainability**: Consider long-term test maintenance
 - **Fast feedback**: Quick tests run first
-==================== END: .bmad-core/tasks/test-design.md ====================
+====== END: .bmad-core/tasks/test-design.md ======
 
-==================== START: .bmad-core/tasks/trace-requirements.md ====================
+====== START: .bmad-core/tasks/trace-requirements.md ======
 <!-- Powered by BMAD™ Core -->
 
 # trace-requirements
@@ -1747,9 +1747,9 @@ Trace matrix: qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.md
 - Identify both presence and absence
 - Prioritize based on risk
 - Make recommendations actionable
-==================== END: .bmad-core/tasks/trace-requirements.md ====================
+====== END: .bmad-core/tasks/trace-requirements.md ======
 
-==================== START: .bmad-core/templates/qa-gate-tmpl.yaml ====================
+====== START: .bmad-core/templates/qa-gate-tmpl.yaml ======
 # <!-- Powered by BMAD™ Core -->
 template:
   id: qa-gate-template-v1
@@ -1801,7 +1801,7 @@ examples:
       reason: "Accepted for MVP release - will address in next sprint"
       approved_by: "Product Owner"
 
-# ============ Optional Extended Fields ============
+# ===== Optional Extended Fields =====
 # Uncomment and use if your team wants more detail
 
 optional_fields_examples:
@@ -1853,9 +1853,9 @@ optional_fields_examples:
       future:  # Can be addressed later
         - action: "Consider caching for better performance"
           refs: ["services/data.service.ts"]
-==================== END: .bmad-core/templates/qa-gate-tmpl.yaml ====================
+====== END: .bmad-core/templates/qa-gate-tmpl.yaml ======
 
-==================== START: .bmad-core/templates/story-tmpl.yaml ====================
+====== START: .bmad-core/templates/story-tmpl.yaml ======
 # <!-- Powered by BMAD™ Core -->
 template:
   id: story-template-v2
@@ -1994,12 +1994,12 @@ sections:
     instruction: Results from QA Agent QA review of the completed story implementation
     owner: qa-agent
     editors: [qa-agent]
-==================== END: .bmad-core/templates/story-tmpl.yaml ====================
+====== END: .bmad-core/templates/story-tmpl.yaml ======
 
-==================== START: .bmad-core/data/technical-preferences.md ====================
+====== START: .bmad-core/data/technical-preferences.md ======
 <!-- Powered by BMAD™ Core -->
 
 # User-Defined Preferred Patterns and Preferences
 
 None Listed
-==================== END: .bmad-core/data/technical-preferences.md ====================
+====== END: .bmad-core/data/technical-preferences.md ======

@@ -66,7 +66,6 @@ services:
     depends_on: [backend]
 
 volumes: { db_data: {}, minio_data: {}, weaviate_data: {}, meili_data: {}, n8n_data: {} }
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a
 version: "3.9"
 
 services:
@@ -184,7 +183,6 @@ networks:
   default:
     name: blackletter_network
     driver: bridge
-=======
 version: "3.8"
 services:
   db:
@@ -253,4 +251,3 @@ services:
     depends_on: [backend]
 
 volumes: { db_data: {}, minio_data: {}, weaviate_data: {}, meili_data: {}, n8n_data: {} }
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a

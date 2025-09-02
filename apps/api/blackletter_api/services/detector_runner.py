@@ -1,23 +1,26 @@
 from __future__ import annotations
 
+import json
+import logging
 import os
 import re
-import json
-from typing import Iterable, List, Optional, Dict, Any, Pattern
+from typing import Any, Dict, Iterable, List, Optional, Pattern
 
-from .weak_lexicon import (
-    get_weak_terms,
-    get_counter_anchors,
-)
-from .detector_mapping import decide_verdict_with_downgrade
-from .token_ledger import get_token_ledger, should_apply_token_capping, token_capping_enabled
-from .rulepack_loader import load_rulepack
+from sqlalchemy.exc import SQLAlchemyError
+
+from ..core.weak_language_detector import evaluate_weak_language
+from ..database import SessionLocal
+from ..models.entities import OrgSetting
 from ..models.schemas import Finding
+from .evidence import build_window
+from .rulepack_loader import load_rulepack
 from .storage import analysis_dir
+from .token_ledger import (
+    get_token_ledger,
+    should_apply_token_capping,
+)
 
-
-def weak_lexicon_enabled() -> bool:
-    return os.getenv("WEAK_LEXICON_ENABLED", "1") == "1"
+logger = logging.getLogger(__name__)
 
 
 def _has_any(text_lc: str, terms: Iterable[str]) -> bool:
@@ -30,28 +33,8 @@ def _has_any(text_lc: str, terms: Iterable[str]) -> bool:
     return False
 
 
-def postprocess_weak_language(
-    original_verdict: str,
-    window_text: str,
-    counter_anchors: Optional[List[str]] = None,
-    enabled: Optional[bool] = None,
-) -> str:
-    """Downgrade verdict if weak terms appear without counter-anchors."""
-    if enabled is None:
-        enabled = weak_lexicon_enabled()
-    if not enabled or original_verdict != "pass":
-        return original_verdict
-
-    weak_terms = get_weak_terms()
-    anchors = list(counter_anchors or []) + get_counter_anchors()
-    verdict, _ = decide_verdict_with_downgrade(window_text, weak_terms, anchors)
-    if verdict == "warn":
-        return "weak"
-    return original_verdict
-
-
 def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
-    """Minimal detector runner for lexicon-based checks with token tracking."""
+    """Minimal detector runner for lexicon and regex checks with token tracking."""
     findings: List[Finding] = []
 
     # Initialize token tracking
@@ -65,10 +48,8 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
         extraction_data = json.load(f)
 
     sentences = extraction_data.get("sentences", [])
-    total_sentences = len(sentences)
 
     # Estimate tokens for this analysis (rough approximation)
-    # ~4 characters per token, plus some overhead
     estimated_chars = sum(len(s.get("text", "")) for s in sentences)
     estimated_tokens = max(100, (estimated_chars // 4) + 50)  # Minimum 100 tokens + overhead
 
@@ -105,8 +86,6 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
     # Load rulepack dynamically
     rulepack = load_rulepack()
 
-    processed_sentences = 0
-
     # Precompile regex detectors once to avoid repeated compilation
     compiled_regexes: Dict[str, Pattern[str]] = {}
     for det in rulepack.detectors:
@@ -117,6 +96,15 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                 # Skip malformed patterns
                 continue
 
+    n_sentences = 2
+    try:
+        with SessionLocal() as db:
+            settings = db.query(OrgSetting).first()
+            if settings and getattr(settings, "evidence_window_sentences", None):
+                n_sentences = settings.evidence_window_sentences
+    except SQLAlchemyError:
+        pass
+
     for sentence_data in sentences:
         sentence_text = sentence_data.get("text", "")
         page = sentence_data.get("page", 1)
@@ -125,7 +113,6 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
 
         for detector_spec in rulepack.detectors:
             detector_id = detector_spec.id
-
 
             if detector_spec.type == "lexicon":
                 lexicon_ref = detector_spec.lexicon or ""
@@ -141,51 +128,107 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     # Skip if lexicon missing or empty
                     continue
 
-                # Extract terms list from lexicon (handle both old and new formats)
+                # Prefer lexicon metadata from extraction.json if provided
+                meta = sentence_data.get("lexicon", {})
+                hits = meta.get(name) or meta.get(lexicon_ref) or []
+                if hits:
+                    for hit in hits:
+                        finding = Finding(
+                            detector_id=detector_id,
+                            rule_id=detector_id,
+                            verdict="pass",
+                            snippet=sentence_text,
+                            page=page,
+                            start=start,
+                            end=end,
+                            rationale="Lexicon term found.",
+                            category=hit.get("category"),
+                            confidence=hit.get("confidence"),
+                        )
+                        new_verdict, detected, version = evaluate_weak_language(
+                            original_verdict=finding.verdict,
+                            window_text=finding.snippet,
+                        )
+                        if new_verdict != finding.verdict:
+                            logger.debug(
+                                "weak language verdict change: %s -> %s",
+                                finding.verdict,
+                                new_verdict,
+                            )
+                        finding.verdict = new_verdict
+                        finding.weak_language_detected = detected
+                        finding.lexicon_version = version
+                        findings.append(finding)
+                    continue
+
+                # Fallback to direct term matching if no metadata provided
                 if lx.terms and isinstance(lx.terms[0], dict):
                     anchors_any = [item.get("term", "") for item in lx.terms if isinstance(item, dict)]
                 else:
                     anchors_any = [str(term) for term in lx.terms]
 
                 if _has_any(sentence_text.lower(), anchors_any):
-                    finding = Finding(
-                        detector_id=detector_id,
-                        rule_id=detector_id, # Use detector_id as rule_id for now
-                        verdict="pass",
-                        snippet=sentence_text,
-                        page=page,
-                        start=start,
-                        end=end,
-                        rationale="Lexicon term found."
-                    )
-
-                    final_verdict = postprocess_weak_language(
-                        original_verdict=finding.verdict,
-                        window_text=finding.snippet
-                    )
-                    finding.verdict = final_verdict
-                    findings.append(finding)
-            elif detector_spec.type == "regex":
-                regex = compiled_regexes.get(detector_id)
-                if regex and regex.search(sentence_text):
+                    window = build_window(analysis_id, start, end, n_sentences=n_sentences)
+                    snippet = window["snippet"] or sentence_text
+                    page_val = window["page"] or page
+                    start_val = window["start"] or start
+                    end_val = window["end"] or end
                     finding = Finding(
                         detector_id=detector_id,
                         rule_id=detector_id,
                         verdict="pass",
-                        snippet=sentence_text,
-                        page=page,
-                        start=start,
-                        end=end,
-                        rationale=f"Regex pattern '{regex.pattern}' matched.",
+                        snippet=snippet,
+                        page=page_val,
+                        start=start_val,
+                        end=end_val,
+                        rationale="Lexicon term found.",
                     )
-                    final_verdict = postprocess_weak_language(
+                    new_verdict, detected, version = evaluate_weak_language(
                         original_verdict=finding.verdict,
                         window_text=finding.snippet,
                     )
-                    finding.verdict = final_verdict
+                    if new_verdict != finding.verdict:
+                        logger.debug(
+                            "weak language verdict change: %s -> %s",
+                            finding.verdict,
+                            new_verdict,
+                        )
+                    finding.verdict = new_verdict
+                    finding.weak_language_detected = detected
+                    finding.lexicon_version = version
                     findings.append(finding)
-
-        processed_sentences += 1
+            elif detector_spec.type == "regex":
+                regex = compiled_regexes.get(detector_id)
+                if regex and regex.search(sentence_text):
+                    window = build_window(analysis_id, start, end, n_sentences=n_sentences)
+                    snippet = window["snippet"] or sentence_text
+                    page_val = window["page"] or page
+                    start_val = window["start"] or start
+                    end_val = window["end"] or end
+                    finding = Finding(
+                        detector_id=detector_id,
+                        rule_id=detector_id,
+                        verdict="pass",
+                        snippet=snippet,
+                        page=page_val,
+                        start=start_val,
+                        end=end_val,
+                        rationale=f"Regex pattern '{regex.pattern}' matched.",
+                    )
+                    new_verdict, detected, version = evaluate_weak_language(
+                        original_verdict=finding.verdict,
+                        window_text=finding.snippet,
+                    )
+                    if new_verdict != finding.verdict:
+                        logger.debug(
+                            "weak language verdict change: %s -> %s",
+                            finding.verdict,
+                            new_verdict,
+                        )
+                    finding.verdict = new_verdict
+                    finding.weak_language_detected = detected
+                    finding.lexicon_version = version
+                    findings.append(finding)
 
     # Persist findings
     a_dir = analysis_dir(analysis_id)

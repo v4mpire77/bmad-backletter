@@ -2,15 +2,19 @@
   "name": "blackletter-automation-tests",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.15.1",
   "scripts": {
-    "test:py": "node scripts/run_pytests.js",
-    "test": "npm run test:py",
-    "test:ui": "vitest",
-    "lint": "eslint automation --ext .js",
-    "format": "prettier -w .",
-    "codex:bundle": "python tools/bmad/generate_codex_bundle.py",
-    "codex:rules": "python tools/bmad/generate_codex_rules_from_cursor.py",
-    "codex:all": "npm run codex:bundle && npm run codex:rules"
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
+    "test": "pnpm -r run test",
+    "test:watch": "pnpm -r run test:watch",
+    "type-check": "pnpm -r run type-check",
+    "clean": "pnpm -r run clean",
+    "swa:start": "swa start",
+    "swa:build": "swa build",
+    "swa:deploy": "swa deploy"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",

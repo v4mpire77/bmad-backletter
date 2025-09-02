@@ -79,7 +79,10 @@ def get_analysis_summary(analysis_id: str) -> AnalysisSummary:
         coverage = compute_analysis_coverage(analysis_id, findings_list)
         
     except KeyError as exc:
-        raise HTTPException(status_code=404, detail="not_found") from exc
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "not_found", "message": "Analysis not found"},
+        ) from exc
     
     return AnalysisSummary(
         id=rec.id,
@@ -97,5 +100,8 @@ def get_analysis_findings(analysis_id: str) -> List[Finding]:
     try:
         rec_findings = orchestrator.findings(analysis_id)
     except KeyError as exc:
-        raise HTTPException(status_code=404, detail="not_found") from exc
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "not_found", "message": "Analysis not found"},
+        ) from exc
     return [Finding(**f) for f in rec_findings]

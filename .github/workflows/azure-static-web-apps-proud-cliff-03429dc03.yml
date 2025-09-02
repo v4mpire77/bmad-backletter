@@ -1,0 +1,61 @@
+name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+
+jobs:
+  build_and_deploy_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    permissions:
+       id-token: write
+       contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: |
+          cd apps/web
+          pnpm install
+        
+      - name: Build web app
+        run: |
+          cd apps/web
+          pnpm build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_USE_MOCKS: '0'
+        
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          action: "upload"
+          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
+          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+          app_location: "/apps/web" # App source code path
+          api_location: "/apps/api" # Api source code path - optional
+          output_location: "out" # Built app content directory for Next.js static export
+          skip_app_build: true # We already built it above
+          ###### End of Repository/Build Configurations ######

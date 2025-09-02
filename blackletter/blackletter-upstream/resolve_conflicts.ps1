@@ -6,7 +6,7 @@ Write-Host \"Starting automated merge conflict resolution...\" -ForegroundColor 
 # Get all files with merge conflict markers
 $conflictFiles = Get-ChildItem -Recurse -Include *.* | Where-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
-    $content -and ($content -match '<<<<<<<|=======|>>>>>>>')
+    $content -and ($content -match '<<<<<<<||>>>>>>>')
 }
 
 Write-Host \"Found $($conflictFiles.Count) files with merge conflicts\" -ForegroundColor Yellow
@@ -19,13 +19,12 @@ foreach ($file in $conflictFiles) {
         $content = Get-Content $file.FullName -Raw
         
         # Remove conflict markers and keep HEAD content
-        # Pattern: <<<<<<< HEAD\n(content)\n=======\n(other content)\n>>>>>>> hash
-        $resolved = $content -replace '(?s)<<<<<<< HEAD\\r?\n(.*?)\\r?\n=======\\r?\n.*?\\r?\n>>>>>>> [^\\r\n]*', '$1'
+        # Pattern: \n(content)\n\n(other content)\n        $resolved = $content -replace '(?s)\\r?\n(.*?)\\r?\n\\r?\n.*?\\r?\n\r\n]*', '$1'
         
         # Handle remaining orphaned markers
-        $resolved = $resolved -replace '<<<<<<< HEAD\\r?\n', ''
-        $resolved = $resolved -replace '=======\\r?\n', ''
-        $resolved = $resolved -replace '>>>>>>> [^\\r\n]*\\r?\n?', ''
+        $resolved = $resolved -replace '\\r?\n', ''
+        $resolved = $resolved -replace '\\r?\n', ''
+        $resolved = $resolved -replace '\r\n]*\\r?\n?', ''
         
         # Write resolved content back
         Set-Content -Path $file.FullName -Value $resolved -NoNewline
@@ -42,7 +41,7 @@ Write-Host \"Merge conflict resolution completed!\" -ForegroundColor Green
 # Verify no conflicts remain
 $remainingConflicts = Get-ChildItem -Recurse -Include *.* | Where-Object {
     $content = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
-    $content -and ($content -match '<<<<<<<|=======|>>>>>>>')
+    $content -and ($content -match '<<<<<<<||>>>>>>>')
 }
 
 if ($remainingConflicts.Count -eq 0) {

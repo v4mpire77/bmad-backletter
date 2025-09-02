@@ -3,10 +3,13 @@ Gemini Judge Service
 
 LLM-powered contract analysis using Google's Gemini model.
 """
-import os
+import asyncio
 import json
-from typing import Dict, List, Any, Optional
+import os
 from dataclasses import dataclass
+from typing import Any, Dict, List
+
+import httpx
 
 @dataclass
 class JudgmentResult:
@@ -30,30 +33,50 @@ class GeminiJudge:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY environment variable is required")
     
-    async def judge_rule_compliance(self, 
-                                  rule: Dict[str, Any], 
-                                  snippet: str, 
+    async def judge_rule_compliance(self,
+                                  rule: Dict[str, Any],
+                                  snippet: str,
                                   context: str,
                                   citations: List[Dict[str, Any]]) -> JudgmentResult:
-        """
-        Analyze contract snippet against GDPR rule.
-        
-        Args:
-            rule: GDPR rule definition
-            snippet: Relevant contract text snippet
-            context: Expanded context around snippet
-            citations: Citation metadata
-            
-        Returns:
-            JudgmentResult with verdict and analysis
-        """
-        
-        # Build analysis prompt
+        """Analyze contract snippet against GDPR rule."""
+
         prompt = self._build_analysis_prompt(rule, snippet, context, citations)
-        
-        # For now, return a structured mock response
-        # TODO: Replace with actual Gemini API call
-        return self._mock_gemini_response(rule, snippet)
+
+        url = (
+            "https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{self.model}:generateContent?key={self.api_key}"
+        )
+        payload = {"contents": [{"parts": [{"text": prompt}]}]}
+
+        for attempt in range(3):
+            try:
+                async with httpx.AsyncClient(timeout=15.0) as client:
+                    response = await client.post(url, json=payload)
+                    response.raise_for_status()
+
+                model_resp = response.json()
+                text = model_resp["candidates"][0]["content"]["parts"][0]["text"]
+                data = json.loads(text)
+
+                return JudgmentResult(
+                    rule_id=rule["id"],
+                    verdict=data.get("verdict", "insufficient_context"),
+                    risk=data.get("risk", "low"),
+                    rationale=data.get("rationale", ""),
+                    improvements=data.get("improvements", []),
+                    quotes=data.get("quotes", []),
+                    confidence=float(data.get("confidence", 0.0)),
+                )
+            except (
+                httpx.TimeoutException,
+                httpx.RequestError,
+                httpx.HTTPStatusError,
+                KeyError,
+                json.JSONDecodeError,
+            ) as exc:
+                if attempt == 2:
+                    raise RuntimeError("Gemini API request failed") from exc
+                await asyncio.sleep(2 ** attempt)
     
     def _build_analysis_prompt(self, rule: Dict[str, Any], snippet: str, 
                               context: str, citations: List[Dict[str, Any]]) -> str:
@@ -104,53 +127,6 @@ RESPONSE FORMAT (JSON):
 Analyze now:"""
         
         return prompt
-    
-    def _mock_gemini_response(self, rule: Dict[str, Any], snippet: str) -> JudgmentResult:
-        """Generate mock response for testing (replace with real Gemini call)."""
-        
-        # Simple heuristic analysis for demonstration
-        snippet_lower = snippet.lower()
-        
-        # Check for GDPR-related terms
-        gdpr_terms = ["data protection", "personal data", "processing", "consent", "lawful basis"]
-        has_gdpr_terms = any(term in snippet_lower for term in gdpr_terms)
-        
-        # Check for vague language
-        vague_terms = ["reasonable", "appropriate", "adequate", "sufficient"]
-        has_vague_terms = any(term in snippet_lower for term in vague_terms)
-        
-        if rule['id'] == 'R01':  # Data processing lawful basis
-            if has_gdpr_terms and not has_vague_terms:
-                verdict = "compliant"
-                risk = "low"
-                rationale = "Contract contains clear data processing provisions"
-                improvements = []
-            elif has_vague_terms:
-                verdict = "weak"
-                risk = "medium"
-                rationale = "Data processing terms present but contain vague language"
-                improvements = ["Specify exact lawful basis under GDPR Article 6", "Remove ambiguous terms"]
-            else:
-                verdict = "non_compliant"
-                risk = "high"
-                rationale = "No clear lawful basis for data processing identified"
-                improvements = ["Add GDPR Article 6 lawful basis clause", "Specify data processing purposes"]
-        else:
-            # Default analysis for other rules
-            verdict = "weak" if has_vague_terms else "compliant"
-            risk = "medium" if has_vague_terms else "low"
-            rationale = f"Analysis of {rule['name']} - {'vague terms detected' if has_vague_terms else 'appears compliant'}"
-            improvements = ["Consider more specific language"] if has_vague_terms else []
-        
-        return JudgmentResult(
-            rule_id=rule['id'],
-            verdict=verdict,
-            risk=risk,
-            rationale=rationale,
-            improvements=improvements,
-            quotes=[{"text": snippet[:100] + "...", "citation": {"doc_id": "mock", "page": 1, "start": 0, "end": 100}}],
-            confidence=0.85
-        )
     
     async def batch_analyze(self, analyses: List[Dict[str, Any]]) -> List[JudgmentResult]:
         """Analyze multiple rule/snippet combinations in batch."""

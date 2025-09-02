@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { addReport } from '../lib/mockReports';
 
 interface ExportDialogProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ export default function ExportDialog({ isOpen, onClose }: ExportDialogProps) {
   }, [isOpen, onClose]);
 
   const handleConfirm = () => {
+    addReport();
     router.push('/reports');
     onClose();
   };

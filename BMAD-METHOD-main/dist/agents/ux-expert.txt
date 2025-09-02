@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-core/folder/filename.md ====================`
-- `==================== END: .bmad-core/folder/filename.md ====================`
+- `====== START: .bmad-core/folder/filename.md ======`
+- `====== END: .bmad-core/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-core/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-core/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `====== START: .bmad-core/utils/template-format.md ======`
+- `tasks: create-story` → Look for `====== START: .bmad-core/tasks/create-story.md ======`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -39,7 +39,7 @@ These references map directly to bundle sections:
 ---
 
 
-==================== START: .bmad-core/agents/ux-expert.md ====================
+====== START: .bmad-core/agents/ux-expert.md ======
 # ux-expert
 
 CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
@@ -86,9 +86,9 @@ dependencies:
   templates:
     - front-end-spec-tmpl.yaml
 ```
-==================== END: .bmad-core/agents/ux-expert.md ====================
+====== END: .bmad-core/agents/ux-expert.md ======
 
-==================== START: .bmad-core/tasks/create-doc.md ====================
+====== START: .bmad-core/tasks/create-doc.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create Document from Template (YAML Driven)
@@ -192,9 +192,9 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 - Select options 2-9 from data/elicitation-methods only
 - Provide detailed rationale explaining decisions
 - End with "Select 1-9 or just type your question/feedback:"
-==================== END: .bmad-core/tasks/create-doc.md ====================
+====== END: .bmad-core/tasks/create-doc.md ======
 
-==================== START: .bmad-core/tasks/execute-checklist.md ====================
+====== START: .bmad-core/tasks/execute-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Checklist Validation Task
@@ -283,9 +283,9 @@ The LLM will:
 - Execute the complete checklist validation
 - Present a final report with pass/fail rates and key findings
 - Offer to provide detailed analysis of any section, especially those with warnings or failures
-==================== END: .bmad-core/tasks/execute-checklist.md ====================
+====== END: .bmad-core/tasks/execute-checklist.md ======
 
-==================== START: .bmad-core/tasks/generate-ai-frontend-prompt.md ====================
+====== START: .bmad-core/tasks/generate-ai-frontend-prompt.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create AI Frontend Prompt Task
@@ -339,9 +339,9 @@ You will now synthesize the inputs and the above principles into a final, compre
    - Output the complete, generated prompt in a clear, copy-pasteable format (e.g., a large code block).
    - Explain the structure of the prompt and why certain information was included, referencing the principles above.
    - <important_note>Conclude by reminding the user that all AI-generated code will require careful human review, testing, and refinement to be considered production-ready.</important_note>
-==================== END: .bmad-core/tasks/generate-ai-frontend-prompt.md ====================
+====== END: .bmad-core/tasks/generate-ai-frontend-prompt.md ======
 
-==================== START: .bmad-core/templates/front-end-spec-tmpl.yaml ====================
+====== START: .bmad-core/templates/front-end-spec-tmpl.yaml ======
 # <!-- Powered by BMAD™ Core -->
 template:
   id: frontend-spec-template-v2
@@ -692,12 +692,12 @@ sections:
   - id: checklist-results
     title: Checklist Results
     instruction: If a UI/UX checklist exists, run it against this document and report results here.
-==================== END: .bmad-core/templates/front-end-spec-tmpl.yaml ====================
+====== END: .bmad-core/templates/front-end-spec-tmpl.yaml ======
 
-==================== START: .bmad-core/data/technical-preferences.md ====================
+====== START: .bmad-core/data/technical-preferences.md ======
 <!-- Powered by BMAD™ Core -->
 
 # User-Defined Preferred Patterns and Preferences
 
 None Listed
-==================== END: .bmad-core/data/technical-preferences.md ====================
+====== END: .bmad-core/data/technical-preferences.md ======

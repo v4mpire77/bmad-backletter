@@ -4,6 +4,12 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
+echo "[devcontainer setup] Setting up BMAD Backletter development environment..."
+
+# Install pnpm globally first
+echo "[devcontainer setup] Installing pnpm..."
+npm install -g pnpm
+
 echo "[devcontainer setup] Creating Python venv at .venv using python3..."
 if [ -d ".venv" ]; then
   echo "[devcontainer setup] .venv already exists — skipping venv creation"
@@ -24,15 +30,19 @@ else
   echo "[devcontainer setup] No requirements.txt found — skipping Python deps"
 fi
 
-# Node workspace installs (web app)
-if [ -f "web/package.json" ]; then
-  echo "[devcontainer setup] Installing Node deps in ./web"
-  if command -v npm >/dev/null 2>&1; then
-    (cd web && npm install) || echo "[devcontainer setup] npm install failed in web/ — continuing"
-  else
-    echo "[devcontainer setup] npm not found — skipping web npm install"
-  fi
+# Install API requirements if they exist
+if [ -f "apps/api/requirements.txt" ]; then
+  echo "[devcontainer setup] Installing API requirements from apps/api/requirements.txt"
+  pip install -r apps/api/requirements.txt || echo "[devcontainer setup] API pip install failed — continuing"
 fi
+
+# Install Node.js dependencies with pnpm (monorepo)
+echo "[devcontainer setup] Installing Node.js dependencies with pnpm..."
+pnpm install || echo "[devcontainer setup] pnpm install failed — continuing"
+
+# Build shared packages
+echo "[devcontainer setup] Building shared packages..."
+pnpm --filter @bmad/shared build || echo "[devcontainer setup] shared package build failed — continuing"
 
 # Install repo global CLIs that are safe to install
 echo "[devcontainer setup] Installing recommended global CLIs if available: bmad-method"

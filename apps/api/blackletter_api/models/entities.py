@@ -30,6 +30,12 @@ class RetentionPolicy(enum.Enum):
     ninety_days = "90d"
 
 
+class ComplianceMode(enum.Enum):
+    """Compliance mode for evidence collection."""
+    strict = "strict"
+    standard = "standard"
+
+
 class Analysis(Base):
     __tablename__ = "analyses"
 
@@ -105,17 +111,56 @@ class Report(Base):
         return f"<Report(id={self.id}, analysis_id='{self.analysis_id}', filename='{self.filename}')>"
 
 
+# Artifacts linking extracted text and evidence windows to processing jobs
+class ExtractionArtifact(Base):
+    __tablename__ = "extraction_artifacts"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    analysis_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    job_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    artifact_path = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+    def __repr__(self):
+        return (
+            f"<ExtractionArtifact(id={self.id}, analysis_id={self.analysis_id},"
+            f" path='{self.artifact_path}')>"
+        )
+
+
+class EvidenceArtifact(Base):
+    __tablename__ = "evidence_artifacts"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    analysis_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    job_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    snippet = Column(String, nullable=False)
+    page = Column(Integer, nullable=False)
+    start = Column(Integer, nullable=False)
+    end = Column(Integer, nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+
+    def __repr__(self):
+        return (
+            f"<EvidenceArtifact(id={self.id}, analysis_id={self.analysis_id},"
+            f" page={self.page})>"
+        )
+
+
 # Story 5.1 - Organization Settings model
 class OrgSetting(Base):
     __tablename__ = "org_settings"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     org_id = Column(UUID(as_uuid=True), nullable=False, index=True, default=uuid.uuid4)  # Default org for MVP
-    
+
     # Story 5.1 settings fields
     llm_provider = Column(Enum(LLMProvider), nullable=False, default="none")
+    llm_enabled = Column(Boolean, nullable=False, default=True)
     ocr_enabled = Column(Boolean, nullable=False, default=False)
     retention_policy = Column(Enum(RetentionPolicy), nullable=False, default="none")
+    compliance_mode = Column(Enum(ComplianceMode), nullable=False, default="strict")
+    evidence_window_sentences = Column(Integer, nullable=False, default=2)
     
     # Audit fields
     created_at = Column(DateTime, nullable=False, server_default=func.now())

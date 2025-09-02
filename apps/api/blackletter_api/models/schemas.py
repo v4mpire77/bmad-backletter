@@ -8,6 +8,13 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
+class ErrorResponse(BaseModel):
+    """Standard error envelope for API responses."""
+
+    code: str
+    message: str
+
+
 class ExtractionArtifact(BaseModel):
     analysis_id: UUID
     text_path: str
@@ -52,7 +59,11 @@ class Finding(BaseModel):
     start: int
     end: int
     rationale: str
+    category: Optional[str] = None
+    confidence: Optional[float] = None
     reviewed: bool = False
+    weak_language_detected: bool = False
+    lexicon_version: Optional[str] = None
 
 
 class VerdictCounts(BaseModel):

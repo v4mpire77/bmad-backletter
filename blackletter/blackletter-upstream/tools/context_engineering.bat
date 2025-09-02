@@ -28,10 +28,10 @@ if %errorlevel% neq 0 (
     set "PYTHON_CMD=python"
 )
 
-echo %MAGENTA%============================================================%RESET%
+echo %MAGENTA%====%RESET%
 echo %MAGENTA%CONTEXT ENGINEERING WORKFLOW TOOLS%RESET%
 echo %MAGENTA%Blackletter Systems%RESET%
-echo %MAGENTA%============================================================%RESET%
+echo %MAGENTA%====%RESET%
 echo.
 
 if "%1"=="" goto :show_help

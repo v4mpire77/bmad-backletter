@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-core/folder/filename.md ====================`
-- `==================== END: .bmad-core/folder/filename.md ====================`
+- `====== START: .bmad-core/folder/filename.md ======`
+- `====== END: .bmad-core/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-core/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-core/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `====== START: .bmad-core/utils/template-format.md ======`
+- `tasks: create-story` → Look for `====== START: .bmad-core/tasks/create-story.md ======`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -39,7 +39,7 @@ These references map directly to bundle sections:
 ---
 
 
-==================== START: .bmad-core/agents/sm.md ====================
+====== START: .bmad-core/agents/sm.md ======
 # sm
 
 CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
@@ -82,9 +82,9 @@ dependencies:
   templates:
     - story-tmpl.yaml
 ```
-==================== END: .bmad-core/agents/sm.md ====================
+====== END: .bmad-core/agents/sm.md ======
 
-==================== START: .bmad-core/tasks/correct-course.md ====================
+====== START: .bmad-core/tasks/correct-course.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Correct Course Task
@@ -157,9 +157,9 @@ dependencies:
   - A summary of the change-checklist analysis (issue, impact, rationale for the chosen path).
   - Specific, clearly drafted proposed edits for all affected project artifacts.
 - **Implicit:** An annotated change-checklist (or the record of its completion) reflecting the discussions, findings, and decisions made during the process.
-==================== END: .bmad-core/tasks/correct-course.md ====================
+====== END: .bmad-core/tasks/correct-course.md ======
 
-==================== START: .bmad-core/tasks/create-next-story.md ====================
+====== START: .bmad-core/tasks/create-next-story.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create Next Story Task
@@ -274,9 +274,9 @@ ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
   - Any deviations or conflicts noted between epic and architecture
   - Checklist Results
   - Next steps: For Complex stories, suggest the user carefully review the story draft and also optionally have the PO run the task `.bmad-core/tasks/validate-next-story`
-==================== END: .bmad-core/tasks/create-next-story.md ====================
+====== END: .bmad-core/tasks/create-next-story.md ======
 
-==================== START: .bmad-core/tasks/execute-checklist.md ====================
+====== START: .bmad-core/tasks/execute-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Checklist Validation Task
@@ -365,9 +365,9 @@ The LLM will:
 - Execute the complete checklist validation
 - Present a final report with pass/fail rates and key findings
 - Offer to provide detailed analysis of any section, especially those with warnings or failures
-==================== END: .bmad-core/tasks/execute-checklist.md ====================
+====== END: .bmad-core/tasks/execute-checklist.md ======
 
-==================== START: .bmad-core/templates/story-tmpl.yaml ====================
+====== START: .bmad-core/templates/story-tmpl.yaml ======
 # <!-- Powered by BMAD™ Core -->
 template:
   id: story-template-v2
@@ -506,9 +506,9 @@ sections:
     instruction: Results from QA Agent QA review of the completed story implementation
     owner: qa-agent
     editors: [qa-agent]
-==================== END: .bmad-core/templates/story-tmpl.yaml ====================
+====== END: .bmad-core/templates/story-tmpl.yaml ======
 
-==================== START: .bmad-core/checklists/story-draft-checklist.md ====================
+====== START: .bmad-core/checklists/story-draft-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Story Draft Checklist
@@ -664,4 +664,4 @@ Be pragmatic - perfect documentation doesn't exist, but it must be enough to pro
 - READY: The story provides sufficient context for implementation
 - NEEDS REVISION: The story requires updates (see issues)
 - BLOCKED: External information required (specify what information)
-==================== END: .bmad-core/checklists/story-draft-checklist.md ====================
+====== END: .bmad-core/checklists/story-draft-checklist.md ======

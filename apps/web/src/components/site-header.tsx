@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button } from './ui/button';
 
 const tabs = [
   { href: '/upload', label: 'Upload' },
@@ -25,6 +26,7 @@ export default function SiteHeader() {
             </Link>
           ))}
         </div>
+        <Button size="sm" variant="secondary">Sign in</Button>
       </nav>
     </header>
   );

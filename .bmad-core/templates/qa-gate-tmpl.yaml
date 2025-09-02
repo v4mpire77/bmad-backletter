@@ -49,7 +49,7 @@ examples:
       reason: "Accepted for MVP release - will address in next sprint"
       approved_by: "Product Owner"
 
-# ============ Optional Extended Fields ============
+# ===== Optional Extended Fields =====
 # Uncomment and use if your team wants more detail
 
 optional_fields_examples:

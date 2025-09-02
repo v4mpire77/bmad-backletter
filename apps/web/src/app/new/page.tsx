@@ -1,52 +1,55 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const UploadPage = () => {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadStep, setUploadStep] = useState<
-    'idle' | 'queued' | 'extracting' | 'detecting' | 'reporting' | 'done'
-  >('idle');
+  const [uploadStep, setUploadStep] = useState<'idle' | 'queued' | 'processing' | 'done'>(
+    'idle',
+  );
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const jobRef = useRef<string | null>(null);
 
-  // Mock state machine logic
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (uploadStep !== 'idle' && uploadStep !== 'done') {
-      timer = setTimeout(() => {
-        switch (uploadStep) {
-          case 'queued':
-            setUploadStep('extracting');
-            setProgress(25);
-            break;
-          case 'extracting':
-            setUploadStep('detecting');
-            setProgress(50);
-            break;
-          case 'detecting':
-            setUploadStep('reporting');
-            setProgress(75);
-            break;
-          case 'reporting':
-            setUploadStep('done');
-            setProgress(100);
-            break;
-          default:
-            break;
-        }
-      }, 900); // ~0.9s per step
-    }
-    return () => clearTimeout(timer);
-  }, [uploadStep]);
-
-  const handleFileChange = (selectedFile: File) => {
+  const pollJob = useCallback(async (jobId: string) => {
+    const interval = setInterval(async () => {
+      const res = await fetch(`/api/jobs/${jobId}`);
+      if (!res.ok) {
+        return;
+      }
+      const data = await res.json();
+      if (data.status === 'running') {
+        setUploadStep('processing');
+        setProgress(50);
+      }
+      if (data.status === 'done') {
+        clearInterval(interval);
+        setUploadStep('done');
+        setProgress(100);
+        router.push(`/analyses/${jobId}`);
+      }
+    }, 1000);
+  }, [router]);
+  const handleFileChange = async (selectedFile: File) => {
     setFile(selectedFile);
     setUploadStep('queued');
     setProgress(0);
+    const fd = new FormData();
+    fd.append('file', selectedFile);
+    const res = await fetch('/api/contracts', {
+      method: 'POST',
+      body: fd,
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const jobId = data.job_id || data.id;
+      jobRef.current = jobId;
+      pollJob(jobId);
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -76,11 +79,20 @@ const UploadPage = () => {
     setFile(null);
     setUploadStep('idle');
     setProgress(0);
+    setError(null);
   }, []);
 
   const handleViewFindings = () => {
-    router.push('/analyses/mock-1');
+    if (jobRef.current) {
+      router.push(`/analyses/${jobRef.current}`);
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
 
   // Cancel simulation on ESC key
   useEffect(() => {
@@ -97,7 +109,7 @@ const UploadPage = () => {
   }, [uploadStep, handleReset]);
 
   const getStepStatus = (step: string) => {
-    const steps = ['queued', 'extracting', 'detecting', 'reporting', 'done'];
+    const steps = ['queued', 'processing', 'done'];
     const currentIndex = steps.indexOf(uploadStep);
     const stepIndex = steps.indexOf(step);
 
@@ -138,9 +150,7 @@ const UploadPage = () => {
             <div className="space-y-4">
               <div className="flex justify-between text-sm font-medium">
                 <span>Queued</span>
-                <span>Extracting</span>
-                <span>Detecting</span>
-                <span>Reporting</span>
+                <span>Processing</span>
                 <span>Done</span>
               </div>
               <div className="relative pt-1">
@@ -156,31 +166,37 @@ const UploadPage = () => {
               <div className="flex justify-between text-xs text-gray-500">
                 <span
                   aria-current={getStepStatus('queued') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('queued') === 'completed' ? 'text-green-600' : getStepStatus('queued') === 'active' ? 'text-blue-600 font-semibold' : ''}
+                  className={
+                    getStepStatus('queued') === 'completed'
+                      ? 'text-green-600'
+                      : getStepStatus('queued') === 'active'
+                      ? 'text-blue-600 font-semibold'
+                      : ''
+                  }
                 >
                   Queued
                 </span>
                 <span
-                  aria-current={getStepStatus('extracting') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('extracting') === 'completed' ? 'text-green-600' : getStepStatus('extracting') === 'active' ? 'text-blue-600 font-semibold' : ''}
+                  aria-current={getStepStatus('processing') === 'active' ? 'step' : undefined}
+                  className={
+                    getStepStatus('processing') === 'completed'
+                      ? 'text-green-600'
+                      : getStepStatus('processing') === 'active'
+                      ? 'text-blue-600 font-semibold'
+                      : ''
+                  }
                 >
-                  Extracting
-                </span>
-                <span
-                  aria-current={getStepStatus('detecting') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('detecting') === 'completed' ? 'text-green-600' : getStepStatus('detecting') === 'active' ? 'text-blue-600 font-semibold' : ''}
-                >
-                  Detecting
-                </span>
-                <span
-                  aria-current={getStepStatus('reporting') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('reporting') === 'completed' ? 'text-green-600' : getStepStatus('reporting') === 'active' ? 'text-blue-600 font-semibold' : ''}
-                >
-                  Reporting
+                  Processing
                 </span>
                 <span
                   aria-current={getStepStatus('done') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('done') === 'completed' ? 'text-green-600' : getStepStatus('done') === 'active' ? 'text-blue-600 font-semibold' : ''}
+                  className={
+                    getStepStatus('done') === 'completed'
+                      ? 'text-green-600'
+                      : getStepStatus('done') === 'active'
+                      ? 'text-blue-600 font-semibold'
+                      : ''
+                  }
                 >
                   Done
                 </span>
@@ -207,7 +223,10 @@ const UploadPage = () => {
             )}
           </div>
         )}
-        {file && uploadStep === 'idle' && (
+        {error && (
+          <p className="mt-4 text-sm text-red-600 text-center">{error}</p>
+        )}
+        {file && uploadStep === 'idle' && !error && (
           <p className="mt-4 text-sm text-gray-500 text-center">
             Selected file: {file.name}
           </p>

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * Blackletter GDPR Processor - Utility Functions
  * Context Engineering Framework v2.0.0 Compliant
@@ -269,11 +268,3 @@ export const theme = {
     }
   }
 };
-=======
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a

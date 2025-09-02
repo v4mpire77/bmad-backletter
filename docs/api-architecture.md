@@ -27,7 +27,8 @@ Describes RESTful contract for Blackletter services and how clients interact wit
 
 ## Error Handling
 
-- Consistent JSON envelope: `{ "detail": str, "code": str }`.
+- Consistent JSON envelope: `{ "code": str, "message": str }`.
+- `code` provides a stable machine-readable identifier while `message` is human-readable.
 - 4xx for client issues, 5xx for server faults.
 
 ## Rate Limits

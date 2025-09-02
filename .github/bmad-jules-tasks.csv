@@ -1,0 +1,11 @@
+title,label,body
+"BMAD: Create Landing Page Story","jules,bmad,story-development","Create a new story for implementing the landing page component with dark theme and gold accents. Epic: EPIC1-LANDING. Use @sm agent with *create-next-story command."
+"BMAD: Review Authentication Story","jules,bmad,story-development","Review the authentication implementation story for code quality and test coverage. Epic: EPIC2-AUTH. Use @qa agent with *review-story command."
+"BMAD: Develop Contract Analysis Feature","jules,bmad,story-development","Implement the contract analysis core functionality based on existing story requirements. Epic: EPIC3-ANALYSIS. Use @dev agent for implementation."
+"BMAD: Improve User Dashboard Story","jules,bmad,story-development","Enhance the user dashboard story with better UX requirements and acceptance criteria. Epic: EPIC4-DASHBOARD. Use @sm agent for story improvement."
+"BMAD: Create API Integration Epic","jules,bmad,story-development","Create a new epic for API integration with external services. Use @pm agent with *brownfield-create-epic command."
+"BMAD: Shard Architecture Documentation","jules,bmad,story-development","Break down the architecture documentation into manageable shards for story creation. Use @bmad-master with *shard-doc command."
+"BMAD: QA Risk Assessment - File Upload","jules,bmad,story-development","Perform risk assessment for file upload functionality story. Epic: EPIC5-UPLOAD. Use @qa agent with *risk command."
+"BMAD: Create Database Schema Story","jules,bmad,story-development","Create implementation story for database schema updates and migrations. Epic: EPIC6-DATA. Use @sm agent with *create-next-story."
+"BMAD: Review Security Implementation","jules,bmad,story-development","Comprehensive security review of authentication and authorization implementation. Epic: EPIC2-AUTH. Use @qa agent with *review-story."
+"BMAD: Develop Test Suite Enhancement","jules,bmad,story-development","Implement enhanced test suite with better coverage and automation. Epic: EPIC7-TESTING. Use @dev agent for implementation."

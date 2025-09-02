@@ -10,12 +10,12 @@ Expose `/api/analyses?limit=&query=&verdict=` and build a searchable dashboard l
 - apps/api/blackletter_api/routers/analyses.py (list endpoint)
 - apps/api/blackletter_api/models/schemas.py (AnalysisSummary/VerdictCounts)
 - apps/web/src/app/dashboard/page.tsx
-- apps/web/src/components/VerdictChips.tsx
+- apps/web/src/components/VerdictBadge.tsx
 - apps/web/test/components (render/interaction tests)
 
 ## Implementation Steps
 - API list returns `{ items: [ {id, filename, created_at, size, verdicts } ], next? }` with basic filtering by `query` and `verdict`.
-- Web renders table with filename, created date, size, verdict chips, and “Open” link to `/analyses/{id}`; empty state CTA to `/new`.
+- Web renders table with filename, created date, size, verdict badges, and “Open” link to `/analyses/{id}`; empty state CTA to `/new`.
 - Keep UI accessible: table headers, focus styles, aria labels on chips.
 
 ## Tests

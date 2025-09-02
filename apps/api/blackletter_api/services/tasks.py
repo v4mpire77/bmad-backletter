@@ -13,6 +13,12 @@ from redis import Redis
 from .storage import analysis_dir, write_analysis_json
 from .extraction import run_extraction
 from .detector_runner import run_detectors
+from .evidence import build_window
+from .exporter import generate_html_export
+from .artifacts import (
+    record_extraction_artifact,
+    record_evidence_artifact,
+)
 from ..models.schemas import JobState
 from .celery_app import celery_app
 
@@ -88,6 +94,11 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
         t_start_ext = time.time()
         try:
             extraction_path = run_extraction(analysis_id, source_path, a_dir)
+            record_extraction_artifact(
+                analysis_id=analysis_id,
+                job_id=job_id,
+                artifact_path=str(extraction_path),
+            )
             t_end_ext = time.time()
             latency_ms = round((t_end_ext - t_start_ext) * 1000)
             log_extras["latency_ms"] = latency_ms
@@ -104,7 +115,15 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
         # Stage 2: Detection
         t_start_det = time.time()
         try:
-            run_detectors(analysis_id, str(extraction_path))
+            findings = run_detectors(analysis_id, str(extraction_path))
+            for f in findings:
+                window = build_window(analysis_id, f.start, f.end)
+                record_evidence_artifact(
+                    analysis_id=analysis_id,
+                    job_id=job_id,
+                    window=window,
+                )
+            generate_html_export(analysis_id, findings)
             t_end_det = time.time()
             latency_ms = round((t_end_det - t_start_det) * 1000)
             log_extras["latency_ms"] = latency_ms

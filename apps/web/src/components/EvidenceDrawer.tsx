@@ -1,63 +1,63 @@
-'use client';
+ 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import type { Finding } from '@/lib/types';
+import { highlightAnchors } from '@/lib/anchors';
 
 interface EvidenceDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode;
+  finding: Finding | null; // allow null to simplify parent logic
+  children?: ReactNode;
 }
 
-export default function EvidenceDrawer({ isOpen, onClose, children }: EvidenceDrawerProps) {
-  const drawerRef = useRef<HTMLDivElement>(null);
+export default function EvidenceDrawer({ isOpen, onClose, finding }: EvidenceDrawerProps) {
+  const [isReviewed, setIsReviewed] = useState(false);
+  const initialFocus = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      } else if (e.key === 'Tab' && drawerRef.current) {
-        const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
-      }
-    };
-
-    if (isOpen) {
-      drawerRef.current?.focus();
-      document.addEventListener('keydown', handleKeyDown);
+    if (isOpen && finding) {
+      // no-op here; actual highlighting occurs in render via helper
     }
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, finding]);
 
-  if (!isOpen) return null;
+  if (!finding) return null;
+
+  const highlighted = highlightAnchors(
+    finding.snippet,
+    finding.anchors ?? [],
+    { tag: 'mark', className: 'bg-yellow-200' }
+  );
 
   return (
-    <div className="fixed inset-0 z-40">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div
-        ref={drawerRef}
-        tabIndex={-1}
-        className="absolute right-0 top-0 h-full w-80 bg-white p-4 shadow-lg"
-      >
-        {children}
-        <div className="mt-4 flex justify-end">
-          <button onClick={onClose}>Close</button>
+    <Transition show={isOpen} appear>
+      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose} initialFocus={initialFocus}>
+        <div className="min-h-screen px-4 text-center">
+          <Transition.Child enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-black/30" />
+          </Transition.Child>
+
+          <span className="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
+
+          <Transition.Child enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+            <Dialog.Panel className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">Evidence — {finding.rule_id}</Dialog.Title>
+              <div className="mt-3 prose">
+                {/* eslint-disable-next-line react/no-danger */}
+                <p className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: highlighted }} />
+              </div>
+              {finding.location && (
+                <p className="mt-2 text-xs text-gray-500">p.{finding.location.page} [{finding.location.start_char}–{finding.location.end_char}]</p>
+              )}
+              <div className="mt-6 flex items-center gap-3">
+                <button ref={initialFocus} className="px-3 py-2 text-sm rounded-md bg-blue-600 text-white" onClick={onClose}>Close</button>
+                <button className="px-3 py-2 text-sm rounded-md bg-gray-100" onClick={() => setIsReviewed(true)}>{isReviewed ? 'Reviewed' : 'Mark reviewed'}</button>
+              </div>
+            </Dialog.Panel>
+          </Transition.Child>
         </div>
-      </div>
-    </div>
+      </Dialog>
+    </Transition>
   );
 }
