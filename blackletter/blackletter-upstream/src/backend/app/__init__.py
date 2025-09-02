@@ -1,1 +1,0 @@
-"""Blackletter Systems backend application."""

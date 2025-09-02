@@ -1,1 +1,0 @@
-The controller works with a processor but data is handled elsewhere.

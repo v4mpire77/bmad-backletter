@@ -1,1 +1,0 @@
-The parties agree on data processing responsibilities between the controller and the processor.
