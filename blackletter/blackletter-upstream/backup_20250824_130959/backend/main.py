@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Blackletter GDPR Processor - Main FastAPI Application
 Context Engineering Framework v2.0.0 Compliant
@@ -147,34 +146,3 @@ async def compliance_check() -> Dict[str, Any]:
         "validation_enabled": settings.validation_enabled,
         "status": "compliant" if settings.validation_enabled else "unchecked"
     }
-=======
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
-from .core.config import settings
-from .routers import contracts, dashboard, jobs
-
-app = FastAPI(title="Blackletter Systems API")
-
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Mount routers
-app.include_router(contracts.router, prefix="/api")
-app.include_router(dashboard.router, prefix="/api")
-app.include_router(
-    jobs.router, prefix=f"/api/{settings.API_VERSION}/jobs", tags=["Jobs"]
-)
-
-
-# Health check
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a

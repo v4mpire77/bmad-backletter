@@ -2,7 +2,7 @@
 
 # Book Cover Design Assets
 
-# ============================================================
+# ====
 
 # This canvas file contains:
 

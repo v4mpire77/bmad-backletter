@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-<<<<<<< HEAD
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -15,17 +14,7 @@ module.exports = {
       screens: {
         "2xl": "1400px",
       },
-    },
-=======
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a
-    extend: {
+    },    extend: {
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -66,7 +55,6 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-<<<<<<< HEAD
       keyframes: {
         "accordion-down": {
           from: { height: 0 },
@@ -83,22 +71,4 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-=======
-    },
-  },
-  plugins: [
-    function({ addUtilities }) {
-      addUtilities({
-        '.animate-accordion-down': {
-          'animation': 'accordion-down 0.2s ease-out',
-        },
-        '.animate-accordion-up': {
-          'animation': 'accordion-up 0.2s ease-out',
-        },
-      })
-    },
-    require('@tailwindcss/forms'),
-  ],
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a
-}
+  plugins: [require("tailwindcss-animate")],}

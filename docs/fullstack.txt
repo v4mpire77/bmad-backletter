@@ -1,5 +1,4 @@
 Full-Stack Agent Orchestration Guide
-===================================
 
 This repository uses a filesystem message bus for coordinating Windows-based agents.
 

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Blackletter GDPR Processor - Celery Configuration
 Context Engineering Framework v2.0.0 Compliant
@@ -298,28 +297,3 @@ celery_app.conf.timezone = "UTC"
 if __name__ == "__main__":
     # For direct execution
     celery_app.start()
-=======
-from celery import Celery
-
-from ..core.config import settings
-
-celery_app = Celery(
-    "blackletter_worker",
-    broker=settings.CELERY_BROKER_URL,
-    backend=settings.CELERY_RESULT_BACKEND,
-    include=["backend.workers.tasks"],
-)
-
-celery_app.conf.update(
-    task_serializer="json",
-    result_serializer="json",
-    accept_content=["json"],
-    result_expires=86400,
-    task_acks_late=True,
-    worker_prefetch_multiplier=1,
-    broker_pool_limit=10,
-    task_routes={
-        "backend.workers.tasks.process_contract": {"queue": "contract_processing"}
-    },
-)
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a

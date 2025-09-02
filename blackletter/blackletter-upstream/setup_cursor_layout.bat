@@ -1,6 +1,6 @@
 @echo off
 echo 🎯 Cursor IDE Layout Setup
-echo ========================================
+echo =====
 echo This script will guide you through setting up the AI chat panel on the left.
 echo.
 

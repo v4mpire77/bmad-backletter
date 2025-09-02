@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Blackletter GDPR Processor-Obligations Checker MVP
 
 A **Context Engineering Framework v2.0.0 compliant** system for automated detection of GDPR Article 28(3) processor obligations in contracts. Built with Next.js 14, FastAPI, Supabase, and Celery for robust, scalable contract analysis.
@@ -407,42 +406,6 @@ Context Engineering Framework v2.0.0 Compliant
 ---
 
 *Built with Context Engineering Framework v2.0.0 - Delivering reliable, scalable, and compliant GDPR contract analysis.*
-=======
-# Blackletter Systems - AI Contract Review
-
-Simple, fast contract review using AI. Upload → Extract → Summarise → Show risks.
-
-## Quick Start (Windows)
-
-### Backend Setup
-
-```powershell
-cd blackletter\backend
-python -m venv ..\.venv
-. ..\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-setx OPENAI_API_KEY "<YOUR_KEY>"
-uvicorn main:app --reload --port 8000
-```
-
-### Frontend Setup
-
-<<<<<<< Updated upstream
-- [Implementation Plan](docs/Implementation.md)
-- [Project Structure](docs/project_structure.md)
-- [UI/UX Design](docs/UI_UX_doc.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Copilot Instructions](docs/COPILOT_INSTRUCTIONS.md)
-- [Context Engineering Workflow](docs/AGENT_CONTEXT_ENGINEERING_WORKFLOW.md)
-=======
-```powershell
-cd frontend
-npm install
-setx NEXT_PUBLIC_API_URL "http://localhost:8000"
-npm run dev
-```
->>>>>>> Stashed changes
-
 ## System Constraints
 
 - Max file size: 10MB
@@ -479,4 +442,3 @@ Content-Type: application/pdf
 2. Redline docx export
 3. Add playbook YAML and score risks against it
 4. Logging + basic analytics
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a

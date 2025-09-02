@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-creative-writing/folder/filename.md ====================`
-- `==================== END: .bmad-creative-writing/folder/filename.md ====================`
+- `====== START: .bmad-creative-writing/folder/filename.md ======`
+- `====== END: .bmad-creative-writing/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-creative-writing/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-creative-writing/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `====== START: .bmad-creative-writing/utils/template-format.md ======`
+- `tasks: create-story` → Look for `====== START: .bmad-creative-writing/tasks/create-story.md ======`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -39,7 +39,7 @@ These references map directly to bundle sections:
 ---
 
 
-==================== START: .bmad-creative-writing/agents/book-critic.md ====================
+====== START: .bmad-creative-writing/agents/book-critic.md ======
 # book-critic
 
 CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
@@ -78,4 +78,4 @@ dependencies:
   checklists:
     - genre-tropes-checklist
 ```
-==================== END: .bmad-creative-writing/agents/book-critic.md ====================
+====== END: .bmad-creative-writing/agents/book-critic.md ======

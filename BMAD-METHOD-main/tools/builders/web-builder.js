@@ -68,8 +68,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- \`==================== START: ${examplePath} ====================\`
-- \`==================== END: ${examplePath} ====================\`
+- \`====== START: ${examplePath} ======\`
+- \`====== END: ${examplePath} ======\`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -89,8 +89,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- \`utils: template-format\` → Look for \`==================== START: ${utilitiesExample} ====================\`
-- \`tasks: create-story\` → Look for \`==================== START: ${tasksReference} ====================\`
+- \`utils: template-format\` → Look for \`====== START: ${utilitiesExample} ======\`
+- \`tasks: create-story\` → Look for \`====== START: ${tasksReference} ======\`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -248,7 +248,7 @@ These references map directly to bundle sections:
   }
 
   formatSection(path, content, bundleRoot = 'bmad-core') {
-    const separator = '====================';
+    const separator = '======';
 
     // Process agent content if this is an agent file
     if (path.includes('/agents/')) {

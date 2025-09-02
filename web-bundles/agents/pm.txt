@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-core/folder/filename.md ====================`
-- `==================== END: .bmad-core/folder/filename.md ====================`
+- `====== START: .bmad-core/folder/filename.md ======`
+- `====== END: .bmad-core/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-core/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-core/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `====== START: .bmad-core/utils/template-format.md ======`
+- `tasks: create-story` → Look for `====== START: .bmad-core/tasks/create-story.md ======`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -39,7 +39,7 @@ These references map directly to bundle sections:
 ---
 
 
-==================== START: .bmad-core/agents/pm.md ====================
+====== START: .bmad-core/agents/pm.md ======
 # pm
 
 CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
@@ -101,9 +101,9 @@ dependencies:
     - brownfield-prd-tmpl.yaml
     - prd-tmpl.yaml
 ```
-==================== END: .bmad-core/agents/pm.md ====================
+====== END: .bmad-core/agents/pm.md ======
 
-==================== START: .bmad-core/tasks/brownfield-create-epic.md ====================
+====== START: .bmad-core/tasks/brownfield-create-epic.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create Brownfield Epic Task
@@ -266,9 +266,9 @@ The epic creation is successful when:
 - If the scope grows beyond 3 stories, consider the full brownfield PRD process
 - Always prioritize existing system integrity over new functionality
 - When in doubt about scope or complexity, escalate to full brownfield planning
-==================== END: .bmad-core/tasks/brownfield-create-epic.md ====================
+====== END: .bmad-core/tasks/brownfield-create-epic.md ======
 
-==================== START: .bmad-core/tasks/brownfield-create-story.md ====================
+====== START: .bmad-core/tasks/brownfield-create-story.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create Brownfield Story Task
@@ -418,9 +418,9 @@ The story creation is successful when:
 - Always prioritize existing system integrity
 - When in doubt about integration complexity, use brownfield-create-epic instead
 - Stories should take no more than 4 hours of focused development work
-==================== END: .bmad-core/tasks/brownfield-create-story.md ====================
+====== END: .bmad-core/tasks/brownfield-create-story.md ======
 
-==================== START: .bmad-core/tasks/correct-course.md ====================
+====== START: .bmad-core/tasks/correct-course.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Correct Course Task
@@ -493,9 +493,9 @@ The story creation is successful when:
   - A summary of the change-checklist analysis (issue, impact, rationale for the chosen path).
   - Specific, clearly drafted proposed edits for all affected project artifacts.
 - **Implicit:** An annotated change-checklist (or the record of its completion) reflecting the discussions, findings, and decisions made during the process.
-==================== END: .bmad-core/tasks/correct-course.md ====================
+====== END: .bmad-core/tasks/correct-course.md ======
 
-==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
+====== START: .bmad-core/tasks/create-deep-research-prompt.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create Deep Research Prompt Task
@@ -776,9 +776,9 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 - Balance comprehensiveness with focus
 - Document assumptions and limitations clearly
 - Plan for iterative refinement based on initial findings
-==================== END: .bmad-core/tasks/create-deep-research-prompt.md ====================
+====== END: .bmad-core/tasks/create-deep-research-prompt.md ======
 
-==================== START: .bmad-core/tasks/create-doc.md ====================
+====== START: .bmad-core/tasks/create-doc.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create Document from Template (YAML Driven)
@@ -882,9 +882,9 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 - Select options 2-9 from data/elicitation-methods only
 - Provide detailed rationale explaining decisions
 - End with "Select 1-9 or just type your question/feedback:"
-==================== END: .bmad-core/tasks/create-doc.md ====================
+====== END: .bmad-core/tasks/create-doc.md ======
 
-==================== START: .bmad-core/tasks/execute-checklist.md ====================
+====== START: .bmad-core/tasks/execute-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Checklist Validation Task
@@ -973,9 +973,9 @@ The LLM will:
 - Execute the complete checklist validation
 - Present a final report with pass/fail rates and key findings
 - Offer to provide detailed analysis of any section, especially those with warnings or failures
-==================== END: .bmad-core/tasks/execute-checklist.md ====================
+====== END: .bmad-core/tasks/execute-checklist.md ======
 
-==================== START: .bmad-core/tasks/shard-doc.md ====================
+====== START: .bmad-core/tasks/shard-doc.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Document Sharding Task
@@ -1163,9 +1163,9 @@ Document sharded successfully:
 - Preserve ALL formatting, including whitespace where significant
 - Handle edge cases like sections with code blocks containing ## symbols
 - Ensure the sharding is reversible (could reconstruct the original from shards)
-==================== END: .bmad-core/tasks/shard-doc.md ====================
+====== END: .bmad-core/tasks/shard-doc.md ======
 
-==================== START: .bmad-core/templates/brownfield-prd-tmpl.yaml ====================
+====== START: .bmad-core/templates/brownfield-prd-tmpl.yaml ======
 # <!-- Powered by BMAD™ Core -->
 template:
   id: brownfield-prd-template-v2
@@ -1447,9 +1447,9 @@ sections:
               - template: "IV1: {{existing_functionality_verification}}"
               - template: "IV2: {{integration_point_verification}}"
               - template: "IV3: {{performance_impact_verification}}"
-==================== END: .bmad-core/templates/brownfield-prd-tmpl.yaml ====================
+====== END: .bmad-core/templates/brownfield-prd-tmpl.yaml ======
 
-==================== START: .bmad-core/templates/prd-tmpl.yaml ====================
+====== START: .bmad-core/templates/prd-tmpl.yaml ======
 # <!-- Powered by BMAD™ Core -->
 template:
   id: prd-template-v2
@@ -1653,9 +1653,9 @@ sections:
       - id: architect-prompt
         title: Architect Prompt
         instruction: This section will contain the prompt for the Architect, keep it short and to the point to initiate create architecture mode using this document as input.
-==================== END: .bmad-core/templates/prd-tmpl.yaml ====================
+====== END: .bmad-core/templates/prd-tmpl.yaml ======
 
-==================== START: .bmad-core/checklists/change-checklist.md ====================
+====== START: .bmad-core/checklists/change-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Change Navigation Checklist
@@ -1840,9 +1840,9 @@ Keep it action-oriented and forward-looking.]]
 - [ ] **Confirm Next Steps:** Reiterate the handoff plan and the next actions to be taken by specific agents.
 
 ---
-==================== END: .bmad-core/checklists/change-checklist.md ====================
+====== END: .bmad-core/checklists/change-checklist.md ======
 
-==================== START: .bmad-core/checklists/pm-checklist.md ====================
+====== START: .bmad-core/checklists/pm-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Product Manager (PM) Requirements Checklist
@@ -2215,12 +2215,12 @@ After presenting the report, ask if the user wants:
 
 - **READY FOR ARCHITECT**: The PRD and epics are comprehensive, properly structured, and ready for architectural design.
 - **NEEDS REFINEMENT**: The requirements documentation requires additional work to address the identified deficiencies.
-==================== END: .bmad-core/checklists/pm-checklist.md ====================
+====== END: .bmad-core/checklists/pm-checklist.md ======
 
-==================== START: .bmad-core/data/technical-preferences.md ====================
+====== START: .bmad-core/data/technical-preferences.md ======
 <!-- Powered by BMAD™ Core -->
 
 # User-Defined Preferred Patterns and Preferences
 
 None Listed
-==================== END: .bmad-core/data/technical-preferences.md ====================
+====== END: .bmad-core/data/technical-preferences.md ======
