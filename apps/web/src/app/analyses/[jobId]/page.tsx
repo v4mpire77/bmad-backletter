@@ -12,6 +12,7 @@ export default function AnalysisFindingsPage({ params }: { params: { jobId: stri
   const [findings, setFindings] = useState<Finding[]>([]);
 
   useEffect(() => {
+    fetch(`/api/analyses/${params.jobId}/findings`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Network response was not ok');
