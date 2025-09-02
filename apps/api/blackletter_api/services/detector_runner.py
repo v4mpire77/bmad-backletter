@@ -176,8 +176,13 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     findings.append(finding)
             elif detector_spec.type == "regex":
                 pattern = detector_spec.pattern or ""
+                flags = 0
+                if getattr(detector_spec, "case_insensitive", False):
+                    flags |= re.IGNORECASE
+                if getattr(detector_spec, "multiline", False):
+                    flags |= re.MULTILINE
                 try:
-                    regex = re.compile(pattern, re.IGNORECASE)
+                    regex = re.compile(pattern, flags)
                 except re.error:
                     continue
                 if regex.search(sentence_text):
