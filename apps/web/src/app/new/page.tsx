@@ -2,6 +2,8 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useJobPolling } from '../../hooks/useJobPolling';
+import { StaleJobNotice } from '../../components/StaleJobNotice';
 
 const UploadPage = () => {
   const router = useRouter();
@@ -13,27 +15,21 @@ const UploadPage = () => {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const jobRef = useRef<string | null>(null);
-
-  const pollJob = useCallback(async (jobId: string) => {
-    const interval = setInterval(async () => {
-      const res = await fetch(`/api/jobs/${jobId}`);
-      if (!res.ok) {
-        return;
-      }
-      const data = await res.json();
-      if (data.status === 'running') {
+  const [jobId, setJobId] = useState<string | null>(null);
+  const { isStale, retry, cancel } = useJobPolling({
+    jobId,
+    onDone: (id) => {
+      setUploadStep('done');
+      setProgress(100);
+      router.push(`/analyses/${id}`);
+    },
+    onStatus: (s) => {
+      if (s === 'running') {
         setUploadStep('processing');
         setProgress(50);
       }
-      if (data.status === 'done') {
-        clearInterval(interval);
-        setUploadStep('done');
-        setProgress(100);
-        router.push(`/analyses/${jobId}`);
-      }
-    }, 1000);
-  }, [router]);
+    },
+  });
   const handleFileChange = async (selectedFile: File) => {
     setFile(selectedFile);
     setUploadStep('queued');
@@ -47,8 +43,7 @@ const UploadPage = () => {
     if (res.ok) {
       const data = await res.json();
       const jobId = data.job_id || data.id;
-      jobRef.current = jobId;
-      pollJob(jobId);
+      setJobId(jobId);
     }
   };
 
@@ -76,15 +71,17 @@ const UploadPage = () => {
   };
 
   const handleReset = useCallback(() => {
+    cancel();
     setFile(null);
+    setJobId(null);
     setUploadStep('idle');
     setProgress(0);
     setError(null);
-  }, []);
+  }, [cancel]);
 
   const handleViewFindings = () => {
-    if (jobRef.current) {
-      router.push(`/analyses/${jobRef.current}`);
+    if (jobId) {
+      router.push(`/analyses/${jobId}`);
     }
   };
 
@@ -220,6 +217,9 @@ const UploadPage = () => {
                   Start Over
                 </button>
               </div>
+            )}
+            {isStale && jobId && (
+              <StaleJobNotice jobId={jobId} onRetry={retry} onCancel={handleReset} />
             )}
           </div>
         )}

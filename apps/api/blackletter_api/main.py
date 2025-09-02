@@ -5,9 +5,7 @@ request metrics middleware, and simple health/readiness endpoints.
 """
 
 import os
-import uuid
 import logging
-import time
 import json
 from fastapi import (
     FastAPI,
@@ -64,43 +62,19 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# --- Structured Logging Setup ---
+from .logging import LogMiddleware, setup_logging
 
-class JsonFormatter(logging.Formatter):
-    def format(self, record):
-        log_record = {
-            "timestamp": self.formatTime(record, self.datefmt),
-            "level": record.levelname,
-            "message": record.getMessage(),
-        }
-        if hasattr(record, 'job_id'):
-            log_record['job_id'] = record.job_id
-        if hasattr(record, 'analysis_id'):
-            log_record['analysis_id'] = record.analysis_id
-        if hasattr(record, 'latency_ms'):
-            log_record['latency_ms'] = record.latency_ms
-        
-        return json.dumps(log_record)
+setup_logging()
 
-# Configure root logger
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-# Remove existing handlers and add our JSON formatter
-if logger.hasHandlers():
-    logger.handlers.clear()
-logHandler = logging.StreamHandler()
-logHandler.setFormatter(JsonFormatter())
-logger.addHandler(logHandler)
-
-# --- End Logging Setup ---
-
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Blackletter Systems API",
     description="API for GDPR contract analysis.",
     version="0.1.0"
 )
+
+app.add_middleware(LogMiddleware)
 
 
 @app.exception_handler(HTTPException)
@@ -113,29 +87,6 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
         status_code=exc.status_code,
         content={"code": "error", "message": str(exc.detail)},
     )
-
-
-@app.middleware("http")
-async def add_process_time_header_and_logging(request: Request, call_next):
-    """
-    Middleware to add a correlation ID, log requests, and measure latency.
-    This fulfills parts of E4 (Metrics & Observability) for Sprint 1.
-    """
-    start_time = time.time()
-    correlation_id = str(uuid.uuid4())
-
-    response = await call_next(request)
-
-    process_time = (time.time() - start_time) * 1000
-
-    logger.info(
-        f'{{"correlation_id": "{correlation_id}", "method": "{request.method}", '
-        f'"path": "{request.url.path}", "status_code": {response.status_code}, '
-        f'"duration_ms": {process_time:.2f}}}'
-    )
-
-    response.headers["X-Correlation-ID"] = correlation_id
-    return response
 
 
 # E4: Health and Readiness Endpoints
