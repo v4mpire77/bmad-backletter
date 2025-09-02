@@ -7,7 +7,7 @@ Accessible findings UI with verdict filters, search, and evidence drawer.
 Render 8 detector rows with verdict colors, short rationale, and accessible interactions. Uses API when mocks disabled.
 
 ## Allowed Repo Surface
-- apps/web/src/components/{FindingsTable,EvidenceDrawer,VerdictChips}.tsx
+- apps/web/src/components/{FindingsTable,EvidenceDrawer,VerdictBadge}.tsx
 - apps/web/src/app/analyses/[id]/page.tsx
 - apps/web/src/lib/{mocks,anchors}.ts
 - apps/web/test/components/*.test.tsx

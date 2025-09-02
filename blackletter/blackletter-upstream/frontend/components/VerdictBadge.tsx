@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 interface VerdictBadgeProps {
   verdict: string;
@@ -53,7 +53,10 @@ export default function VerdictBadge({ verdict, variant = 'subtle' }: VerdictBad
   }, [verdict]);
 
   return (
-    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${badgeStyle}`} aria-label={ariaLabel}>
+    <span
+      className={`px-2 py-1 text-xs font-semibold rounded-full ${badgeStyle}`}
+      aria-label={ariaLabel}
+    >
       {verdict.replace('_', ' ')}
     </span>
   );

@@ -9,4 +9,10 @@ describe('VerdictBadge', () => {
     const badge = getByText(/pass/i);
     expect(badge).toHaveAttribute('aria-label', 'Pass');
   });
+
+  it('supports solid variant', () => {
+    const { getByText } = render(<VerdictBadge verdict="pass" variant="solid" />);
+    const badge = getByText(/pass/i);
+    expect(badge.className).toMatch(/bg-green-700/);
+  });
 });
