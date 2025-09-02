@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Create work branch
+        id: create_branch
         uses: actions/github-script@v7
         with:
           script: |
@@ -28,6 +29,6 @@ jobs:
         with:
           script: |
             const title = `[Plan] ${context.payload.issue.title}`;
-            const head = `${{ steps.plan-or-fix.outputs.branch || '' }}` || 'codex/tmp';
+            const head = `${{ steps.create_branch.outputs.branch || '' }}` || 'codex/tmp';
             const pr = await github.rest.pulls.create({owner:context.repo.owner, repo:context.repo.repo, title, head, base: (await github.rest.repos.get({owner:context.repo.owner, repo:context.repo.repo})).data.default_branch, body: 'Auto-created from issue.\n\n@codex Please propose plan, tasks and initial diff.'});
             await github.rest.issues.createComment({owner:context.repo.owner, repo:context.repo.repo, issue_number: pr.data.number, body: '@codex\n\nKick off planning with the **codegen** profile.'});
