@@ -40,6 +40,22 @@ def test_build_window_uses_persisted_metadata(tmp_path, monkeypatch):
     assert result["sentence_window"] == 1
 
 
+def test_build_window_includes_span_end(tmp_path, monkeypatch):
+    """build_window covers multi-sentence spans using the end offset."""
+    monkeypatch.setattr(storage, "DATA_ROOT", tmp_path)
+    analysis_id = "analysis2"
+    analysis_dir = storage.analysis_dir(analysis_id)
+    extraction = {"page_map": [{"page": 1, "start": 0, "end": 201}], "sentences": SAMPLE_SENTENCES}
+    (analysis_dir / "extraction.json").write_text(json.dumps(extraction), encoding="utf-8")
+
+    # Span from sentence 3 through 5 with one sentence of context
+    result = build_window(analysis_id, start=60, end=130, n_sentences=1)
+
+    assert result["start"] == 26  # begins at sentence 2
+    assert result["end"] == 171   # extends through sentence 6
+    assert "This is the sixth sentence." in result["snippet"]
+
+
 def test_build_window_missing_metadata_returns_empty(tmp_path, monkeypatch):
     """When extraction.json is missing, build_window returns an empty snippet."""
     monkeypatch.setattr(storage, "DATA_ROOT", tmp_path)

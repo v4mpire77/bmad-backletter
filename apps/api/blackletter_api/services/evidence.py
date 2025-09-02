@@ -34,29 +34,49 @@ def build_window(
     page_map = meta.get("page_map", [])
     sentences = meta.get("sentences", [])
 
-    # Determine page containing the start character
-    page = 0
+    # Determine pages containing the start and end characters
+    start_page = 0
+    end_page = 0
     for p in page_map:
-        if p.get("start", 0) <= start < p.get("end", 0):
-            page = p.get("page", 0)
-            break
+        p_start = p.get("start", 0)
+        p_end = p.get("end", 0)
+        if p_start <= start < p_end:
+            start_page = p.get("page", 0)
+        if p_start <= end < p_end:
+            end_page = p.get("page", 0)
 
-    page_sents = [s for s in sentences if s.get("page") == page]
+    if not start_page and page_map:
+        start_page = page_map[0].get("page", 0)
+    if not end_page:
+        end_page = start_page
 
-    idx = 0
+    relevant_pages = range(min(start_page, end_page), max(start_page, end_page) + 1)
+    page_sents = [s for s in sentences if s.get("page") in relevant_pages]
+
+    # Find sentence indices covering both start and end
+    start_idx = 0
     for i, s in enumerate(page_sents):
         if s["start"] <= start <= s["end"] or start < s["start"]:
-            idx = i
+            start_idx = i
             break
 
-    start_idx = max(0, idx - n_sentences)
-    end_idx = min(len(page_sents), idx + n_sentences + 1)
-    selected = page_sents[start_idx:end_idx]
+    end_idx = start_idx
+    for j in range(start_idx, len(page_sents)):
+        s = page_sents[j]
+        if end <= s["end"]:
+            end_idx = j
+            break
+    else:
+        end_idx = len(page_sents) - 1
+
+    window_start_idx = max(0, start_idx - n_sentences)
+    window_end_idx = min(len(page_sents), end_idx + n_sentences + 1)
+    selected = page_sents[window_start_idx:window_end_idx]
 
     if not selected:
         return {
             "snippet": "",
-            "page": page,
+            "page": start_page,
             "start": start,
             "end": end,
             "analysis_id": analysis_id,
@@ -69,7 +89,7 @@ def build_window(
 
     return {
         "snippet": snippet,
-        "page": page,
+        "page": start_page,
         "start": window_start,
         "end": window_end,
         "analysis_id": analysis_id,
