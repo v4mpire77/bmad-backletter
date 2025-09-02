@@ -45,9 +45,11 @@ uvicorn blackletter_api.main:app --reload --app-dir apps/api
 ### Frontend (Ready for Development)
 ```bash
 cd apps/web
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
+
+> **Note**: These commands assume a `pnpm-workspace.yaml` exists at the repository root to enable pnpm workspace features.
 
 ### Demo Mode
 

@@ -21,13 +21,13 @@ This guide operationalizes the BMAD develop-story process so Devs can implement 
 - Mark checkboxes, update File List and Change Log, set status when done
 
 ## Commands (Windows PowerShell)
-- Web: `cd apps/web; npm install; npm run lint; npm run test; npm run dev`
+- Web: `cd apps/web; pnpm install; pnpm lint; pnpm test; pnpm dev`
 - API: `cd apps/api; pip install -r requirements.txt; uvicorn blackletter_api.main:app --reload`
 - API tests: `pytest apps/api/blackletter_api/tests -q`
 
 ## Web Testing
 - Unit/integration (RTL + Jest): `apps/web/test/**/*.test.tsx`
-- Coverage: `npm run coverage`
+- Coverage: `pnpm coverage`
 - Accessibility: test roles, labels, ESC behavior, focus
 
 ## API Testing
