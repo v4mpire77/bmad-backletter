@@ -1,5 +1,12 @@
 import pytest
-from blackletter_api.services.evidence import build_window, build_window_legacy, handle_boundary_cases
+import json
+
+from blackletter_api.services import storage
+from blackletter_api.services.evidence import (
+    build_window,
+    build_window_legacy,
+    handle_boundary_cases,
+)
 
 # A constant list of sentences to be used across tests.
 # Spans multiple pages to test for cross-page leakage.
@@ -15,46 +22,33 @@ SAMPLE_SENTENCES = [
 ]
 
 
-# Story 1.3 Tests - New build_window function with updated signature
-def test_story_1_3_build_window():
-    """Test Story 1.3 build_window function with new signature."""
-    analysis_id = "test_analysis_123"
-    start = 100
-    end = 200
-    n_sentences = 2
-    
-    result = build_window(analysis_id, start, end, n_sentences)
-    
-    # Verify the response structure matches acceptance criteria
-    assert "snippet" in result
-    assert "page" in result
-    assert "start" in result
-    assert "end" in result
-    assert result["analysis_id"] == analysis_id
-    assert result["sentence_window"] == n_sentences
+# Story 1.3 Tests - build_window reads persisted metadata
+def test_build_window_uses_persisted_metadata(tmp_path, monkeypatch):
+    """build_window returns a snippet using stored extraction metadata."""
+    monkeypatch.setattr(storage, "DATA_ROOT", tmp_path)
+    analysis_id = "analysis1"
+    analysis_dir = storage.analysis_dir(analysis_id)
+    extraction = {"page_map": [{"page": 1, "start": 0, "end": 201}], "sentences": SAMPLE_SENTENCES}
+    (analysis_dir / "extraction.json").write_text(json.dumps(extraction), encoding="utf-8")
+
+    result = build_window(analysis_id, start=90, end=95, n_sentences=1)
+
+    assert result["page"] == 1
+    assert result["start"] == 56  # sentence 3 start
+    assert result["end"] == 142   # sentence 5 end
+    assert "This is the fourth sentence." in result["snippet"]
+    assert result["sentence_window"] == 1
 
 
-def test_story_1_3_build_window_default_sentences():
-    """Test that build_window uses default of 2 sentences."""
-    analysis_id = "test_analysis_456"
-    start = 50
-    end = 100
-    
-    result = build_window(analysis_id, start, end)
-    
+def test_build_window_missing_metadata_returns_empty(tmp_path, monkeypatch):
+    """When extraction.json is missing, build_window returns an empty snippet."""
+    monkeypatch.setattr(storage, "DATA_ROOT", tmp_path)
+
+    result = build_window("missing", start=0, end=10)
+
+    assert result["snippet"] == ""
+    assert result["page"] == 0
     assert result["sentence_window"] == 2
-
-
-def test_story_1_3_build_window_custom_sentences():
-    """Test build_window with custom sentence count."""
-    analysis_id = "test_analysis_789"
-    start = 50
-    end = 100
-    n_sentences = 5
-    
-    result = build_window(analysis_id, start, end, n_sentences)
-    
-    assert result["sentence_window"] == n_sentences
 
 
 def test_handle_boundary_cases_start_of_document():

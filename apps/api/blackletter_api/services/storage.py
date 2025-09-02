@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import BinaryIO, List
+from typing import Any, BinaryIO, Dict, List, Optional
 
 from fastapi import UploadFile
 import json
@@ -157,3 +157,23 @@ def get_analysis_findings(analysis_id: str) -> list:
         return data if isinstance(data, list) else []
     except Exception:
         return []
+
+
+def get_extraction_metadata(analysis_id: str) -> Optional[Dict[str, Any]]:
+    """Return sentence and page metadata for an analysis.
+
+    Reads `.data/analyses/{analysis_id}/extraction.json` produced by the
+    extraction step in Story 1.2 and returns a dictionary with `page_map` and
+    `sentences` lists. Returns ``None`` if the artifact is missing or invalid.
+    """
+    p = analysis_dir(analysis_id) / "extraction.json"
+    if not p.exists():
+        return None
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return {
+        "page_map": data.get("page_map", []),
+        "sentences": data.get("sentences", []),
+    }

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 import logging
+
+from .storage import get_extraction_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -10,33 +12,68 @@ def build_window(
     analysis_id: str,
     start: int,
     end: int,
-    n_sentences: int = 2
+    n_sentences: int = 2,
 ) -> Dict:
+    """Build an evidence window around a character span.
+
+    Loads sentence and page metadata produced by Story 1.2 and returns a
+    snippet containing ``±n_sentences`` around the span. If metadata cannot be
+    loaded, an empty snippet is returned.
     """
-    Build evidence window for Story 1.3 - Evidence Window Builder.
-    
-    Given a char span in extracted text, return a window of ±N sentences 
-    (default 2) with page/offsets, respecting page boundaries.
-    
-    Args:
-        analysis_id: The analysis ID to get sentence index and page map from
-        start: Start character position
-        end: End character position  
-        n_sentences: Number of sentences before/after (default 2)
-        
-    Returns:
-        Dict with: { snippet, page, start, end }
-    """
-    # TODO: In actual implementation, retrieve persisted sentence index and page map from 1.2
-    # For now, return a mock response matching the expected interface
-    
+    meta = get_extraction_metadata(analysis_id)
+    if not meta:
+        return {
+            "snippet": "",
+            "page": 0,
+            "start": start,
+            "end": end,
+            "analysis_id": analysis_id,
+            "sentence_window": n_sentences,
+        }
+
+    page_map = meta.get("page_map", [])
+    sentences = meta.get("sentences", [])
+
+    # Determine page containing the start character
+    page = 0
+    for p in page_map:
+        if p.get("start", 0) <= start < p.get("end", 0):
+            page = p.get("page", 0)
+            break
+
+    page_sents = [s for s in sentences if s.get("page") == page]
+
+    idx = 0
+    for i, s in enumerate(page_sents):
+        if s["start"] <= start <= s["end"] or start < s["start"]:
+            idx = i
+            break
+
+    start_idx = max(0, idx - n_sentences)
+    end_idx = min(len(page_sents), idx + n_sentences + 1)
+    selected = page_sents[start_idx:end_idx]
+
+    if not selected:
+        return {
+            "snippet": "",
+            "page": page,
+            "start": start,
+            "end": end,
+            "analysis_id": analysis_id,
+            "sentence_window": n_sentences,
+        }
+
+    window_start = selected[0]["start"]
+    window_end = selected[-1]["end"]
+    snippet = " ".join(s["text"] for s in selected)
+
     return {
-        "snippet": f"Evidence window for span {start}-{end} with ±{n_sentences} sentences",
-        "page": 1,
-        "start": max(0, start - 100),  # Expanded start
-        "end": end + 100,  # Expanded end
+        "snippet": snippet,
+        "page": page,
+        "start": window_start,
+        "end": window_end,
         "analysis_id": analysis_id,
-        "sentence_window": n_sentences
+        "sentence_window": n_sentences,
     }
 
 
