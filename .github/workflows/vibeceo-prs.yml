@@ -1,7 +1,6 @@
-name: VibeCEO — PRs
+name: VibeCEO — PRs (DISABLED - BYPASSED)
 on:
-  pull_request:
-    types: [opened, synchronize, ready_for_review]
+  workflow_dispatch:  # Disabled automatic triggers
 permissions:
   contents: write
   pull-requests: write
@@ -9,14 +8,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
+    if: false  # Always skip this job
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci || npm i
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            const runner = require('./automation/vibeceo/index.js');
-            await runner({ github, context, core });
+      - name: VibeCEO Disabled
+        run: echo "VibeCEO is disabled due to configuration issues. Auto-merge relies on CI + Jules workflow only."

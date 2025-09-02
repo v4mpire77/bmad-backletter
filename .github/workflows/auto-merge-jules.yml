@@ -5,6 +5,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  checks: read
 jobs:
   merge:
     if: >
@@ -13,15 +14,102 @@ jobs:
       !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v7
+      - name: Wait for CI checks
+        uses: actions/github-script@v7
         with:
           script: |
             const pr = context.payload.pull_request;
-            const { data: statuses } = await github.rest.repos.getCombinedStatusForRef({
-              owner: context.repo.owner, repo: context.repo.repo, ref: pr.head.sha
-            });
-            if (statuses.state !== 'success') return; // only green
-            await github.rest.pulls.merge({
-              owner: context.repo.owner, repo: context.repo.repo,
-              pull_number: pr.number, merge_method: "squash"
+            
+            // Wait up to 10 minutes for checks to complete
+            let attempts = 0;
+            const maxAttempts = 30; // 30 attempts x 20s = 10 minutes
+            
+            while (attempts < maxAttempts) {
+              const { data: statuses } = await github.rest.repos.getCombinedStatusForRef({
+                owner: context.repo.owner, 
+                repo: context.repo.repo, 
+                ref: pr.head.sha
+              });
+              
+              console.log(`Attempt ${attempts + 1}: Status is ${statuses.state}`);
+              
+              if (statuses.state === 'success') {
+                console.log('✅ All checks passed! Proceeding with merge.');
+                
+                // Add approval comment before merging
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: '🤖 **Auto-merge approved**: Jules bot + low-risk label + all CI checks passed. Merging now...'
+                });
+                
+                // Merge the PR with conflict handling
+                try {
+                  await github.rest.pulls.merge({
+                    owner: context.repo.owner, 
+                    repo: context.repo.repo,
+                    pull_number: pr.number, 
+                    merge_method: "squash",
+                    commit_title: `${pr.title} (#${pr.number})`,
+                    commit_message: `Auto-merged Jules PR: ${pr.title}\n\n${pr.body || ''}`
+                  });
+                  
+                  console.log('✅ PR merged successfully!');
+                  return;
+                  
+                } catch (mergeError) {
+                  console.log('❌ Merge failed:', mergeError.message);
+                  
+                  if (mergeError.message.includes('conflict') || mergeError.message.includes('409')) {
+                    await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: pr.number,
+                      body: '⚠️ **Auto-merge blocked**: Merge conflicts detected. Please resolve conflicts manually:\n\n' +
+                            '```bash\n' +
+                            'git checkout main\n' +
+                            'git pull origin main\n' +
+                            `git checkout ${pr.head.ref}\n` +
+                            'git rebase main\n' +
+                            '# Resolve conflicts, then:\n' +
+                            'git push --force-with-lease\n' +
+                            '```\n\n' +
+                            'Or use GitHub\'s web interface to resolve conflicts.'
+                    });
+                  } else {
+                    await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: pr.number,
+                      body: `❌ **Auto-merge failed**: ${mergeError.message}\n\nPlease merge manually or check PR status.`
+                    });
+                  }
+                  
+                  return;
+                }
+              }
+              
+              if (statuses.state === 'failure') {
+                console.log('❌ Checks failed. Will not auto-merge.');
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: '❌ **Auto-merge blocked**: CI checks failed. Please fix and retry.'
+                });
+                return;
+              }
+              
+              // Wait 20 seconds before next check
+              await new Promise(resolve => setTimeout(resolve, 20000));
+              attempts++;
+            }
+            
+            console.log('⏰ Timeout waiting for checks. Will not auto-merge.');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: '⏰ **Auto-merge timeout**: Checks took too long. Please verify CI status manually.'
             });

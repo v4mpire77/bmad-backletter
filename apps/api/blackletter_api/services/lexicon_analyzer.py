@@ -61,9 +61,14 @@ def _load_from_disk(language: str) -> Lexicon:
                     or []
                 ),
                 strengtheners=list(
-                    data.get("strengtheners")
-                    or data.get("anchors", {}).get("strengtheners")
-                    or []
+                    [
+                        *(
+                            data.get("strengtheners")
+                            or data.get("anchors", {}).get("strengtheners")
+                            or []
+                        ),
+                        *(data.get("counter_anchors") or []),
+                    ]
                 ),
             )
     return Lexicon(language=language)

@@ -1,46 +1,35 @@
 'use client';
+import React from 'react';
+import type { PageFinding } from '@/lib/types';
 
-import React, { useState } from 'react';
-import VerdictBadge from './VerdictBadge';
-import EvidenceDrawer from './EvidenceDrawer';
-import type { Finding } from '@bmad/shared/types';
+type Props = {
+  findings: PageFinding[];
+  onRowClick?: (f: PageFinding) => void;
+};
 
-interface FindingsTableProps {
-  findings: Finding[];
-}
-
-export default function FindingsTable({ findings }: FindingsTableProps) {
-  const [selected, setSelected] = useState<Finding | null>(null);
-  const handleClose = () => setSelected(null);
-
+export default function FindingsTable({ findings, onRowClick }: Props) {
   return (
-    <div className="space-y-4">
-      <table className="min-w-full text-sm">
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
         <thead>
-          <tr className="bg-gray-50 text-left">
-            <th className="p-4 font-medium">Rule</th>
-            <th className="p-4 font-medium">Snippet</th>
-            <th className="p-4 font-medium">Verdict</th>
+          <tr>
+            <th className="py-2 pr-4">Rule</th>
+            <th className="py-2">Snippet</th>
           </tr>
         </thead>
         <tbody>
-          {findings.map(f => (
+          {findings.map((f) => (
             <tr
-              key={f.id}
-              onClick={() => setSelected(f)}
-              className="cursor-pointer hover:bg-gray-50"
+              key={f.id ?? `${f.rule_id}-${f.snippet.slice(0, 16)}`}
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => onRowClick?.(f)}
             >
-              <td className="p-4">{f.rule_id}</td>
-              <td className="p-4">{f.snippet}</td>
-              <td className="p-4"><VerdictBadge verdict={f.verdict} /></td>
+              <td className="py-2 pr-4 whitespace-nowrap">{f.rule_id}</td>
+              <td className="py-2">{f.snippet}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <EvidenceDrawer isOpen={!!selected} onClose={handleClose}>
-        <p><span className="font-medium">Rule:</span> {selected?.rule_id}</p>
-        <p className="mt-2 whitespace-pre-wrap">{selected?.snippet}</p>
-      </EvidenceDrawer>
     </div>
   );
 }

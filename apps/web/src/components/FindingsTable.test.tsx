@@ -2,17 +2,15 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import FindingsTable from './FindingsTable';
-import type { Finding } from '@bmad/shared/types';
+import type { PageFinding } from '@/lib/types';
 
 describe('FindingsTable', () => {
-  const findings: Finding[] = [
+  const findings: PageFinding[] = [
     {
       id: '1',
-      doc_id: 'd1',
       rule_id: 'art28-3-a',
-      verdict: 'pass',
       snippet: 'sample snippet',
-      location: { page: 1, start_char: 0, end_char: 6 },
+      anchors: [],
     },
   ];
 

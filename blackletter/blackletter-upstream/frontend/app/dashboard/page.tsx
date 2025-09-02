@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import VerdictChips from '@/components/VerdictChips';
+import VerdictBadge from '@/components/VerdictBadge';
 
 export default function Dashboard() {
   const [darkMode, setDarkMode] = useState(false);
@@ -99,10 +99,10 @@ export default function Dashboard() {
                 
                 {mockEnabled ? (
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <VerdictChips verdict="pass" />
-                    <VerdictChips verdict="weak" />
-                    <VerdictChips verdict="missing" />
-                    <VerdictChips verdict="needs_review" />
+                    <VerdictBadge verdict="pass" />
+                    <VerdictBadge verdict="weak" />
+                    <VerdictBadge verdict="missing" />
+                    <VerdictBadge verdict="needs_review" />
                   </div>
                 ) : (
                   <div className="mt-4">

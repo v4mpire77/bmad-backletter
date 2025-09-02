@@ -1,49 +1,29 @@
 'use client';
+import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import type { PageFinding } from '@/lib/types';
+import { toFinding } from '@/lib/types';
+import FindingsTable from '@/components/FindingsTable';
+import EvidenceDrawer from '@/components/EvidenceDrawer';
+import { mockAnalysis } from '@/lib/mockReports';
 
-import { useEffect, useState } from 'react';
+export default function AnalysesPage() {
+  const [selected, setSelected] = useState<PageFinding | null>(null);
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get('jobId') || 'mock-job-123';
 
-type Finding = {
-  rule_id: string;
-  verdict: string;
-  snippet: string;
-};
+  const analysis = mockAnalysis; // TODO: fetch by jobId
 
-export default function AnalysisFindingsPage({ params }: { params: { jobId: string } }) {
-  const [findings, setFindings] = useState<Finding[]>([]);
+  const onRowClick = (f: PageFinding) => setSelected(f);
+  const onClose = () => setSelected(null);
 
-  useEffect(() => {
-    fetch(`/api/analyses/${params.jobId}/findings`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return res.json();
-      })
-      .then((data) => setFindings(data))
-      .catch(() => setFindings([]));
-  }, [params.jobId]);
+  if (!analysis) return <div>Loading analysis for job ID: {jobId}...</div>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Findings</h1>
-      <table className="min-w-full text-left border">
-        <thead>
-          <tr>
-            <th className="border px-2 py-1">Rule</th>
-            <th className="border px-2 py-1">Verdict</th>
-            <th className="border px-2 py-1">Snippet</th>
-          </tr>
-        </thead>
-        <tbody>
-          {findings.map((f, idx) => (
-            <tr key={idx}>
-              <td className="border px-2 py-1">{f.rule_id}</td>
-              <td className="border px-2 py-1">{f.verdict}</td>
-              <td className="border px-2 py-1">{f.snippet}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-4">Analysis Findings for Job ID: {jobId}</h1>
+      <FindingsTable findings={analysis.findings as PageFinding[]} onRowClick={onRowClick} />
+      <EvidenceDrawer isOpen={!!selected} onClose={onClose} finding={selected ? toFinding(selected) : null} />
     </div>
   );
 }

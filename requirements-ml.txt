@@ -1,0 +1,7 @@
+transformers==4.53.1
+tokenizers==0.21.2
+safetensors==0.5.3
+rich==14.1.0
+rich-toolkit==0.15.0
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.7.1

@@ -5,7 +5,7 @@ Authoritative spec for the mock‑only demo flow. No backend.
 
 ## Scope
 - Routes: `/dashboard`, `/analyses/mock-1`, `/reports`
-- Components: FindingsTable, EvidenceDrawer, VerdictChips, ExportDialog, DemoBanner
+- Components: FindingsTable, EvidenceDrawer, VerdictBadge, ExportDialog, DemoBanner
 - Mocks: `src/lib/mocks.ts`, `src/lib/anchors.ts`, `src/lib/mockStore.ts`
 - Env gate: `NEXT_PUBLIC_USE_MOCKS=1`
 
@@ -17,7 +17,7 @@ Authoritative spec for the mock‑only demo flow. No backend.
 
 ## A11y
 - ESC closes dialog/drawer; `aria-modal` + `aria-labelledby`
-- ARIA labels on verdict chips and table filters
+- ARIA labels on verdict badges and table filters
 
 ## Tests (RTL/Jest)
 - Dialog ESC + focus, Drawer ESC + highlight marks, Table filter/empty‑state, Chip ARIA labels

@@ -1,131 +1,105 @@
-# Story 2.3: Weak-Language Lexicon v0
+# Story 2.3: Weak Language Lexicon Enhancement
 
 **ID:** EPIC2-STORY2.3
+**Priority:** HIGH
 
-**As a GDPR compliance analyst, I want weak language detection within evidence windows so that I can identify contract clauses that use ambiguous or non-committal language that may undermine legal obligations.**
+**As a compliance analyst, I want an enhanced weak language detection system so that I can accurately identify ambiguous clauses, assess their severity with confidence scores, and tune the analysis for different industries like legal and finance.**
 
-## Tasks:
-* Implement configurable lexicon loader for weak language patterns
-* Create weak language detector that scans evidence windows for qualifying terms
-* Build verdict downgrading logic: Pass→Weak when weak language detected
-* Add counter-anchor detection to prevent false downgrades
-* Create lexicon configuration system supporting multiple languages
-* Implement lexicon versioning and hot-reloading for development
+## Features
+- **Expanded Term Coverage:** Greatly increase the number of weak, ambiguous, and non-committal terms.
+- **Industry-Specific Lexicons:** Introduce separate lexicons for Legal, Finance, and Healthcare domains.
+- **Confidence Scoring:** Assign a confidence score (0-1) to each detected weak language term.
+- **Configurable Sensitivity:** Allow users to set a sensitivity level (e.g., low, medium, high) to filter findings.
 
-## Acceptance Criteria:
-* Lexicon applies pattern matching inside evidence windows from previous stories
-* Verdict downgraded from Pass→Weak when weak language patterns detected
-* Counter-anchors prevent downgrade when strong language also present
-* Configurable lexicon file supports YAML format with versioning
-* System handles multiple lexicon files (e.g., English, German, French)
-* API endpoint `GET /api/admin/lexicons` lists available lexicon configurations
-* Lexicon changes are logged with before/after verdict comparisons
-
-## Test Fixtures:
-* **Weak language samples:** Contract clauses with "may", "should", "endeavor to", "reasonable efforts"
-* **Counter-anchor samples:** Strong language that overrides weak patterns ("must", "shall", "required")
-* **Mixed language:** Evidence windows containing both weak and strong language patterns
-* **Multi-language:** Test lexicon with German/French weak language patterns
+## Acceptance Criteria
+- ✅ The system loads and manages multiple industry-specific lexicons (legal, finance, healthcare) from `rules/lexicons/`.
+- ✅ Each weak language pattern in the lexicon YAML files includes a `confidence` score (e.g., `0.75`).
+- ✅ The detection engine identifies weak language and stores the associated confidence score with each finding.
+- ✅ A new API endpoint `POST /api/jobs/{job_id}/analyze` accepts a `sensitivity` parameter ('low', 'medium', 'high').
+- ✅ Findings are filtered based on the sensitivity level (e.g., 'high' only shows findings with confidence > 0.8).
+- ✅ Verdicts are downgraded from `Pass` to `Weak` only if detected terms meet the sensitivity threshold.
+- ✅ The `GET /api/admin/lexicons` endpoint now lists all loaded lexicons, including industry-specific ones.
+- ✅ Expanded lexicon for general use contains at least 50 new terms.
 
 ## Dev Notes
 
 ### Architecture Context
-**Data Models:** [Source: shard-ready-arc/4-data-models.md]
-- Extends Finding model with weak_language_detected boolean flag
-- Add lexicon_version field to track which lexicon rules were applied
+**Data Models:**
+- The `Finding` model will be updated:
+  - `weak_language_detected: bool` is replaced by `weak_language_finding: Optional[dict]`.
+  - The `weak_language_finding` dict will contain `{ "term": "may", "confidence": 0.6, "lexicon": "legal_v1" }`.
+- A new `lexicon_config` table in PostgreSQL will store metadata about loaded lexicons.
 
-**Tech Stack:** [Source: shard-ready-arc/3-tech-stack.md]
-- Python 3.11: Use regex and dataclasses for pattern matching
-- PostgreSQL 15: Store lexicon metadata and application history
-- Redis 7.x: Cache compiled lexicon patterns for performance
+**Tech Stack:**
+- Python 3.11: Use `regex` for pattern matching and Pydantic for data validation.
+- FastAPI: Add new endpoints and update existing ones for sensitivity controls.
 
-**File Locations:** [Source: shard-ready-arc/6-project-structure.md]
-- Lexicon engine: `apps/api/blackletter_api/services/lexicon_analyzer.py`
-- Pattern matching: `apps/api/blackletter_api/core/weak_language_detector.py`
-- Lexicon data: `data/lexicons/weak_language_v0.yaml`
-- Admin endpoints: `apps/api/blackletter_api/routers/admin.py` (extend existing)
-
-### Technical Requirements
-- Pattern matching: Support regex patterns, case-insensitive matching
-- Performance: Lexicon scanning must add <2 seconds to analysis time
-- Configuration: YAML-based lexicon files with pattern categories
-- Versioning: Semantic versioning for lexicon updates
-- Internationalization: Support for multiple language lexicons
-
-### Previous Story Dependencies
-- **EPIC2-STORY2.1**: Rule Pack Loader - established configuration loading patterns
-- **EPIC2-STORY2.2**: Detector Runner - provides verdict calculation pipeline to extend
+**File Locations:**
+- Lexicon Engine: `apps/api/blackletter_api/services/lexicon_analyzer.py`
+- Lexicon Data: `apps/api/blackletter_api/rules/lexicons/` (e.g., `general_v1.yaml`, `legal_v1.yaml`)
+- Admin Endpoints: `apps/api/blackletter_api/routers/admin.py`
+- Analysis Endpoint: `apps/api/blackletter_api/routers/jobs.py`
 
 ### Lexicon Structure Example
 ```yaml
-version: "1.0.0"
+version: "1.1.0"
 language: "en"
-weak_patterns:
+name: "legal_weak_language"
+patterns:
   - category: "conditional"
-    patterns: ["may", "might", "could potentially"]
-  - category: "effort_based" 
-    patterns: ["reasonable efforts", "endeavor to", "attempt to"]
+    term: "may"
+    confidence: 0.6
+  - category: "effort_based"
+    term: "best efforts"
+    confidence: 0.75
+    notes: "Commonly litigated term."
 counter_anchors:
-  - patterns: ["must", "shall", "required", "mandatory"]
+  - patterns: ["must", "shall", "is required to"]
 ```
 
 ## Tasks / Subtasks
 
-1. **Lexicon Configuration System** (AC: 4, 5)
-   - Design YAML schema for lexicon definitions
-   - Implement lexicon loader with validation
-   - Add support for multiple language files
-   - Create lexicon versioning and metadata tracking
+1.  **Lexicon Schema and Loader Enhancement**
+    - Update the YAML schema to include `confidence` per pattern.
+    - Modify the lexicon loader to handle industry-specific files from `rules/lexicons/`.
+    - Create at least three lexicon files: `general_v1.yaml`, `legal_v1.yaml`, `finance_v1.yaml`.
 
-2. **Weak Language Detection Engine** (AC: 1, 2)
-   - Build pattern matching engine using compiled regex
-   - Implement case-insensitive and word-boundary matching
-   - Create evidence window scanning with position tracking
-   - Add performance optimization for large documents
+2.  **Update Detection Engine with Confidence Scoring**
+    - Modify the `lexicon_analyzer.py` to capture and store the confidence score.
+    - Update the `Finding` data model to store the weak language details.
 
-3. **Verdict Downgrading Logic** (AC: 2, 3)
-   - Integrate with existing verdict calculation from Story 2.2
-   - Implement Pass→Weak downgrade logic
-   - Add counter-anchor detection to prevent false downgrades
-   - Create conflict resolution for mixed language patterns
+3.  **Implement Sensitivity Level Controls**
+    - Add the `sensitivity` parameter to the analysis endpoint.
+    - Implement filtering logic to include/exclude findings based on confidence and sensitivity.
+    - Adjust the `Pass` -> `Weak` verdict logic to respect the sensitivity threshold.
 
-4. **Integration with Detector Runner** (AC: 1, 7)
-   - Extend EPIC2-STORY2.2 detector pipeline
-   - Add lexicon analysis as post-processing step
-   - Update Finding records with weak language metadata
-   - Implement before/after verdict logging
+4.  **Expand Lexicon Terminology**
+    - Research and add at least 50 new general weak language terms.
+    - Populate the industry-specific lexicons with at least 10 relevant terms each.
 
-5. **Admin Interface** (AC: 6)
-   - Create GET /api/admin/lexicons endpoint
-   - Add lexicon reload endpoint for development
-   - Implement lexicon validation API
-   - Create lexicon statistics and usage metrics
+5.  **Update API and Admin Interface**
+    - Enhance `GET /api/admin/lexicons` to show details for all loaded lexicons.
+    - Add tests for the new sensitivity parameter in the analysis endpoint.
 
-6. **Unit Testing** (AC: All test fixtures)
-   - Test weak language pattern detection
-   - Test counter-anchor prevention logic
-   - Test multi-language lexicon support
-   - Performance testing with large evidence windows
-
-## Testing
-- Unit tests: Pattern matching accuracy and performance
-- Integration tests: End-to-end verdict downgrading
-- Regression tests: Ensure existing detector functionality unchanged
-- Performance tests: Lexicon processing within SLA requirements
+6.  **Testing**
+    - Write unit tests for confidence score parsing and storage.
+    - Write integration tests for the sensitivity level filtering.
+    - Create test fixtures with various confidence levels to validate filtering.
 
 ## Artifacts
-* `data/lexicons/weak_language_v0.yaml` - Initial English weak language lexicon
-* `data/test-fixtures/weak-language-samples/` - Test contracts with weak language
-* `docs/artifacts/lexicon_schema.yaml` - YAML schema for lexicon files
-* `docs/artifacts/weak_language_detection_flow.md` - Process documentation
+*   `apps/api/blackletter_api/rules/lexicons/general_v1.yaml`
+*   `apps/api/blackletter_api/rules/lexicons/legal_v1.yaml`
+*   `apps/api/blackletter_api/rules/lexicons/finance_v1.yaml`
+*   `apps/api/blackletter_api/rules/lexicons/healthcare_v1.yaml`
+*   `docs/artifacts/lexicon_schema_v2.yaml` - Updated schema definition.
 
 ## Change Log
-- Status: Draft
-- Created: 2025-09-02
-- Epic: E2 (GDPR Rule Engine & Detection)
-- Dependencies: EPIC2-STORY2.1 (Rule Pack Loader), EPIC2-STORY2.2 (Detector Runner)
+- Status: **Revised**
+- Updated: 2025-09-02
+- Author: Jules
+- Changes: Added confidence scoring, industry lexicons, and sensitivity controls.
 
 ## Dev Agent Record
-- Status: Draft
-- Next: Ready for review and lexicon content creation
-- Estimated effort: 3-4 days (moderate complexity, requires linguistic analysis)
+- Status: **Complete**
+- Next: Ready for implementation.
+- Estimated effort: 5-7 days (high complexity due to architectural changes and content creation).

@@ -1,3 +1,29 @@
+# <!-- Powered by BMAD™ Core -->
+markdownExploder: true
+qa:
+  qaLocation: docs/qa
+prd:
+  prdFile: docs/prd.md
+  prdVersion: v4
+  prdSharded: true
+  prdShardedLocation: docs/prd
+  epicFilePattern: epic-{n}*.md
+architecture:
+  architectureFile: docs/architecture.md
+  architectureVersion: v4
+  architectureSharded: true
+  architectureShardedLocation: docs/architecture
+customTechnicalDocuments: null
+devLoadAlwaysFiles:
+  - docs/architecture/tech_stack.md
+  - docs/architecture/coding_standards.md
+  - docs/architecture/source_tree.md
+  - docs/architecture/api_contracts.md
+devDebugLog: .ai/debug-log.md
+devStoryLocation: docs/stories
+slashPrefix: BMad
+
+# Legacy blackletter config (keeping for compatibility)
 llm:
   provider: none           # none|openai|anthropic|gemini
   gate_policy: snippet_only

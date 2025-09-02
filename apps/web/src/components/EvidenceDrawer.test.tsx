@@ -7,7 +7,7 @@ describe('EvidenceDrawer', () => {
   it('closes on Escape key', () => {
     const onClose = vi.fn();
     render(
-      <EvidenceDrawer isOpen onClose={onClose}>
+      <EvidenceDrawer isOpen onClose={onClose} finding={null}>
         <p>content</p>
       </EvidenceDrawer>
     );
@@ -20,7 +20,7 @@ describe('EvidenceDrawer', () => {
     const writeText = vi.fn();
     Object.assign(navigator, { clipboard: { writeText } });
     render(
-      <EvidenceDrawer isOpen onClose={vi.fn()}>
+      <EvidenceDrawer isOpen onClose={vi.fn()} finding={null}>
         <p>snippet text</p>
       </EvidenceDrawer>
     );
