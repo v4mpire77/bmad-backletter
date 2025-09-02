@@ -17,8 +17,8 @@ def build_window(
     """Build an evidence window around a character span.
 
     Loads sentence and page metadata produced by Story 1.2 and returns a
-    snippet containing ``±n_sentences`` around the span. If metadata cannot be
-    loaded, an empty snippet is returned.
+    snippet containing ``±n_sentences`` around the span defined by ``start`` and
+    ``end``. If metadata cannot be loaded, an empty snippet is returned.
     """
     meta = get_extraction_metadata(analysis_id)
     if not meta:
@@ -34,29 +34,40 @@ def build_window(
     page_map = meta.get("page_map", [])
     sentences = meta.get("sentences", [])
 
-    # Determine page containing the start character
-    page = 0
+    # Determine pages containing the start and end characters
+    start_page = end_page = 0
     for p in page_map:
-        if p.get("start", 0) <= start < p.get("end", 0):
-            page = p.get("page", 0)
-            break
+        p_start = p.get("start", 0)
+        p_end = p.get("end", 0)
+        if p_start <= start < p_end:
+            start_page = p.get("page", 0)
+        if p_start <= end < p_end:
+            end_page = p.get("page", start_page)
 
-    page_sents = [s for s in sentences if s.get("page") == page]
+    pages = range(start_page, end_page + 1)
+    page_sents = [s for s in sentences if s.get("page") in pages]
 
-    idx = 0
+    # Find sentence indices covering the span
+    start_idx = 0
     for i, s in enumerate(page_sents):
         if s["start"] <= start <= s["end"] or start < s["start"]:
-            idx = i
+            start_idx = i
             break
 
-    start_idx = max(0, idx - n_sentences)
-    end_idx = min(len(page_sents), idx + n_sentences + 1)
-    selected = page_sents[start_idx:end_idx]
+    end_idx = start_idx
+    for i in range(start_idx, len(page_sents)):
+        if end <= page_sents[i]["end"]:
+            end_idx = i
+            break
+
+    window_start_idx = max(0, start_idx - n_sentences)
+    window_end_idx = min(len(page_sents), end_idx + n_sentences + 1)
+    selected = page_sents[window_start_idx:window_end_idx]
 
     if not selected:
         return {
             "snippet": "",
-            "page": page,
+            "page": start_page,
             "start": start,
             "end": end,
             "analysis_id": analysis_id,
@@ -69,7 +80,7 @@ def build_window(
 
     return {
         "snippet": snippet,
-        "page": page,
+        "page": start_page,
         "start": window_start,
         "end": window_end,
         "analysis_id": analysis_id,
