@@ -7,11 +7,9 @@ from typing import Iterable, List, Optional, Dict, Any, Pattern
 
 from .weak_lexicon import (
     get_weak_terms,
-    get_weak_terms_with_metadata,
     get_counter_anchors,
-    calculate_weak_confidence,
-    get_terms_by_confidence_threshold
 )
+from .detector_mapping import decide_verdict_with_downgrade
 from .token_ledger import get_token_ledger, should_apply_token_capping, token_capping_enabled
 from .rulepack_loader import load_rulepack
 from ..models.schemas import Finding
@@ -37,35 +35,17 @@ def postprocess_weak_language(
     window_text: str,
     counter_anchors: Optional[List[str]] = None,
     enabled: Optional[bool] = None,
-    confidence_threshold: float = 0.5,
 ) -> str:
-    """Downgrade 'pass' to 'weak' if weak-language terms are present, with confidence scoring."""
+    """Downgrade verdict if weak terms appear without counter-anchors."""
     if enabled is None:
         enabled = weak_lexicon_enabled()
-    if not enabled:
+    if not enabled or original_verdict != "pass":
         return original_verdict
 
-    text_lc = (window_text or "").lower()
-
-    # Check counter-anchors first (they prevent downgrade)
-    all_counter_anchors = []
-    if counter_anchors:
-        all_counter_anchors.extend([a.lower() for a in counter_anchors if a])
-    # Add lexicon counter-anchors
-    lexicon_counter_anchors = get_counter_anchors()
-    all_counter_anchors.extend(lexicon_counter_anchors)
-
-    if all_counter_anchors and _has_any(text_lc, all_counter_anchors):
-        return original_verdict
-
-    # Use enhanced weak language detection with confidence scoring
-    weak_terms = get_weak_terms_with_metadata()
-    if not weak_terms:
-        return original_verdict
-
-    has_weak, confidence, category = calculate_weak_confidence(text_lc, weak_terms)
-
-    if original_verdict == "pass" and has_weak and confidence >= confidence_threshold:
+    weak_terms = get_weak_terms()
+    anchors = list(counter_anchors or []) + get_counter_anchors()
+    verdict, _ = decide_verdict_with_downgrade(window_text, weak_terms, anchors)
+    if verdict == "warn":
         return "weak"
     return original_verdict
 
