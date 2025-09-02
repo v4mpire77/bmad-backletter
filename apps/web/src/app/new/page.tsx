@@ -114,7 +114,7 @@ const UploadPage = () => {
           <>
             <label
               htmlFor="fileInput"
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+              className={`block w-full border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
                 isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
               }`}
               onDrop={handleDrop}
