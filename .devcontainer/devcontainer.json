@@ -38,7 +38,8 @@
         "ms-vscode.vscode-typescript-next",
         "ms-azuretools.vscode-azurestaticwebapps",
         "github.copilot",
-        "github.copilot-chat"
+        "github.copilot-chat",
+        "robertpiosik.gemini-coder"
       ]
     }
   }

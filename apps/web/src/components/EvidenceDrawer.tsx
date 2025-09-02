@@ -1,151 +1,62 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
-import { Finding } from '@/lib/types';
+import { useEffect, useRef, useState } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import type { Finding } from '@/lib/types';
 import { highlightAnchors } from '@/lib/anchors';
 
 interface EvidenceDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  finding: Finding;
+  finding: Finding | null; // allow null to simplify parent logic
 }
 
 export default function EvidenceDrawer({ isOpen, onClose, finding }: EvidenceDrawerProps) {
   const [isReviewed, setIsReviewed] = useState(false);
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const initialFocus = useRef<HTMLButtonElement | null>(null);
 
-  // Handle ESC key to close the drawer
   useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEsc);
-      // Focus the drawer for accessibility
-      drawerRef.current?.focus();
+    if (isOpen && finding) {
+      // no-op here; actual highlighting occurs in render via helper
     }
+  }, [isOpen, finding]);
 
-    return () => {
-      document.removeEventListener('keydown', handleEsc);
-    };
-  }, [isOpen, onClose]);
+  if (!finding) return null;
 
-  // Highlight anchors in the evidence text
-  const highlightedEvidence = highlightAnchors(finding.evidence, finding.anchors);
-
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(finding.evidence);
-    // Could add a toast notification here
-  };
-
-  const handleMarkReviewed = () => {
-    setIsReviewed(!isReviewed);
-    // In a real app, this would update the finding's status in the store
-  };
+  const highlighted = highlightAnchors(
+    finding.snippet,
+    finding.anchors ?? [],
+    { tag: 'mark', className: 'bg-yellow-200' }
+  );
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+    <Transition show={isOpen} appear>
+      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose} initialFocus={initialFocus}>
+        <div className="min-h-screen px-4 text-center">
+          <Transition.Child enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-black/30" />
+          </Transition.Child>
 
-      {/* Drawer panel */}
-      <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-            <DialogPanel
-              ref={drawerRef}
-              tabIndex={-1}
-              className="pointer-events-auto w-screen max-w-md transform transition duration-300 ease-in-out data-[closed]:translate-x-full"
-            >
-              <div className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
-                <div className="flex min-h-0 flex-1 flex-col overflow-y-scroll">
-                  <div className="px-4 py-6 sm:px-6">
-                    <div className="flex items-start justify-between">
-                      <DialogTitle className="text-lg font-semibold text-gray-900">
-                        Evidence for {finding.detector}
-                      </DialogTitle>
-                      <div className="ml-3 flex h-7 items-center">
-                        <button
-                          type="button"
-                          className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none"
-                          onClick={onClose}
-                        >
-                          <span className="sr-only">Close panel</span>
-                          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative flex-1 px-4 py-6 sm:px-6">
-                    {/* Evidence content */}
-                    <div className="mb-6">
-                      <h3 className="text-md font-medium text-gray-900 mb-2">Evidence</h3>
-                      <div 
-                        className="border p-4 rounded bg-gray-50 max-h-60 overflow-y-auto"
-                        dangerouslySetInnerHTML={{ __html: highlightedEvidence }}
-                      />
-                    </div>
+          <span className="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
 
-                    {/* Anchors */}
-                    <div className="mb-6">
-                      <h3 className="text-md font-medium text-gray-900 mb-2">Anchors</h3>
-                      <ul className="list-disc pl-5">
-                        {finding.anchors.map((anchor, index) => (
-                          <li key={index} className="mb-1">
-                            {anchor.text} (Page: {anchor.page}, Offset: {anchor.offset})
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Verdict and Rationale */}
-                    <div className="mb-6">
-                      <h3 className="text-md font-medium text-gray-900 mb-2">Verdict</h3>
-                      <p className="mb-2">
-                        <span className="font-medium">Verdict:</span> {finding.verdict}
-                      </p>
-                      <p>
-                        <span className="font-medium">Rationale:</span> {finding.rationale}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-shrink-0 justify-end px-4 py-4">
-                  <button
-                    type="button"
-                    className="mr-2 inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    onClick={handleCopyToClipboard}
-                  >
-                    Copy to Clipboard
-                  </button>
-                  <button
-                    type="button"
-                    className={`mr-2 inline-flex justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm ${
-                      isReviewed ? 'bg-green-600 hover:bg-green-500' : 'bg-gray-600 hover:bg-gray-500'
-                    }`}
-                    onClick={handleMarkReviewed}
-                  >
-                    {isReviewed ? 'Reviewed' : 'Mark as Reviewed'}
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                    onClick={onClose}
-                  >
-                    Close
-                  </button>
-                </div>
+          <Transition.Child enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+            <Dialog.Panel className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">Evidence — {finding.rule_id}</Dialog.Title>
+              <div className="mt-3 prose">
+                {/* eslint-disable-next-line react/no-danger */}
+                <p className="text-sm text-gray-700" dangerouslySetInnerHTML={{ __html: highlighted }} />
               </div>
-            </DialogPanel>
-          </div>
+              {finding.location && (
+                <p className="mt-2 text-xs text-gray-500">p.{finding.location.page} [{finding.location.start_char}–{finding.location.end_char}]</p>
+              )}
+              <div className="mt-6 flex items-center gap-3">
+                <button ref={initialFocus} className="px-3 py-2 text-sm rounded-md bg-blue-600 text-white" onClick={onClose}>Close</button>
+                <button className="px-3 py-2 text-sm rounded-md bg-gray-100" onClick={() => setIsReviewed(true)}>{isReviewed ? 'Reviewed' : 'Mark reviewed'}</button>
+              </div>
+            </Dialog.Panel>
+          </Transition.Child>
         </div>
-      </div>
-    </Dialog>
+      </Dialog>
+    </Transition>
   );
 }
