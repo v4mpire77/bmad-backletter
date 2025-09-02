@@ -13,6 +13,8 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from .database import engine, Base
 from .models import entities
@@ -124,11 +126,14 @@ async def get_health():
 
 @app.get("/readyz", tags=["Health"])
 async def get_readiness():
-    """
-    Readiness check. In a real app, this would check DB connections, etc.
-    For Sprint 1, it's a simple check.
-    """
-    # TODO: Check database connection
+    """Perform a simple database connectivity check."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except SQLAlchemyError:
+        return JSONResponse(
+            status_code=503, content={"ok": False, "db": "error"}
+        )
     return JSONResponse(content={"ok": True, "db": "ok", "migrations": "ok"})
 
 
