@@ -1,171 +1,94 @@
-# Blackletter - Contract Analysis Platform
+# Blackletter Systems - Unified Repository
 
-## 🎯 **CURRENT STATUS: MVP CORE COMPLETE!** 
+**One definitive path for GDPR compliance checking and contract analysis.**
 
-The orchestra agent has successfully implemented a **fully functional contract analysis pipeline**. The foundation is solid and ready for the next phase of development.
+This repository has been consolidated to provide a single, comprehensive development environment for the Blackletter GDPR compliance system.
 
-## 🚀 **What's Working Right Now**
+## 🗺️ Repository Structure
 
-✅ **Complete Backend Pipeline**
-- File upload & job orchestration (PDF/DOCX support)
-- Text extraction with sentence indexing
-- GDPR Article 28 detection engine
-- Evidence window building
-- Findings persistence & storage
-
-✅ **Production Ready Services**
-- FastAPI application with CORS & logging
-- Background task processing
-- Rulepack loading & validation
-- Comprehensive test coverage (>80%)
-
-## 📋 **Quick Start**
-
-### Backend (Ready to Run)
-
-Run the setup script to create a virtual environment and install dependencies:
-
-```bash
-./scripts/setup.sh                         # macOS/Linux
-# or
-pwsh -NoProfile -File tools/windows/setup.ps1  # Windows PowerShell
-```
-
-Then start the API:
-
-```bash
-source .venv/bin/activate     # Windows: .\.venv\Scripts\Activate.ps1
-uvicorn blackletter_api.main:app --reload --app-dir apps/api
-```
-
-On Windows you can start the API and/or frontend with a helper script:
-
-```powershell
-pwsh -NoProfile -File tools/windows/dev.ps1      # run API and web
-pwsh -NoProfile -File tools/windows/dev.ps1 -Api # API only
-pwsh -NoProfile -File tools/windows/dev.ps1 -Web # web only
-```
-
-> **Note**: The in-memory orchestrator uses thread locks for safety but
-> remains process-local. Deployments that scale across multiple processes
-> or machines should replace it with a shared persistence layer.
-
-### Frontend (Ready for Development)
-```bash
-cd apps/web
-pnpm install
-pnpm dev
-```
-
-> **Note**: These commands assume a `pnpm-workspace.yaml` exists at the repository root to enable pnpm workspace features.
-
-### Demo Mode
-
-To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MOCKS=1` in your environment. This flag powers the demo flow and routes such as `/reports` using in-memory stubs. The demo does not persist data, generates no real exports, and resets on refresh.
-
-## Development
-
-### Workspace setup
-
-This repository uses a [pnpm](https://pnpm.io) workspace defined in `pnpm-workspace.yaml` with packages under `apps/*` and `packages/*`. The root `pnpm-lock.yaml` tracks dependency versions and all scripts should be invoked with `pnpm` from the repo root.
-
-Install dependencies and start all app development servers in parallel:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Common scripts can be run from the repo root:
-
-```bash
-pnpm build         # build all packages
-pnpm lint          # lint all packages
-pnpm lint:fix      # fix lint issues
-pnpm test          # run tests
-pnpm test:watch    # watch tests
-pnpm type-check    # type checking
-pnpm clean         # remove build artifacts
-```
-
-These commands work in Windows PowerShell and Unix shells.
-
-### POSIX setup
-
-The repository provides a helper script for macOS and Linux environments that mirrors the Windows setup.
-
-```bash
-./scripts/setup_posix.sh
-source .venv/bin/activate
-uvicorn blackletter_api.main:app --reload --app-dir apps/api
-```
-
-Optional flags:
-
-- `--recreate-venv` rebuilds the virtual environment
-- `--skip-install` skips installing dependencies
-
-## 🎯 **Next Development Priorities**
-
-### Ready to Start (Epic 2 Completion)
-1. **Weak Language Lexicon Enhancement** - Expand detection capabilities
-2. **Token Ledger Caps** - Implement usage tracking & limits
-3. **Findings Table Frontend** - Build React components for results display
-
-### Short Term (Epics 3-5)
-- **Analysis & Reporting** - Dashboard, export, history
-- **Metrics & Monitoring** - Real-time performance tracking
-- **Organization & Auth** - User management & access control
-
-## 📚 **Documentation**
-
-- **Implementation Status**: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md) - Complete overview
-- **Stories**: [`docs/stories/`](docs/stories/) - All development stories with status
-- **Architecture**: [`docs/architecture/`](docs/architecture/) - System design docs
-
-## 🏗️ **Architecture**
+Following the **shard map** approach with **16 epics** as the foundation:
 
 ```
-apps/api/blackletter_api/          # ✅ Backend API (FastAPI)
-├── services/                      # ✅ Core services implemented
-├── routers/                       # ✅ API endpoints working
-├── rules/                         # ✅ GDPR rulepack loaded
-└── tests/                         # ✅ Comprehensive test coverage
-
-apps/web/                          # 🔄 Frontend (Next.js)
-├── src/                           # Ready for development
-└── components/                    # Component library ready
+blackletter/
+├── docs/                          # 📚 Consolidated documentation (SHARDED)
+│   ├── README.md                  # Context Engineering Framework
+│   ├── SHARD_MAP.md              # Document index and reading order
+│   ├── backlog-blackletter/      # 16 Epics (E0-E16) - MVP foundation
+│   ├── prd/                      # Product Requirements Document  
+│   ├── shard-ready-arc/          # Architecture specification
+│   ├── architecture-blackletter/ # System architecture details
+│   └── tests-blackletter/        # Testing and QA strategy
+├── apps/                          # 🚀 Application code
+│   ├── api/                      # FastAPI backend with comprehensive rules
+│   └── web/                      # Next.js frontend
+├── tools/                         # 🔧 Development tools and scripts
+├── BMAD-METHOD-main/             # 📦 BMAD methodology framework
+└── web-bundles/                  # 🤖 Agent configurations
 ```
 
-## 🧪 **Testing**
+## 🚀 Quick Start
 
-```bash
-cd apps/api
-python -m pytest blackletter_api/tests/ -v
-```
+1. **Read the Documentation** (recommended order):
+   - Start: [`docs/README.md`](docs/README.md) - Context Engineering Framework
+   - Overview: [`docs/SHARD_MAP.md`](docs/SHARD_MAP.md) - Navigation guide
+   - Epics: [`docs/backlog-blackletter/`](docs/backlog-blackletter/) - 16 epics foundation
+   - Architecture: [`docs/shard-ready-arc.md`](docs/shard-ready-arc.md) - System design
 
-All core services have unit and integration tests passing.
+2. **Development Setup**:
+   ```bash
+   # Python API setup
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1  # Windows
+   pip install -r requirements.txt
+   
+   # Run API
+   cd apps/api && uvicorn blackletter_api.main:app --reload
+   ```
 
-## 🎉 **Summary**
+3. **Project Rules**: See [`AGENTS.md`](AGENTS.md) for comprehensive agent guidelines
 
-**The orchestra agent has delivered a working MVP!** 
+## 🎯 The 16 Epics Foundation
 
-- ✅ **5 core stories completed** (Epic 1 + Epic 2 core)
-- ✅ **6 services fully functional**
-- ✅ **8+ API endpoints working**
-- ✅ **Complete test coverage**
-- 🔄 **Ready for Epic 2 completion and Epics 3-5 development**
+The MVP is organized around **16 epics** (E0-E16) in [`docs/backlog-blackletter/`](docs/backlog-blackletter/):
 
-The platform can now:
-1. Upload contracts (PDF/DOCX)
-2. Extract and index text
-3. Run GDPR compliance checks
-4. Generate findings with evidence
-5. Store and retrieve analysis results
+- **E0**: Platform & Security Baseline
+- **E1**: Ingestion & Extraction  
+- **E2**: GDPR Rule Engine & Detection
+- **E3**: Findings & Report UI
+- **E4**: Metrics, Logging & Observability
+- **E5**: Templates, Clause Library & Interview Builder
+- **E6**: Governance & Settings
+- **E7**: Accounts, Auth & Roles
+- **E8**: Evidence, Provenance & Review Controls
+- **E9**: Export, Sharing & Presentation
+- **E10**: Storage & Data Layer
+- **E11**: Evaluation & QA Harness
+- **E12**: Cost & Performance Controls
+- **E13**: DevEx Tooling & Agent Flows
+- **E14**: Integrations
+- **E15**: Pricing, Plans & Billing
+- **E16**: Token & Evidence Layer
 
-**Ready for the next sprint!** 🚀
+## 🧩 Key Features
+
+- **Context Engineering Framework**: Structured development with AI agents
+- **Comprehensive Rules Engine**: GDPR, UK ICS, and property compliance rules
+- **Shard-Ready Architecture**: Modular, scalable system design
+- **16-Epic MVP Structure**: Complete product roadmap
+- **Consolidated Documentation**: Single source of truth
+
+## 📖 Documentation Shards
+
+This repository follows a **sharded documentation** approach where each major area has dedicated, focused documentation:
+
+- **PRD Shard**: Product requirements and user stories
+- **Architecture Shard**: Technical system design
+- **Backlog Shard**: Epic and story management (16 epics)
+- **Testing Shard**: QA strategy and test plans
+
+See [`docs/SHARD_MAP.md`](docs/SHARD_MAP.md) for the complete navigation guide.
 
 ---
 
-*Last Updated: January 2025*  
-*Status: MVP Core Complete - Ready for Enhancement Phase*
+**Generated**: 2025-09-02 | **Consolidated from**: Multiple upstream sources  
+**Framework**: Context Engineering with 16 Epic Foundation
