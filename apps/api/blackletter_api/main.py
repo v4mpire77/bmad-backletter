@@ -44,12 +44,16 @@ class ConnectionManager:
         await websocket.send_text(message)
 
     async def broadcast(self, message: str):
-        for connection in self.active_connections:
+        dead_connections: List[WebSocket] = []
+        for connection in list(self.active_connections):
             try:
                 await connection.send_text(message)
-            except:
-                # Remove dead connections
-                self.active_connections.remove(connection)
+            except Exception as exc:
+                logger.warning(f"Failed to send message: {exc}")
+                dead_connections.append(connection)
+
+        for connection in dead_connections:
+            self.disconnect(connection)
 
 manager = ConnectionManager()
 
