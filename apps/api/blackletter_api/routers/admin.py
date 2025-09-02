@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
 from ..services.metrics import get_metrics_service
 from ..services.llm_gate import get_llm_gate
+from apps.api.dependencies.auth import require_role
+from apps.api.models.user import Role
 
 
 class MetricTile(BaseModel):
@@ -72,7 +74,11 @@ class AggregateMetricsResponse(BaseModel):
     scope: str
 
 
-router = APIRouter(prefix="/api/admin", tags=["admin"])
+router = APIRouter(
+    prefix="/api/admin",
+    tags=["admin"],
+    dependencies=[Depends(require_role(Role.ADMIN))],
+)
 
 
 @router.get("/metrics", response_model=AdminMetricsResponse)
