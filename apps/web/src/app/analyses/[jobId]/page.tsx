@@ -12,8 +12,12 @@ export default function AnalysisFindingsPage({ params }: { params: { jobId: stri
   const [findings, setFindings] = useState<Finding[]>([]);
 
   useEffect(() => {
-    fetch(`/api/findings?job_id=${params.jobId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json();
+      })
       .then((data) => setFindings(data))
       .catch(() => setFindings([]));
   }, [params.jobId]);
