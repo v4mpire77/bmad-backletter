@@ -41,6 +41,10 @@ npm install
 npm run dev
 ```
 
+### Demo Mode
+
+To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MOCKS=1` in your environment. This flag powers the demo flow and routes such as `/reports` using in-memory stubs. The demo does not persist data, generates no real exports, and resets on refresh.
+
 ## 🎯 **Next Development Priorities**
 
 ### Ready to Start (Epic 2 Completion)
