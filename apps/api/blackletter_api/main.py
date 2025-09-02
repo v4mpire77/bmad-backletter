@@ -26,6 +26,7 @@ from .database import engine, Base
 from .models import entities
 from .routers import rules, analyses
 from .routers import contracts, jobs, reports
+from .routers import docs, exports
 from .routers import risk_analysis, admin
 from .routers import orchestration, gemini
 from .routers import document_qa
@@ -219,3 +220,8 @@ app.include_router(document_qa.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
 app.include_router(devtools.router, prefix="/api/dev")
 app.include_router(settings.router)
+
+# V1 prefixed routes
+app.include_router(contracts.router, prefix="/v1")
+app.include_router(docs.router, prefix="/v1")
+app.include_router(exports.router, prefix="/v1")
