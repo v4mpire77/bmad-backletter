@@ -111,7 +111,7 @@ class Detector(BaseModel):
                 value=v
             )
         # Check for valid characters (alphanumeric, underscore, hyphen)
-        if not re.match(r'^[a-zA-Z0-9_-]+', v):
+        if not re.match(r'^[a-zA-Z0-9_-]+$', v):
             raise RulepackValidationError(
                 f"Detector ID must contain only alphanumeric characters, underscores, or hyphens: {v}",
                 field="detector.id",
