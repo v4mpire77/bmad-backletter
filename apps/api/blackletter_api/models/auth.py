@@ -29,8 +29,6 @@ class Org(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     members = relationship("OrgMember", back_populates="org")
-    # documents relationship is optional — Document model may live elsewhere
-    documents = relationship("Document", back_populates="org")
 
 
 class OrgMember(Base):
