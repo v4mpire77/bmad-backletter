@@ -4,6 +4,8 @@ from sqlalchemy import (
     DateTime,
     Integer,
     String,
+    Boolean,
+    Float,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -50,3 +52,22 @@ class Finding(Base):
 
     def __repr__(self):
         return f"<Finding(id={self.id}, rule='{self.rule}')>"
+
+
+# Story 2.4 - Metric model for token tracking and metrics
+class Metric(Base):
+    __tablename__ = "metrics"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    analysis_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    tokens_per_doc = Column(Integer, nullable=False, default=0)
+    llm_invoked = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    
+    # Additional metrics fields for comprehensive tracking
+    processing_time_ms = Column(Float, nullable=True)
+    detection_count = Column(Integer, nullable=False, default=0)
+    error_reason = Column(String, nullable=True)  # For token_cap, extraction_failed, etc.
+    
+    def __repr__(self):
+        return f"<Metric(id={self.id}, analysis_id={self.analysis_id}, tokens={self.tokens_per_doc}, llm={self.llm_invoked})>"

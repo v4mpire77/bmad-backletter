@@ -21,7 +21,7 @@ from .routers import contracts, jobs, reports
 from .routers import risk_analysis, admin
 from .routers import orchestration, gemini
 from .routers import document_qa
-from .routers import auth
+from .routers import auth, devtools
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -190,3 +190,4 @@ app.include_router(orchestration.router)
 app.include_router(gemini.router, prefix="/api")
 app.include_router(document_qa.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
+app.include_router(devtools.router, prefix="/api/dev")
