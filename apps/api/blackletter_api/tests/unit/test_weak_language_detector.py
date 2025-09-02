@@ -52,3 +52,19 @@ def test_lexicon_loads_terms(monkeypatch):
 
     lex = load_lexicon()
     assert "may" in lex.weak_terms()
+
+
+def test_lexicon_loads_counter_anchors(tmp_path, monkeypatch):
+    from blackletter_api.services import lexicon_analyzer
+
+    lex_dir = tmp_path / "lexicons"
+    lex_dir.mkdir()
+    (lex_dir / "weak_language.yaml").write_text(
+        "counter_anchors:\n  - must\n", encoding="utf-8"
+    )
+
+    monkeypatch.setattr(lexicon_analyzer, "LEXICON_DIR", lex_dir)
+    monkeypatch.setattr(lexicon_analyzer, "redis_client", None)
+
+    lex = lexicon_analyzer.load_lexicon(force_reload=True)
+    assert "must" in lex.strengtheners
