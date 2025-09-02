@@ -1,31 +1,53 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import ExportDialog from './ExportDialog';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import { mockReports } from '../lib/mockReports';
-
-const push = vi.fn();
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push }),
-}));
-
-beforeEach(() => {
-  mockReports.length = 0;
-});
+import ExportDialog from './ExportDialog';
 
 describe('ExportDialog', () => {
-  it('saves report metadata and navigates to reports on confirm', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('posts selected options and downloads file', async () => {
     const onClose = vi.fn();
-    const { getByText } = render(<ExportDialog isOpen onClose={onClose} />);
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ url: '/report.pdf' }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    const { getByLabelText, getByText } = render(
+      <ExportDialog isOpen onClose={onClose} analysisId="a1" />
+    );
+
+    fireEvent.click(getByLabelText('Include logo'));
+    fireEvent.click(getByLabelText('Include metadata'));
+    fireEvent.change(getByLabelText('Date format'), {
+      target: { value: 'dd/mm/yyyy' },
+    });
+
     fireEvent.click(getByText('Confirm'));
-    expect(mockReports).toHaveLength(1);
-    expect(push).toHaveBeenCalledWith('/reports');
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/reports/a1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        include_logo: false,
+        include_meta: false,
+        date_format: 'dd/mm/yyyy',
+      }),
+    });
+    expect(clickSpy).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
   });
 
   it('closes on Escape key', () => {
     const onClose = vi.fn();
-    render(<ExportDialog isOpen onClose={onClose} />);
+    render(<ExportDialog isOpen onClose={onClose} analysisId="a1" />);
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).toHaveBeenCalled();
   });
