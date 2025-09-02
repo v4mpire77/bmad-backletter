@@ -1,14 +1,17 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import type { Finding } from '../types';
 
-interface VerdictChipsProps {
-  verdict: string;
+interface VerdictBadgeProps {
+  verdict: Finding['verdict'] | string;
 }
 
-export default function VerdictChips({ verdict }: VerdictChipsProps) {
-  const chipStyle = useMemo(() => {
-    switch (verdict.toLowerCase()) {
+export default function VerdictBadge({ verdict }: VerdictBadgeProps) {
+  const normalized = verdict.toLowerCase() as Finding['verdict'];
+
+  const style = useMemo(() => {
+    switch (normalized) {
       case 'pass':
         return 'bg-green-100 text-green-800';
       case 'weak':
@@ -20,10 +23,10 @@ export default function VerdictChips({ verdict }: VerdictChipsProps) {
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  }, [verdict]);
+  }, [normalized]);
 
-  const ariaLabel = useMemo(() => {
-    switch (verdict.toLowerCase()) {
+  const label = useMemo(() => {
+    switch (normalized) {
       case 'pass':
         return 'Pass';
       case 'weak':
@@ -35,10 +38,13 @@ export default function VerdictChips({ verdict }: VerdictChipsProps) {
       default:
         return 'Unknown';
     }
-  }, [verdict]);
+  }, [normalized]);
 
   return (
-    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${chipStyle}`} aria-label={ariaLabel}>
+    <span
+      className={`inline-block rounded px-2 py-1 text-xs font-semibold ${style}`}
+      aria-label={label}
+    >
       {verdict.replace('_', ' ')}
     </span>
   );
