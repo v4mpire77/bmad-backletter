@@ -41,9 +41,9 @@
 - S3-compatible storage: Report archival and retrieval
 
 **File Locations:** [Source: shard-ready-arc/6-project-structure.md]
-- Report generator: `apps/api/src/services/report_generator.py`
-- Templates: `apps/api/src/templates/report_template.html`
-- Export endpoints: `apps/api/src/routers/reports.py`
+- Report generator: `apps/api/blackletter_api/services/report_generator.py`
+- Templates: `apps/api/blackletter_api/templates/report_template.html`
+- Export endpoints: `apps/api/blackletter_api/routers/reports.py`
 - Frontend trigger: `apps/web/src/components/ExportButton.tsx`
 
 ### Technical Requirements
@@ -110,8 +110,8 @@
 - Visual tests: PDF layout and formatting consistency
 
 ## Artifacts
-* `apps/api/src/templates/report_template.html` - Main report template
-* `apps/api/src/static/report_styles.css` - Report styling and branding
+* `apps/api/blackletter_api/templates/report_template.html` - Main report template
+* `apps/api/blackletter_api/static/report_styles.css` - Report styling and branding
 * `data/test-fixtures/export-samples/` - Sample generated reports
 * `docs/artifacts/report_format_spec.md` - Report structure documentation
 

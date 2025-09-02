@@ -40,10 +40,10 @@
 - Redis 7.x: Cache compiled lexicon patterns for performance
 
 **File Locations:** [Source: shard-ready-arc/6-project-structure.md]
-- Lexicon engine: `apps/api/src/services/lexicon_analyzer.py`
-- Pattern matching: `apps/api/src/core/weak_language_detector.py`
+- Lexicon engine: `apps/api/blackletter_api/services/lexicon_analyzer.py`
+- Pattern matching: `apps/api/blackletter_api/core/weak_language_detector.py`
 - Lexicon data: `data/lexicons/weak_language_v0.yaml`
-- Admin endpoints: `apps/api/src/routers/admin.py` (extend existing)
+- Admin endpoints: `apps/api/blackletter_api/routers/admin.py` (extend existing)
 
 ### Technical Requirements
 - Pattern matching: Support regex patterns, case-insensitive matching

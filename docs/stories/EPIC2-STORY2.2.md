@@ -39,10 +39,10 @@
 - Consistent error response format with structured error codes
 
 **File Locations:** [Source: shard-ready-arc/6-project-structure.md]
-- Detector engine: `apps/api/src/services/detector_engine.py`
-- Verdict mapping: `apps/api/src/core/verdict_mapper.py`
-- Orchestration: `apps/api/src/services/analysis_orchestrator.py`
-- Analysis endpoints: `apps/api/src/routers/analysis.py`
+- Detector engine: `apps/api/blackletter_api/services/detector_engine.py`
+- Verdict mapping: `apps/api/blackletter_api/core/verdict_mapper.py`
+- Orchestration: `apps/api/blackletter_api/services/analysis_orchestrator.py`
+- Analysis endpoints: `apps/api/blackletter_api/routers/analysis.py`
 
 ### Technical Requirements
 - Python: Use dataclasses for detector results and verdict structures
