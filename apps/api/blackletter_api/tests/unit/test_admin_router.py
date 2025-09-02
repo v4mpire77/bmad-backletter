@@ -4,10 +4,13 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from blackletter_api.routers import admin
+from apps.api.dependencies.auth import get_current_user
+from apps.api.models.user import Role, User
 
 
 app = FastAPI()
 app.include_router(admin.router)
+app.dependency_overrides[get_current_user] = lambda: User(id="1", email="t@example.com", role=Role.ADMIN)
 client = TestClient(app)
 
 
@@ -39,7 +42,14 @@ class DummyLLMGate:
         return 200
 
     def get_analysis_metrics(self) -> dict[str, int]:
-        return {"avg_tokens_per_doc": 120}
+        return {
+            "avg_tokens_per_doc": 120,
+            "percent_docs_invoking_llm": 50,
+            "total_analyses": 10,
+            "total_tokens": 1200,
+            "cap_exceeded_count": 0,
+            "hard_cap_limit": 1000,
+        }
 
 
 def test_get_admin_metrics(monkeypatch) -> None:
@@ -99,4 +109,27 @@ def test_get_system_health(monkeypatch) -> None:
     assert res.status_code == 200
     body = res.json()
     assert body["status"] == "healthy"
+
+
+def test_list_lexicons(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "blackletter_api.routers.admin.list_lexicons",
+        lambda: [{"file": "weak_language.yaml", "language": "en", "version": "v1"}],
+    )
+    res = client.get("/api/admin/lexicons")
+    assert res.status_code == 200
+    assert res.json() == [{"file": "weak_language.yaml", "language": "en", "version": "v1"}]
+
+
+def test_reload_lexicons(monkeypatch) -> None:
+    called = {}
+
+    def fake_reload() -> None:
+        called["done"] = True
+
+    monkeypatch.setattr("blackletter_api.routers.admin.reload_lexicons", fake_reload)
+    res = client.post("/api/admin/lexicons/reload")
+    assert res.status_code == 200
+    assert res.json() == {"status": "reloaded"}
+    assert called.get("done") is True
 

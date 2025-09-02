@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import FindingsTable from './FindingsTable';
-import type { Finding } from '../types';
+import type { Finding } from '@bmad/shared/types';
 
 describe('FindingsTable', () => {
   const findings: Finding[] = [

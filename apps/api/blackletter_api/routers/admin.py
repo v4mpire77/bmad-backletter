@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Dict, List, Optional
 
+from ..services.lexicon_analyzer import list_lexicons, reload_lexicons
 from ..services.metrics import get_metrics_service
 from ..services.llm_gate import get_llm_gate
 from apps.api.dependencies.auth import require_role
@@ -57,6 +58,12 @@ class TokenUsageResponse(BaseModel):
     hard_cap_limit: int
     cap_exceeded: bool
     usage_percentage: float
+
+
+class LexiconInfo(BaseModel):
+    file: str
+    language: str
+    version: str
 
 
 class AggregateMetrics(BaseModel):
@@ -193,6 +200,23 @@ async def get_aggregate_metrics() -> AggregateMetricsResponse:
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve aggregate metrics: {str(e)}")
+
+
+@router.get("/lexicons", response_model=List[LexiconInfo])
+async def get_lexicons() -> List[LexiconInfo]:
+    try:
+        return [LexiconInfo(**lx) for lx in list_lexicons()]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list lexicons: {str(e)}")
+
+
+@router.post("/lexicons/reload")
+async def reload_lexicon_cache() -> Dict[str, str]:
+    try:
+        reload_lexicons()
+        return {"status": "reloaded"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reload lexicons: {str(e)}")
 
 
 @router.get("/health")

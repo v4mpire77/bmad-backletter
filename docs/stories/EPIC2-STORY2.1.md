@@ -36,10 +36,10 @@
 - Follow existing error response patterns
 
 **File Locations:** [Source: shard-ready-arc/6-project-structure.md]
-- Rule pack loader: `apps/api/src/services/rulepack_loader.py`
-- Schema validation: `apps/api/src/schemas/rulepack.py` 
+- Rule pack loader: `apps/api/blackletter_api/services/rulepack_loader.py`
+- Schema validation: `apps/api/blackletter_api/schemas/rulepack.py`
 - Rule pack storage: `data/rulepacks/` directory
-- Admin endpoints: `apps/api/src/routers/admin.py`
+- Admin endpoints: `apps/api/blackletter_api/routers/admin.py`
 
 ### Technical Requirements
 - Python: Use Pydantic for YAML schema validation

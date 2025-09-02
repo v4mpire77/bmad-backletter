@@ -3,14 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --parallel run dev",
-    "build": "pnpm --recursive run build",
-    "lint": "pnpm --recursive run lint",
-    "lint:fix": "pnpm --recursive run lint:fix",
-    "test": "pnpm --recursive run test",
-    "test:watch": "pnpm --recursive run test:watch",
-    "type-check": "pnpm --recursive run type-check",
-    "clean": "pnpm --recursive run clean"
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
+    "test": "pnpm -r run test",
+    "test:watch": "pnpm -r run test:watch",
+    "type-check": "pnpm -r run type-check",
+    "clean": "pnpm -r run clean"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",
