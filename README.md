@@ -21,13 +21,23 @@ The orchestra agent has successfully implemented a **fully functional contract a
 
 ## 📋 **Quick Start**
 
-### Backend (Ready to Run)
+### Backend (Run Locally)
 ```bash
+# Set up a virtual environment
 cd apps/api
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1  # Windows
+source .venv/bin/activate  # macOS/Linux
+# .\.venv\Scripts\Activate.ps1  # Windows PowerShell
 pip install -r requirements.txt
+
+# Start the API
 uvicorn blackletter_api.main:app --reload
+```
+
+### Backend Tests
+```bash
+cd apps/api
+pytest blackletter_api/tests -q
 ```
 
 ### Frontend (Ready for Development)
@@ -73,7 +83,7 @@ apps/web/                          # 🔄 Frontend (Next.js)
 
 ```bash
 cd apps/api
-python -m pytest blackletter_api/tests/ -v
+pytest blackletter_api/tests -q
 ```
 
 All core services have unit and integration tests passing.
