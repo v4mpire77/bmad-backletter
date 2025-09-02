@@ -53,6 +53,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+      - name: Check formatting
+        run: pnpm format
       - name: Lint
         run: pnpm lint
 
