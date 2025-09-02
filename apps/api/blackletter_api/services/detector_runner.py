@@ -5,6 +5,12 @@ import re
 import json
 from typing import Iterable, List, Optional, Dict, Any, Pattern
 
+from sqlalchemy.exc import SQLAlchemyError
+
+from .evidence import build_window
+from ..database import SessionLocal
+from ..models.entities import OrgSetting
+
 from .weak_lexicon import (
     get_weak_terms,
     get_counter_anchors,
@@ -113,6 +119,15 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                 # Skip malformed patterns
                 continue
 
+    n_sentences = 2
+    try:
+        with SessionLocal() as db:
+            settings = db.query(OrgSetting).first()
+            if settings and getattr(settings, "evidence_window_sentences", None):
+                n_sentences = settings.evidence_window_sentences
+    except SQLAlchemyError:
+        pass
+
     for sentence_data in sentences:
         sentence_text = sentence_data.get("text", "")
         page = sentence_data.get("page", 1)
@@ -168,14 +183,19 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     anchors_any = [str(term) for term in lx.terms]
 
                 if _has_any(sentence_text.lower(), anchors_any):
+                    window = build_window(analysis_id, start, end, n_sentences=n_sentences)
+                    snippet = window["snippet"] or sentence_text
+                    page_val = window["page"] or page
+                    start_val = window["start"] or start
+                    end_val = window["end"] or end
                     finding = Finding(
                         detector_id=detector_id,
                         rule_id=detector_id,
                         verdict="pass",
-                        snippet=sentence_text,
-                        page=page,
-                        start=start,
-                        end=end,
+                        snippet=snippet,
+                        page=page_val,
+                        start=start_val,
+                        end=end_val,
                         rationale="Lexicon term found.",
                     )
                     final_verdict = postprocess_weak_language(
@@ -187,14 +207,19 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
             elif detector_spec.type == "regex":
                 regex = compiled_regexes.get(detector_id)
                 if regex and regex.search(sentence_text):
+                    window = build_window(analysis_id, start, end, n_sentences=n_sentences)
+                    snippet = window["snippet"] or sentence_text
+                    page_val = window["page"] or page
+                    start_val = window["start"] or start
+                    end_val = window["end"] or end
                     finding = Finding(
                         detector_id=detector_id,
                         rule_id=detector_id,
                         verdict="pass",
-                        snippet=sentence_text,
-                        page=page,
-                        start=start,
-                        end=end,
+                        snippet=snippet,
+                        page=page_val,
+                        start=start_val,
+                        end=end_val,
                         rationale=f"Regex pattern '{regex.pattern}' matched.",
                     )
                     final_verdict = postprocess_weak_language(

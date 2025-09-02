@@ -160,7 +160,7 @@ class OrgSetting(Base):
     ocr_enabled = Column(Boolean, nullable=False, default=False)
     retention_policy = Column(Enum(RetentionPolicy), nullable=False, default="none")
     compliance_mode = Column(Enum(ComplianceMode), nullable=False, default="strict")
-    evidence_window = Column(Integer, nullable=False, default=2)
+    evidence_window_sentences = Column(Integer, nullable=False, default=2)
     
     # Audit fields
     created_at = Column(DateTime, nullable=False, server_default=func.now())
