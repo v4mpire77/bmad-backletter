@@ -24,7 +24,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .database import engine, Base
 from .models import entities
-from .routers import rules, analyses
+from .routers import rules, analyses, findings
 from .routers import contracts, jobs, reports
 from .routers import docs, exports
 from .routers import risk_analysis, admin
@@ -209,6 +209,7 @@ async def get_live_analysis_status(analysis_id: str):
     }
 app.include_router(rules.router, prefix="/api")
 app.include_router(analyses.router, prefix="/api")
+app.include_router(findings.router, prefix="/api")
 app.include_router(contracts.router, prefix="/api")
 app.include_router(jobs.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
