@@ -1,15 +1,13 @@
-from __future__ import annotations
-
-import os
 import json
 from io import BytesIO
-from time import sleep
 from pathlib import Path
 
+import fakeredis
 from fastapi.testclient import TestClient
 
 from blackletter_api.main import app
 from blackletter_api.services.rulepack_loader import Rulepack, Detector, Lexicon
+import blackletter_api.services.tasks as tasks
 
 
 client = TestClient(app)
@@ -17,7 +15,9 @@ client = TestClient(app)
 
 def test_job_lifecycle_sync(monkeypatch):
     # Force synchronous processing for deterministic test
-    monkeypatch.setenv("JOB_SYNC", "1")
+    tasks.celery_app.conf.task_always_eager = True
+    tasks.celery_app.conf.task_eager_propagates = True
+    monkeypatch.setattr(tasks, "redis_client", fakeredis.FakeRedis(decode_responses=True))
 
     # Mock run_extraction to provide controlled extraction data
     mock_extraction_data = {
