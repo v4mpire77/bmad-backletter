@@ -7,7 +7,7 @@ interface Finding {
   id: string;
   rule: string;
   evidence: string;
-  verdict: string;
+  verdict?: string;
 }
 
 interface FindingsTableProps {
@@ -33,17 +33,21 @@ export default function FindingsTable({ findings, sortState = { column: 'rule', 
     }));
   };
 
+  const toLower = (value?: string) => (value || '').toLowerCase();
+  const getValue = (f: Finding, column: 'rule' | 'verdict') =>
+    toLower(f[column as keyof Finding] as string | undefined);
+
   const filteredFindings = findings.filter(f => {
     const term = filter.toLowerCase();
     return (
       f.rule.toLowerCase().includes(term) ||
-      f.verdict.toLowerCase().includes(term)
+      getValue(f, 'verdict').includes(term)
     );
   });
 
   const sortedFindings = [...filteredFindings].sort((a, b) => {
-    const aVal = a[sort.column].toLowerCase();
-    const bVal = b[sort.column].toLowerCase();
+    const aVal = getValue(a, sort.column);
+    const bVal = getValue(b, sort.column);
     if (aVal < bVal) return sort.direction === 'asc' ? -1 : 1;
     if (aVal > bVal) return sort.direction === 'asc' ? 1 : -1;
     return 0;
