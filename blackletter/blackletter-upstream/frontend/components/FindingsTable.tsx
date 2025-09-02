@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import VerdictChips from '@/components/VerdictChips';
+import VerdictBadge from '@/components/VerdictBadge';
 import { Finding } from '@/lib/types';
 
 interface FindingsTableProps {
@@ -73,7 +73,7 @@ export default function FindingsTable({ findings, onRowClick }: FindingsTablePro
                 >
                   <td className="py-2 px-4 border-b">{finding.detector}</td>
                   <td className="py-2 px-4 border-b">
-                    <VerdictChips verdict={finding.verdict} />
+                    <VerdictBadge verdict={finding.verdict} />
                   </td>
                   <td className="py-2 px-4 border-b">{finding.rationale}</td>
                   {/* Add more columns as needed */}
