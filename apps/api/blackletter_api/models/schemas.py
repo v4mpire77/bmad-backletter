@@ -121,6 +121,7 @@ class ReportExport(BaseModel):
     id: str
     analysis_id: str
     filename: str
+    file_path: str | None = None
     created_at: str
     options: ExportOptions
 
