@@ -41,10 +41,10 @@
 - FastAPI: Expose token metrics via admin endpoints
 
 **File Locations:** [Source: shard-ready-arc/6-project-structure.md]
-- Token ledger: `apps/api/src/services/token_ledger.py`
-- Budget monitoring: `apps/api/src/core/budget_monitor.py`
-- Metrics endpoints: `apps/api/src/routers/admin.py` (extend existing)
-- Configuration: `apps/api/src/config/token_settings.py`
+- Token ledger: `apps/api/blackletter_api/services/token_ledger.py`
+- Budget monitoring: `apps/api/blackletter_api/core/budget_monitor.py`
+- Metrics endpoints: `apps/api/blackletter_api/routers/admin.py` (extend existing)
+- Configuration: `apps/api/blackletter_api/config/token_settings.py`
 
 ### Technical Requirements
 - Performance: Token tracking must add <100ms to processing time
@@ -110,7 +110,7 @@
 - Security tests: Prevent token limit bypass attempts
 
 ## Artifacts
-* `apps/api/src/config/token_limits.yaml` - Default token limit configurations
+* `apps/api/blackletter_api/config/token_limits.yaml` - Default token limit configurations
 * `data/test-fixtures/large-documents/` - Documents for testing hard caps
 * `docs/artifacts/token_usage_schema.json` - Token ledger data model
 * `docs/artifacts/budget_monitoring_api.yaml` - Admin API specifications
