@@ -19,7 +19,7 @@ class Version:
     """Semantic versioning helper class."""
     
     def __init__(self, version_str: str):
-        if not re.match(r'^\d+\.\d+\.\d+, version_str):
+        if not re.match(r'^\d+\.\d+\.\d+', version_str):
             raise ValueError(f"Invalid semantic version format: {version_str}")
         self.version_str = version_str
         self.parts = tuple(map(int, version_str.split('.')))
@@ -111,7 +111,7 @@ class Detector(BaseModel):
                 value=v
             )
         # Check for valid characters (alphanumeric, underscore, hyphen)
-        if not re.match(r'^[a-zA-Z0-9_-]+, v):
+        if not re.match(r'^[a-zA-Z0-9_-]+$', v):
             raise RulepackValidationError(
                 f"Detector ID must contain only alphanumeric characters, underscores, or hyphens: {v}",
                 field="detector.id",
@@ -148,7 +148,7 @@ class Detector(BaseModel):
 
 class Meta(BaseModel):
     pack_id: str = Field(..., min_length=1, max_length=100)
-    version: str = Field(..., regex=r'^\d+\.\d+\.\d+)  # Semantic versioning
+    version: str = Field(..., regex=r'^\d+\.\d+\.\d+')  # Semantic versioning
     evidence_window_sentences: int = Field(ge=1, le=10)  # Reasonable limits
     verdicts: List[Literal['pass', 'weak', 'missing', 'needs_review']]
     tokenizer: str = "sentence"
@@ -164,7 +164,7 @@ class Meta(BaseModel):
                 value=v
             )
         # Check for valid characters
-        if not re.match(r'^[a-zA-Z0-9_-]+, v):
+        if not re.match(r'^[a-zA-Z0-9_-]+', v):
             raise RulepackValidationError(
                 f"Pack ID must contain only alphanumeric characters, underscores, or hyphens: {v}",
                 field="meta.pack_id",
@@ -175,7 +175,7 @@ class Meta(BaseModel):
     @validator('version')
     def validate_version(cls, v):
         # Simple semantic version validation (MAJOR.MINOR.PATCH)
-        if not re.match(r'^\d+\.\d+\.\d+, v):
+        if not re.match(r'^\d+\.\d+\.\d+', v):
             raise RulepackValidationError(
                 f"Invalid semantic version format: {v}. Expected format: MAJOR.MINOR.PATCH",
                 field="meta.version",
