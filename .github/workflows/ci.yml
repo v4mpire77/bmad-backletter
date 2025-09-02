@@ -53,9 +53,20 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+      - name: Lint
+        run: pnpm lint
 
-      - name: Type-check with TypeScript
-        run: pnpm tsc
+      - name: Unit tests
+        run: pnpm test -- --run
+
+      - name: Install Playwright browsers
+        run: pnpm e2e:install
+
+      - name: E2E tests
+        run: pnpm test:e2e
 
       - name: Build project
-        run: pnpm build
+        run: NEXT_DISABLE_ESLINT=1 pnpm build
+
+      - name: Type-check with TypeScript
+        run: pnpm typecheck
