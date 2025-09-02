@@ -14,11 +14,26 @@ export async function createJob(file: File): Promise<{ job_id: string }> {
 
 export async function pollJobUntilDone(jobId: string, timeoutMs = 60000, intervalMs = 1000) {
   const t0 = Date.now();
+  let attempt = 0;
+  let backoff = intervalMs;
+  const maxBackoff = 10000; // 10 seconds max backoff
   while (Date.now() - t0 < timeoutMs) {
-    const j = await getJob(jobId);
-    if (j.status === "complete") return true;
-    if (j.status === "failed") throw new Error(j.error ?? "Analysis failed");
-    await new Promise((r) => setTimeout(r, intervalMs));
+    try {
+      const j = await getJob(jobId);
+      if (j.status === "complete") return true;
+      if (j.status === "failed") throw new Error(j.error ?? "Analysis failed");
+      // Reset backoff on successful request
+      attempt = 0;
+      backoff = intervalMs;
+    } catch (err) {
+      // Only retry on network or fetch errors, not on permanent job errors
+      attempt++;
+      // Optionally, log the error for debugging
+      // console.warn(`Polling attempt ${attempt} failed:`, err);
+      // Exponential backoff, capped
+      backoff = Math.min(intervalMs * 2 ** attempt, maxBackoff);
+    }
+    await new Promise((r) => setTimeout(r, backoff));
   }
   throw new Error("Timed out waiting for analysis");
 }
