@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, Request
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -15,6 +15,9 @@ from ..models.schemas import (
 )
 from ..services import storage
 from ..services.tasks import new_job, process_job
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(tags=["contracts"])
@@ -31,7 +34,16 @@ MAX_BYTES = 10 * 1024 * 1024
 async def upload_contract(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    request: Request = None,
 ) -> JobStatus:
+    logger.info(
+        "job_create_request",
+        extra={
+            "method": request.method if request else "POST",
+            "path": request.url.path if request else "/contracts",
+            "tenant_id": getattr(request.state, "tenant_id", None) if request else None,
+        },
+    )
     # Validate type/extension
     ext = None
     if file.content_type in ALLOWED_MIME:
@@ -95,6 +107,15 @@ async def upload_contract(
 
     job_id = new_job(analysis_id=analysis_id)
     process_job.delay(job_id, analysis_id, safe_name, size)
+
+    logger.info(
+        "job_create_response",
+        extra={
+            "job_id": job_id,
+            "status_code": 201,
+            "state": JobState.queued,
+        },
+    )
 
     return JobStatus(
         id=job_id,

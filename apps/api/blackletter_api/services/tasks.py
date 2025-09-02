@@ -23,6 +23,36 @@ from ..models.schemas import JobState
 from .celery_app import celery_app
 
 logger = logging.getLogger(__name__)
+
+
+def log_transition(
+    *,
+    job_id: str,
+    state: str,
+    tenant_id: str | None = None,
+    attempt: int = 1,
+    queued_at: datetime | None = None,
+    started_at: datetime | None = None,
+    finished_at: datetime | None = None,
+    duration_ms: int | None = None,
+    error_type: str | None = None,
+    error_msg: str | None = None,
+) -> None:
+    logger.info(
+        f"task_{state}",
+        extra={
+            "job_id": job_id,
+            "tenant_id": tenant_id,
+            "state": state,
+            "attempt": attempt,
+            "queued_at": queued_at.isoformat() if queued_at else None,
+            "started_at": started_at.isoformat() if started_at else None,
+            "finished_at": finished_at.isoformat() if finished_at else None,
+            "duration_ms": duration_ms,
+            "error_type": error_type,
+            "error_msg": error_msg,
+        },
+    )
 @dataclass
 class JobRecord:
     id: str
@@ -50,8 +80,13 @@ def new_job(analysis_id: str | None = None) -> str:
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     redis_client.hset(_job_key(job_id), mapping=record)
-    log_extras = {"job_id": job_id, "analysis_id": analysis_id}
-    logger.info("New job created and queued", extra=log_extras)
+    log_transition(
+        job_id=job_id,
+        state="queued",
+        tenant_id=None,
+        attempt=0,
+        queued_at=datetime.fromisoformat(record["created_at"]),
+    )
     return job_id
 
 
@@ -80,8 +115,15 @@ def set_status(job_id: str, status: JobState, error_reason: str | None = None) -
 @celery_app.task(name="process_job")
 def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None:
     """Orchestration work for the document processing job."""
-    log_extras = {"job_id": job_id, "analysis_id": analysis_id}
-    logger.info(f"Starting processing for file: {filename}", extra=log_extras)
+    job = get_job(job_id)
+    queued_at = job.created_at if job else None
+    started_at = datetime.now(timezone.utc)
+    log_transition(
+        job_id=job_id,
+        state="start",
+        queued_at=queued_at,
+        started_at=started_at,
+    )
 
     try:
         set_status(job_id, JobState.running)
@@ -99,16 +141,19 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
                 job_id=job_id,
                 artifact_path=str(extraction_path),
             )
-            t_end_ext = time.time()
-            latency_ms = round((t_end_ext - t_start_ext) * 1000)
-            log_extras["latency_ms"] = latency_ms
-            logger.info("Extraction completed successfully", extra=log_extras)
-
         except Exception as e:
             t_end_ext = time.time()
-            latency_ms = round((t_end_ext - t_start_ext) * 1000)
-            log_extras["latency_ms"] = latency_ms
-            logger.error(f"Extraction failed: {e}", extra=log_extras)
+            duration_ms = round((t_end_ext - t_start_ext) * 1000)
+            log_transition(
+                job_id=job_id,
+                state="error",
+                queued_at=queued_at,
+                started_at=started_at,
+                finished_at=datetime.now(timezone.utc),
+                duration_ms=duration_ms,
+                error_type=type(e).__name__,
+                error_msg=str(e),
+            )
             set_status(job_id, JobState.error, error_reason=f"extraction_failed: {e}")
             return
 
@@ -124,21 +169,45 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
                     window=window,
                 )
             generate_html_export(analysis_id, findings)
-            t_end_det = time.time()
-            latency_ms = round((t_end_det - t_start_det) * 1000)
-            log_extras["latency_ms"] = latency_ms
-            logger.info("Detection completed successfully", extra=log_extras)
         except Exception as e:
             t_end_det = time.time()
-            latency_ms = round((t_end_det - t_start_det) * 1000)
-            log_extras["latency_ms"] = latency_ms
-            logger.error(f"Detection failed: {e}", extra=log_extras)
+            duration_ms = round((t_end_det - t_start_det) * 1000)
+            log_transition(
+                job_id=job_id,
+                state="error",
+                queued_at=queued_at,
+                started_at=started_at,
+                finished_at=datetime.now(timezone.utc),
+                duration_ms=duration_ms,
+                error_type=type(e).__name__,
+                error_msg=str(e),
+            )
             set_status(job_id, JobState.error, error_reason=f"detection_failed: {e}")
             return
 
         set_status(job_id, JobState.done)
-        logger.info("Job processing completed successfully", extra=log_extras)
+        finished_at = datetime.now(timezone.utc)
+        duration_ms = round((finished_at - started_at).total_seconds() * 1000)
+        log_transition(
+            job_id=job_id,
+            state="success",
+            queued_at=queued_at,
+            started_at=started_at,
+            finished_at=finished_at,
+            duration_ms=duration_ms,
+        )
 
     except Exception as e:
-        logger.error(f"Unhandled error in job processing: {e}", extra=log_extras)
+        finished_at = datetime.now(timezone.utc)
+        duration_ms = round((finished_at - started_at).total_seconds() * 1000)
+        log_transition(
+            job_id=job_id,
+            state="error",
+            queued_at=queued_at,
+            started_at=started_at,
+            finished_at=finished_at,
+            duration_ms=duration_ms,
+            error_type=type(e).__name__,
+            error_msg=str(e),
+        )
         set_status(job_id, JobState.error, error_reason=str(e))
