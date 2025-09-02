@@ -1,22 +1,22 @@
 from __future__ import annotations
 
 import os
-import threading
 import time
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Optional
 from uuid import uuid4
+
+from redis import Redis
 
 from .storage import analysis_dir, write_analysis_json
 from .extraction import run_extraction
 from .detector_runner import run_detectors
 from ..models.schemas import JobState
+from .celery_app import celery_app
 
 logger = logging.getLogger(__name__)
-
-
 @dataclass
 class JobRecord:
     id: str
@@ -26,39 +26,52 @@ class JobRecord:
     created_at: datetime
 
 
-_JOBS: Dict[str, JobRecord] = {}
-_LOCK = threading.Lock()
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
+
+
+def _job_key(job_id: str) -> str:
+    return f"job:{job_id}"
 
 
 def new_job(analysis_id: str | None = None) -> str:
     job_id = str(uuid4())
-    with _LOCK:
-        _JOBS[job_id] = JobRecord(
-            id=job_id,
-            status=JobState.queued,
-            analysis_id=analysis_id,
-            error_reason=None,
-            created_at=datetime.now(timezone.utc),
-        )
+    record = {
+        "id": job_id,
+        "status": JobState.queued.value,
+        "analysis_id": analysis_id or "",
+        "error_reason": "",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    redis_client.hset(_job_key(job_id), mapping=record)
     log_extras = {"job_id": job_id, "analysis_id": analysis_id}
     logger.info("New job created and queued", extra=log_extras)
     return job_id
 
 
 def get_job(job_id: str) -> Optional[JobRecord]:
-    with _LOCK:
-        return _JOBS.get(job_id)
+    data = redis_client.hgetall(_job_key(job_id))
+    if not data:
+        return None
+    return JobRecord(
+        id=data["id"],
+        status=JobState(data["status"]),
+        analysis_id=data.get("analysis_id") or None,
+        error_reason=data.get("error_reason") or None,
+        created_at=datetime.fromisoformat(data["created_at"]),
+    )
 
 
 def set_status(job_id: str, status: JobState, error_reason: str | None = None) -> None:
-    with _LOCK:
-        job = _JOBS.get(job_id)
-        if not job:
-            return
-        job.status = status
-        job.error_reason = error_reason
+    if not redis_client.exists(_job_key(job_id)):
+        return
+    redis_client.hset(
+        _job_key(job_id),
+        mapping={"status": status.value, "error_reason": error_reason or ""},
+    )
 
 
+@celery_app.task(name="process_job")
 def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None:
     """Orchestration work for the document processing job."""
     log_extras = {"job_id": job_id, "analysis_id": analysis_id}
@@ -68,9 +81,9 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
         set_status(job_id, JobState.running)
         a_dir = analysis_dir(analysis_id)
         source_path = a_dir / filename
-        
+
         write_analysis_json(analysis_id, filename=filename, size=size)
-        
+
         # Stage 1: Extraction
         t_start_ext = time.time()
         try:

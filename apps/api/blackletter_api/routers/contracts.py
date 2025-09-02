@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import os
-from uuid import uuid4
-
 from datetime import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -32,7 +29,6 @@ MAX_BYTES = 10 * 1024 * 1024
 
 @router.post("/contracts", status_code=201, response_model=JobStatus)
 async def upload_contract(
-    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ) -> JobStatus:
@@ -80,14 +76,7 @@ async def upload_contract(
         raise HTTPException(status_code=500, detail="disk_io_error") from e
 
     job_id = new_job(analysis_id=analysis_id)
-
-    # Run processing either sync (tests/dev) or via background task
-    if os.getenv("JOB_SYNC", "0") == "1":
-        process_job(job_id, analysis_id=analysis_id, filename=safe_name, size=size)
-    else:
-        background_tasks.add_task(
-            process_job, job_id, analysis_id, safe_name, size
-        )
+    process_job.delay(job_id, analysis_id, safe_name, size)
 
     return JobStatus(
         id=job_id,

@@ -2,7 +2,6 @@
 Configuration settings for Blackletter API
 """
 
-import os
 from typing import Optional
 from pydantic_settings import BaseSettings
 from pydantic import Field
@@ -27,7 +26,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
 
     # Security settings
-    secret_key: str = Field(default="your-secret-key-here", env="SECRET_KEY")
+    secret_key: str = Field(..., env="SECRET_KEY")
 
     class Config:
         env_file = ".env"

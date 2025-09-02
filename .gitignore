@@ -31,3 +31,6 @@ dist/
 # IDE
 .vscode/
 .idea/
+
+# TypeScript
+*.tsbuildinfo

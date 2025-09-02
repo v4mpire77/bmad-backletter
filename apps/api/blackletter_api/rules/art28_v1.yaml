@@ -1,10 +1,118 @@
- 
-name: art28
-version: v1
-detectors:
-  - id: weak_language
-    type: lexicon
-    description: Flags weak or hedging language
-    lexicon: weak_language.yaml
-lexicons:
-  - file: weak_language.yaml
+meta:
+  pack_id: art28_v1
+  evidence_window_sentences: 2
+  verdicts: [pass, weak, missing, needs_review]
+  tokenizer: sentence
+
+shared_lexicon:
+  hedges:
+    - commercially reasonable
+    - reasonable efforts
+    - industry standard
+    - where practicable
+    - where feasible
+    - endeavour
+    - as appropriate
+    - periodically
+    - to the extent possible
+  discretion:
+    - may
+    - at our discretion
+    - subject to provider policies
+    - if we deem necessary
+
+# (a) Controller instructions only
+Detectors:
+  - id: A28_3_a_instructions
+    anchors_any:
+      - only on documented instructions
+      - only on written instructions
+      - process .* only on .* instructions
+    allow_carveouts:
+      - unless required by (Union|Member State) law
+    weak_nearby: { any: "@hedges" }
+    redflags_any:
+      - subject to provider policies
+      - at (our|its) discretion .* process personal data
+
+  # (b) Confidentiality of authorised persons
+  - id: A28_3_b_confidentiality
+    anchors_all:
+      - persons authorised
+      - confidentiality
+    weak_nearby: { any: "@hedges" }
+    redflags_any:
+      - where feasible
+      - business purposes
+
+  # (c) Security measures (Art. 32)
+  - id: A28_3_c_security
+    anchors_any:
+      - technical and organisational measures
+      - Article 32
+    weak_nearby: { any: [commercially reasonable security, industry standard] }
+    redflags_any:
+      - subject to change without notice
+
+  # (d) Sub‑processors & flow‑down
+  - id: A28_3_d_subprocessors
+    anchors_any:
+      - prior authorisation of sub-processor
+      - prior authorisation of subprocessor
+      - maintain a list of sub-processors
+      - prior notice .* appointment of sub-processors
+    flowdown_any:
+      - obligations .* equivalent
+      - obligations .* no less protective
+      - flow-down .* obligations
+    weak_nearby: { any: [materially similar, substantially equivalent] }
+    redflags_any:
+      - unrestricted appointment of sub-processors
+      - notice only after onboarding
+
+  # (e) Assistance with data subject rights (Arts. 12–23)
+  - id: A28_3_e_dsar_assist
+    anchors_any:
+      - assist the controller .* (Articles|Arts\.)? ?12-23
+      - assist the controller .* requests of data subjects
+      - assist .* obligations .* data subject rights
+    weak_nearby: { any: "@hedges" }
+    redflags_any:
+      - assistance .* at (our|its) sole discretion
+      - assistance .* subject to separate consulting fees
+
+  # (f) Personal data breach notification without undue delay
+  - id: A28_3_f_breach_notice
+    anchors_any:
+      - notify .* without undue delay .* personal data breach
+      - notify the controller without undue delay
+    weak_nearby: { any: [as soon as practicable, within a reasonable time] }
+    redflags_any:
+      - notify .* only if .* internal threshold
+      - no timing commitment
+
+  # (g) Return or deletion at end of services (incl. copies)
+  - id: A28_3_g_return_delete
+    anchors_any:
+      - at the end of the provision .* delete or return personal data
+      - delete or return .* at end of services
+    copies_any:
+      - delete copies
+      - erase copies
+    weak_nearby: { any: [periodically delete] }
+    redflags_any:
+      - retain .* for analytics by default
+      - delete only upon request (no default)
+
+  # (h) Information availability & audits
+  - id: A28_3_h_audits_info
+    anchors_all:
+      - make available all information
+      - demonstrate compliance
+    audits_any:
+      - allow for and contribute to audits
+      - including inspections
+    weak_nearby: { any: [subject to provider policies, attestations only] }
+    redflags_any:
+      - audits disallowed
+      - SOC2 only regardless of scope

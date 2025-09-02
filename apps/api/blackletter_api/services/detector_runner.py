@@ -3,15 +3,13 @@ from __future__ import annotations
 import os
 import re
 import json
-from typing import Iterable, List, Optional, Dict, Any
+from typing import Iterable, List, Optional, Dict, Any, Pattern
 
 from .weak_lexicon import (
     get_weak_terms,
-    get_weak_terms_with_metadata,
     get_counter_anchors,
-    calculate_weak_confidence,
-    get_terms_by_confidence_threshold
 )
+from .detector_mapping import decide_verdict_with_downgrade
 from .token_ledger import get_token_ledger, should_apply_token_capping, token_capping_enabled
 from .rulepack_loader import load_rulepack
 from ..models.schemas import Finding
@@ -37,35 +35,17 @@ def postprocess_weak_language(
     window_text: str,
     counter_anchors: Optional[List[str]] = None,
     enabled: Optional[bool] = None,
-    confidence_threshold: float = 0.5,
 ) -> str:
-    """Downgrade 'pass' to 'weak' if weak-language terms are present, with confidence scoring."""
+    """Downgrade verdict if weak terms appear without counter-anchors."""
     if enabled is None:
         enabled = weak_lexicon_enabled()
-    if not enabled:
+    if not enabled or original_verdict != "pass":
         return original_verdict
 
-    text_lc = (window_text or "").lower()
-
-    # Check counter-anchors first (they prevent downgrade)
-    all_counter_anchors = []
-    if counter_anchors:
-        all_counter_anchors.extend([a.lower() for a in counter_anchors if a])
-    # Add lexicon counter-anchors
-    lexicon_counter_anchors = get_counter_anchors()
-    all_counter_anchors.extend(lexicon_counter_anchors)
-
-    if all_counter_anchors and _has_any(text_lc, all_counter_anchors):
-        return original_verdict
-
-    # Use enhanced weak language detection with confidence scoring
-    weak_terms = get_weak_terms_with_metadata()
-    if not weak_terms:
-        return original_verdict
-
-    has_weak, confidence, category = calculate_weak_confidence(text_lc, weak_terms)
-
-    if original_verdict == "pass" and has_weak and confidence >= confidence_threshold:
+    weak_terms = get_weak_terms()
+    anchors = list(counter_anchors or []) + get_counter_anchors()
+    verdict, _ = decide_verdict_with_downgrade(window_text, weak_terms, anchors)
+    if verdict == "warn":
         return "weak"
     return original_verdict
 
@@ -126,6 +106,17 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
     rulepack = load_rulepack()
 
     processed_sentences = 0
+
+    # Precompile regex detectors once to avoid repeated compilation
+    compiled_regexes: Dict[str, Pattern[str]] = {}
+    for det in rulepack.detectors:
+        if det.type == "regex" and det.pattern:
+            try:
+                compiled_regexes[det.id] = re.compile(det.pattern, re.IGNORECASE)
+            except re.error:
+                # Skip malformed patterns
+                continue
+
     for sentence_data in sentences:
         sentence_text = sentence_data.get("text", "")
         page = sentence_data.get("page", 1)
@@ -175,12 +166,8 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     finding.verdict = final_verdict
                     findings.append(finding)
             elif detector_spec.type == "regex":
-                pattern = detector_spec.pattern or ""
-                try:
-                    regex = re.compile(pattern, re.IGNORECASE)
-                except re.error:
-                    continue
-                if regex.search(sentence_text):
+                regex = compiled_regexes.get(detector_id)
+                if regex and regex.search(sentence_text):
                     finding = Finding(
                         detector_id=detector_id,
                         rule_id=detector_id,
@@ -189,7 +176,7 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                         page=page,
                         start=start,
                         end=end,
-                        rationale=f"Regex pattern '{pattern}' matched.",
+                        rationale=f"Regex pattern '{regex.pattern}' matched.",
                     )
                     final_verdict = postprocess_weak_language(
                         original_verdict=finding.verdict,
