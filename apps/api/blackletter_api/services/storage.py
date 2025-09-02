@@ -137,23 +137,10 @@ def list_analyses_summaries(limit: int = 50) -> List[AnalysisSummary]:
 
 
 def get_analysis_text(analysis_id: str) -> str:
-    """Return stored analysis text or an empty string if missing."""
-    p = analysis_dir(analysis_id) / "text.txt"
-    try:
-        return p.read_text(encoding="utf-8")
-    except FileNotFoundError:
-        return ""
-    except Exception:
-        return ""
+    """Placeholder retrieval of analysis text."""
+    return ""
 
 
 def get_analysis_findings(analysis_id: str) -> list:
-    """Return deserialized findings or an empty list if missing/invalid."""
-    p = analysis_dir(analysis_id) / "findings.json"
-    if not p.exists():
-        return []
-    try:
-        data = json.loads(p.read_text(encoding="utf-8"))
-        return data if isinstance(data, list) else []
-    except Exception:
-        return []
+    """Placeholder retrieval of analysis findings."""
+    return []

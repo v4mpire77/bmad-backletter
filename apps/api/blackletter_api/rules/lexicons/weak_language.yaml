@@ -1,23 +1,550 @@
-lexicon_id: weak_language_v0
-hedges:
-  - commercially reasonable
-  - reasonable efforts
-  - industry standard
-  - where practicable
-  - where feasible
-  - endeavour
-  - as appropriate
-  - periodically
-  - to the extent possible
-discretion:
-  - may
-  - at our discretion
-  - subject to provider policies
-  - if we deem necessary
-ambiguity:
-  - materially similar
-  - substantially equivalent
-  - generally consistent
-vagueness_time:
-  - as soon as practicable
-  - within a reasonable time
+name: weak_language
+description: "Comprehensive weak language terms for contract analysis"
+
+# Confidence levels: high (0.8-1.0), medium (0.5-0.7), low (0.1-0.4)
+# Categories: conditional, tentative, vague, permissive, discretionary, aspirational, temporal
+
+terms:
+  # High confidence - Very weak language
+  - confidence: 0.95
+    term: "may"
+    category: conditional
+  - confidence: 0.95
+    term: "might"
+    category: conditional
+  - confidence: 0.90
+    term: "could"
+    category: conditional
+  - confidence: 0.90
+    term: "should"
+    category: permissive
+  - confidence: 0.85
+    term: "attempt"
+    category: tentative
+  - confidence: 0.85
+    term: "consider"
+    category: tentative
+  - confidence: 0.85
+    term: "possibly"
+    category: tentative
+  - confidence: 0.85
+    term: "potentially"
+    category: tentative
+  - confidence: 0.85
+    term: "appear to"
+    category: tentative
+  - confidence: 0.85
+    term: "seem to"
+    category: tentative
+  - confidence: 0.85
+    term: "intend to"
+    category: tentative
+  - confidence: 0.85
+    term: "plan to"
+    category: tentative
+  - confidence: 0.85
+    term: "hope to"
+    category: tentative
+  - confidence: 0.85
+    term: "wish to"
+    category: tentative
+
+  # Medium confidence - Moderately weak language
+  - confidence: 0.75
+    term: "can"
+    category: conditional
+  - confidence: 0.75
+    term: "would"
+    category: conditional
+  - confidence: 0.70
+    term: "likely"
+    category: tentative
+  - confidence: 0.70
+    term: "probably"
+    category: tentative
+  - confidence: 0.70
+    term: "perhaps"
+    category: tentative
+  - confidence: 0.70
+    term: "maybe"
+    category: tentative
+  - confidence: 0.70
+    term: "seek"
+    category: tentative
+  - confidence: 0.70
+    term: "endeavor"
+    category: tentative
+  - confidence: 0.70
+    term: "strive"
+    category: tentative
+  - confidence: 0.70
+    term: "aspire"
+    category: tentative
+  - confidence: 0.70
+    term: "aim"
+    category: tentative
+  - confidence: 0.70
+    term: "effort"
+    category: tentative
+  - confidence: 0.70
+    term: "best efforts"
+    category: tentative
+  - confidence: 0.70
+    term: "reasonable efforts"
+    category: tentative
+  - confidence: 0.70
+    term: "commercially reasonable efforts"
+    category: tentative
+
+  # Medium confidence - Vague language
+  - confidence: 0.65
+    term: "generally"
+    category: vague
+  - confidence: 0.65
+    term: "typically"
+    category: vague
+  - confidence: 0.65
+    term: "usually"
+    category: vague
+  - confidence: 0.65
+    term: "normally"
+    category: vague
+  - confidence: 0.65
+    term: "ordinarily"
+    category: vague
+  - confidence: 0.65
+    term: "commonly"
+    category: vague
+  - confidence: 0.65
+    term: "frequently"
+    category: vague
+  - confidence: 0.65
+    term: "often"
+    category: vague
+  - confidence: 0.65
+    term: "occasionally"
+    category: vague
+  - confidence: 0.65
+    term: "sometimes"
+    category: vague
+  - confidence: 0.65
+    term: "occasional"
+    category: vague
+  - confidence: 0.65
+    term: "periodic"
+    category: vague
+  - confidence: 0.65
+    term: "regular"
+    category: vague
+  - confidence: 0.65
+    term: "routine"
+    category: vague
+  - confidence: 0.65
+    term: "standard"
+    category: vague
+  - confidence: 0.65
+    term: "customary"
+    category: vague
+
+  # Medium confidence - Discretionary language
+  - confidence: 0.60
+    term: "at its discretion"
+    category: discretionary
+  - confidence: 0.60
+    term: "in its sole discretion"
+    category: discretionary
+  - confidence: 0.60
+    term: "at the discretion"
+    category: discretionary
+  - confidence: 0.60
+    term: "in its discretion"
+    category: discretionary
+  - confidence: 0.60
+    term: "may choose"
+    category: discretionary
+  - confidence: 0.60
+    term: "may elect"
+    category: discretionary
+  - confidence: 0.60
+    term: "may decide"
+    category: discretionary
+
+  # Low confidence - Weak qualifiers
+  - confidence: 0.40
+    term: "where practicable"
+    category: conditional
+  - confidence: 0.40
+    term: "where possible"
+    category: conditional
+  - confidence: 0.40
+    term: "where feasible"
+    category: conditional
+  - confidence: 0.40
+    term: "to the extent"
+    category: conditional
+  - confidence: 0.40
+    term: "as appropriate"
+    category: conditional
+  - confidence: 0.40
+    term: "as necessary"
+    category: conditional
+  - confidence: 0.40
+    term: "if required"
+    category: conditional
+  - confidence: 0.40
+    term: "when required"
+    category: conditional
+
+  # Low confidence - Time-based vagueness
+  - confidence: 0.35
+    term: "timely"
+    category: vague
+  - confidence: 0.35
+    term: "prompt"
+    category: vague
+  - confidence: 0.35
+    term: "reasonable time"
+    category: vague
+  - confidence: 0.35
+    term: "reasonable period"
+    category: vague
+  - confidence: 0.35
+    term: "within a reasonable time"
+    category: vague
+  - confidence: 0.35
+    term: "as soon as possible"
+    category: vague
+  - confidence: 0.35
+    term: "as soon as practicable"
+    category: vague
+
+  # Additional conditional terms
+  - confidence: 0.40
+    term: "subject to"
+    category: conditional
+  - confidence: 0.40
+    term: "depending on"
+    category: conditional
+  - confidence: 0.40
+    term: "contingent upon"
+    category: conditional
+  - confidence: 0.40
+    term: "provided that"
+    category: conditional
+  - confidence: 0.40
+    term: "in the event that"
+    category: conditional
+
+  # Additional discretionary terms
+  - confidence: 0.55
+    term: "at its option"
+    category: discretionary
+  - confidence: 0.55
+    term: "at the option"
+    category: discretionary
+  - confidence: 0.55
+    term: "in its absolute discretion"
+    category: discretionary
+  - confidence: 0.55
+    term: "may determine"
+    category: discretionary
+  - confidence: 0.55
+    term: "may decide"
+    category: discretionary
+  - confidence: 0.55
+    term: "may choose to"
+    category: discretionary
+
+  # Additional tentative terms
+  - confidence: 0.65
+    term: "anticipate"
+    category: tentative
+  - confidence: 0.65
+    term: "expect"
+    category: tentative
+  - confidence: 0.65
+    term: "hope"
+    category: tentative
+  - confidence: 0.65
+    term: "intend"
+    category: tentative
+  - confidence: 0.65
+    term: "plan"
+    category: tentative
+  - confidence: 0.65
+    term: "propose"
+    category: tentative
+  - confidence: 0.65
+    term: "suggest"
+    category: tentative
+
+  # Additional vague qualifiers
+  - confidence: 0.45
+    term: "substantially"
+    category: vague
+  - confidence: 0.45
+    term: "approximately"
+    category: vague
+  - confidence: 0.45
+    term: "roughly"
+    category: vague
+  - confidence: 0.45
+    term: "about"
+    category: vague
+  - confidence: 0.45
+    term: "around"
+    category: vague
+  - confidence: 0.45
+    term: "circa"
+    category: vague
+
+# Industry-specific weak language extensions
+# Legal context weak terms
+  - confidence: 0.60
+    term: "subject to"
+    category: legal_conditional
+  - confidence: 0.55
+    term: "pursuant to"
+    category: legal_conditional
+  - confidence: 0.50
+    term: "in accordance with"
+    category: legal_conditional
+  - confidence: 0.45
+    term: "as permitted by"
+    category: legal_discretionary
+  - confidence: 0.45
+    term: "at the option of"
+    category: legal_discretionary
+
+# Technical context weak terms
+  - confidence: 0.50
+    term: "ideally"
+    category: technical_aspirational
+  - confidence: 0.45
+    term: "preferably"
+    category: technical_aspirational
+  - confidence: 0.40
+    term: "recommended"
+    category: technical_aspirational
+  - confidence: 0.40
+    term: "suggested"
+    category: technical_aspirational
+  - confidence: 0.35
+    term: "best practice"
+    category: technical_aspirational
+
+# Business context weak terms
+  - confidence: 0.55
+    term: "we will endeavor"
+    category: business_committed
+  - confidence: 0.50
+    term: "we aim to"
+    category: business_committed
+  - confidence: 0.45
+    term: "we strive to"
+    category: business_committed
+  - confidence: 0.40
+    term: "we plan to"
+    category: business_committed
+  - confidence: 0.40
+    term: "we intend to"
+    category: business_committed
+
+# Counter-anchors that prevent weak language downgrades
+counter_anchors:
+  - "shall"
+  - "must"
+  - "will"
+  - "required"
+  - "mandatory"
+  - "obligated"
+  - "binding"
+  - "compulsory"
+  - "enforce"
+  - "enforced"
+  - "penalty"
+  - "penalties"
+  - "breach"
+  - "breaches"
+  - "violation"
+  - "violations"
+  - "terminate"
+  - "terminated"
+  - "cancel"
+  - "cancelled"
+  - "agrees"
+  - "agreed"
+  - "commits"
+  - "committed"
+  - "undertakes"
+  - "undertaken"
+  - "warrants"
+  - "warranted"
+  - "guarantees"
+  - "guaranteed"
+  - "ensures"
+  - "ensured"
+  - "confirms"
+  - "confirmed"
+  - "certifies"
+  - "certified"
+  - "affirms"
+  - "affirmed"
+  - "represents"
+  - "represented"
+  - "covenants"
+  - "covenanted"
+  - "promises"
+  - "promised"
+  - "pledges"
+  - "pledged"
+  - "absolute"
+  - "unconditional"
+  - "irrevocable"
+  - "perpetual"
+  - "forever"
+  - "eternal"
+  - "unlimited"
+  - "without limit"
+
+
+    term: "intend"
+    category: tentative
+  - confidence: 0.65
+    term: "plan"
+    category: tentative
+  - confidence: 0.65
+    term: "propose"
+    category: tentative
+  - confidence: 0.65
+    term: "suggest"
+    category: tentative
+
+  # Additional vague qualifiers
+  - confidence: 0.45
+    term: "substantially"
+    category: vague
+  - confidence: 0.45
+    term: "approximately"
+    category: vague
+  - confidence: 0.45
+    term: "roughly"
+    category: vague
+  - confidence: 0.45
+    term: "about"
+    category: vague
+  - confidence: 0.45
+    term: "around"
+    category: vague
+  - confidence: 0.45
+    term: "circa"
+    category: vague
+
+# Industry-specific weak language extensions
+# Legal context weak terms
+  - confidence: 0.60
+    term: "subject to"
+    category: legal_conditional
+  - confidence: 0.55
+    term: "pursuant to"
+    category: legal_conditional
+  - confidence: 0.50
+    term: "in accordance with"
+    category: legal_conditional
+  - confidence: 0.45
+    term: "as permitted by"
+    category: legal_discretionary
+  - confidence: 0.45
+    term: "at the option of"
+    category: legal_discretionary
+
+# Technical context weak terms
+  - confidence: 0.50
+    term: "ideally"
+    category: technical_aspirational
+  - confidence: 0.45
+    term: "preferably"
+    category: technical_aspirational
+  - confidence: 0.40
+    term: "recommended"
+    category: technical_aspirational
+  - confidence: 0.40
+    term: "suggested"
+    category: technical_aspirational
+  - confidence: 0.35
+    term: "best practice"
+    category: technical_aspirational
+
+# Business context weak terms
+  - confidence: 0.55
+    term: "we will endeavor"
+    category: business_committed
+  - confidence: 0.50
+    term: "we aim to"
+    category: business_committed
+  - confidence: 0.45
+    term: "we strive to"
+    category: business_committed
+  - confidence: 0.40
+    term: "we plan to"
+    category: business_committed
+  - confidence: 0.40
+    term: "we intend to"
+    category: business_committed
+
+# Counter-anchors that prevent weak language downgrades
+counter_anchors:
+  - "shall"
+  - "must"
+  - "will"
+  - "required"
+  - "mandatory"
+  - "obligated"
+  - "binding"
+  - "compulsory"
+  - "enforce"
+  - "enforced"
+  - "penalty"
+  - "penalties"
+  - "breach"
+  - "breaches"
+  - "violation"
+  - "violations"
+  - "terminate"
+  - "terminated"
+  - "cancel"
+  - "cancelled"
+  - "agrees"
+  - "agreed"
+  - "commits"
+  - "committed"
+  - "undertakes"
+  - "undertaken"
+  - "warrants"
+  - "warranted"
+  - "guarantees"
+  - "guaranteed"
+  - "ensures"
+  - "ensured"
+  - "confirms"
+  - "confirmed"
+  - "certifies"
+  - "certified"
+  - "affirms"
+  - "affirmed"
+  - "represents"
+  - "represented"
+  - "covenants"
+  - "covenanted"
+  - "promises"
+  - "promised"
+  - "pledges"
+  - "pledged"
+  - "absolute"
+  - "unconditional"
+  - "irrevocable"
+  - "perpetual"
+  - "forever"
+  - "eternal"
+  - "unlimited"
+  - "without limit"

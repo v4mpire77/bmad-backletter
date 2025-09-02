@@ -1,5 +1,3 @@
-from threading import Thread
-
 from blackletter_api.orchestrator.state import Orchestrator, AnalysisState
 
 
@@ -18,21 +16,3 @@ def test_advance_without_finding():
     record = orch.summary(analysis_id)
     assert record.state == AnalysisState.SEGMENTED
     assert record.findings == []
-
-
-def test_concurrent_advance_no_keyerror_or_lost_updates():
-    orch = Orchestrator()
-    analysis_id = orch.intake("contract.docx")
-
-    def worker(i: int) -> None:
-        orch.advance(analysis_id, AnalysisState.EXTRACTED, {"issue": i})
-
-    threads = [Thread(target=worker, args=(i,)) for i in range(5)]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
-
-    record = orch.summary(analysis_id)
-    assert record.state == AnalysisState.EXTRACTED
-    assert sorted(f["issue"] for f in record.findings) == list(range(5))

@@ -63,24 +63,10 @@ def list_analyses(limit: int = Query(default=50, ge=1, le=200)) -> List[Analysis
 
 @router.get("/analyses/{analysis_id}", response_model=AnalysisSummary)
 def get_analysis_summary(analysis_id: str) -> AnalysisSummary:
-    """Get analysis summary with Story 4.2 coverage information."""
     try:
         rec = orchestrator.summary(analysis_id)
-        
-        # Get findings to compute coverage
-        try:
-            rec_findings = orchestrator.findings(analysis_id)
-            findings_list = [f for f in rec_findings]
-        except Exception:
-            findings_list = []
-        
-        # Compute coverage using Story 4.2 service
-        from ..services.coverage import compute_analysis_coverage
-        coverage = compute_analysis_coverage(analysis_id, findings_list)
-        
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="not_found") from exc
-    
     return AnalysisSummary(
         id=rec.id,
         filename=rec.filename,
@@ -88,7 +74,6 @@ def get_analysis_summary(analysis_id: str) -> AnalysisSummary:
         size=0,
         state=rec.state.value,
         verdicts=VerdictCounts(),
-        coverage=coverage  # Story 4.2 - Include coverage
     )
 
 
