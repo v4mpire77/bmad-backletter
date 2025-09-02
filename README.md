@@ -21,6 +21,14 @@ The orchestra agent has successfully implemented a **fully functional contract a
 
 ## 📋 **Quick Start**
 
+### Setup Script (macOS/Linux)
+```bash
+./scripts/setup.sh
+source .venv/bin/activate
+```
+
+This creates a virtual environment, installs dependencies, and sets up pre-commit hooks.
+
 ### Backend (Ready to Run)
 ```bash
 cd apps/api
