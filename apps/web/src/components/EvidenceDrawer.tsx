@@ -64,7 +64,7 @@ export default function EvidenceDrawer({ isOpen, onClose, children }: EvidenceDr
       <div
         ref={drawerRef}
         tabIndex={-1}
-        className="absolute right-0 top-0 h-full w-80 bg-white p-4 shadow-lg"
+        className="absolute right-0 top-0 h-full w-full sm:w-80 bg-white p-4 shadow-lg"
       >
         <div ref={snippetRef}>{children}</div>
         <div className="mt-4 flex justify-end space-x-2">

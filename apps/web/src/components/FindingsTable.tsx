@@ -1,14 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import FindingsDrawer from './FindingsDrawer';
-
-interface Finding {
-  id: string;
-  rule: string;
-  evidence: string;
-  verdict: string;
-}
+import VerdictBadge from './VerdictBadge';
+import EvidenceDrawer from './EvidenceDrawer';
+import type { Finding } from '../types';
 
 interface FindingsTableProps {
   findings: Finding[];
@@ -24,7 +19,8 @@ export default function FindingsTable({ findings }: FindingsTableProps) {
         <thead>
           <tr className="bg-gray-50 text-left">
             <th className="p-4 font-medium">Rule</th>
-            <th className="p-4 font-medium">Evidence</th>
+            <th className="p-4 font-medium">Snippet</th>
+            <th className="p-4 font-medium">Verdict</th>
           </tr>
         </thead>
         <tbody>
@@ -34,14 +30,17 @@ export default function FindingsTable({ findings }: FindingsTableProps) {
               onClick={() => setSelected(f)}
               className="cursor-pointer hover:bg-gray-50"
             >
-              <td className="p-4">{f.rule}</td>
-              <td className="p-4">{f.evidence}</td>
+              <td className="p-4">{f.rule_id}</td>
+              <td className="p-4">{f.snippet}</td>
+              <td className="p-4"><VerdictBadge verdict={f.verdict} /></td>
             </tr>
           ))}
         </tbody>
       </table>
-      <FindingsDrawer open={!!selected} finding={selected} onClose={handleClose} />
+      <EvidenceDrawer isOpen={!!selected} onClose={handleClose}>
+        <p><span className="font-medium">Rule:</span> {selected?.rule_id}</p>
+        <p className="mt-2 whitespace-pre-wrap">{selected?.snippet}</p>
+      </EvidenceDrawer>
     </div>
   );
 }
-
