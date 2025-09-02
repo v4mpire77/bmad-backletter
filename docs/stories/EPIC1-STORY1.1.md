@@ -12,8 +12,8 @@
 
 ## Acceptance Criteria:
 * The endpoint accepts a file and responds `201 Created` with JSON `{ "job_id": "uuid", "analysis_id": "uuid", "status": "queued" }`.
-* If the file exceeds 10MB, respond `413 Payload Too Large` with `{ "detail": "file_too_large" }`.
-* If the file is not a PDF/DOCX, respond `415 Unsupported Media Type` with `{ "detail": "unsupported_file_type" }`.
+* If the file exceeds 10MB, respond `413 Payload Too Large` with `{ "code": "file_too_large", "detail": "File too large" }`.
+* If the file is not a PDF/DOCX, respond `415 Unsupported Media Type` with `{ "code": "unsupported_file_type", "detail": "Unsupported file type" }`.
 
 ## Test Fixtures:
 * **Success Case:** Upload `test_fixture_1.docx` (50KB, valid).
