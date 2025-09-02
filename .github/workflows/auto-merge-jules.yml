@@ -44,18 +44,50 @@ jobs:
                   body: '🤖 **Auto-merge approved**: Jules bot + low-risk label + all CI checks passed. Merging now...'
                 });
                 
-                // Merge the PR
-                await github.rest.pulls.merge({
-                  owner: context.repo.owner, 
-                  repo: context.repo.repo,
-                  pull_number: pr.number, 
-                  merge_method: "squash",
-                  commit_title: `${pr.title} (#${pr.number})`,
-                  commit_message: `Auto-merged Jules PR: ${pr.title}\n\n${pr.body || ''}`
-                });
-                
-                console.log('✅ PR merged successfully!');
-                return;
+                // Merge the PR with conflict handling
+                try {
+                  await github.rest.pulls.merge({
+                    owner: context.repo.owner, 
+                    repo: context.repo.repo,
+                    pull_number: pr.number, 
+                    merge_method: "squash",
+                    commit_title: `${pr.title} (#${pr.number})`,
+                    commit_message: `Auto-merged Jules PR: ${pr.title}\n\n${pr.body || ''}`
+                  });
+                  
+                  console.log('✅ PR merged successfully!');
+                  return;
+                  
+                } catch (mergeError) {
+                  console.log('❌ Merge failed:', mergeError.message);
+                  
+                  if (mergeError.message.includes('conflict') || mergeError.message.includes('409')) {
+                    await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: pr.number,
+                      body: '⚠️ **Auto-merge blocked**: Merge conflicts detected. Please resolve conflicts manually:\n\n' +
+                            '```bash\n' +
+                            'git checkout main\n' +
+                            'git pull origin main\n' +
+                            `git checkout ${pr.head.ref}\n` +
+                            'git rebase main\n' +
+                            '# Resolve conflicts, then:\n' +
+                            'git push --force-with-lease\n' +
+                            '```\n\n' +
+                            'Or use GitHub\'s web interface to resolve conflicts.'
+                    });
+                  } else {
+                    await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: pr.number,
+                      body: `❌ **Auto-merge failed**: ${mergeError.message}\n\nPlease merge manually or check PR status.`
+                    });
+                  }
+                  
+                  return;
+                }
               }
               
               if (statuses.state === 'failure') {
