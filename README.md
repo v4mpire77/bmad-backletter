@@ -53,6 +53,33 @@ npm run dev
 
 To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MOCKS=1` in your environment. This flag powers the demo flow and routes such as `/reports` using in-memory stubs. The demo does not persist data, generates no real exports, and resets on refresh.
 
+## Development
+
+### Workspace setup
+
+This repository uses a [pnpm](https://pnpm.io) workspace defined in `pnpm-workspace.yaml` with packages under `apps/*` and `packages/*`.
+
+Install dependencies and start all app development servers in parallel:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Common scripts can be run from the repo root:
+
+```bash
+pnpm build         # build all packages
+pnpm lint          # lint all packages
+pnpm lint:fix      # fix lint issues
+pnpm test          # run tests
+pnpm test:watch    # watch tests
+pnpm type-check    # type checking
+pnpm clean         # remove build artifacts
+```
+
+These commands work in Windows PowerShell and Unix shells.
+
 ## 🎯 **Next Development Priorities**
 
 ### Ready to Start (Epic 2 Completion)

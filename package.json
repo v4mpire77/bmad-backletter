@@ -3,14 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:py": "node scripts/run_pytests.js",
-    "test": "npm run test:py",
-    "test:ui": "vitest",
-    "lint": "eslint automation --ext .js",
-    "format": "prettier -w .",
-    "codex:bundle": "python tools/bmad/generate_codex_bundle.py",
-    "codex:rules": "python tools/bmad/generate_codex_rules_from_cursor.py",
-    "codex:all": "npm run codex:bundle && npm run codex:rules"
+    "dev": "pnpm --parallel run dev",
+    "build": "pnpm --recursive run build",
+    "lint": "pnpm --recursive run lint",
+    "lint:fix": "pnpm --recursive run lint:fix",
+    "test": "pnpm --recursive run test",
+    "test:watch": "pnpm --recursive run test:watch",
+    "type-check": "pnpm --recursive run type-check",
+    "clean": "pnpm --recursive run clean"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",
