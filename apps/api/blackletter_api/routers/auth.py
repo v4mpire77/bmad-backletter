@@ -28,15 +28,24 @@ class UserOut(BaseModel):
     name: str | None
 
 # --- API Endpoints ---
-@router.post("/register", status_code=status.HTTP_201_CREATED)
+@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserOut)
 async def register_user(user: UserCreate, db: Session = Depends(database.get_db)):
-    # In a real implementation, this would also create a default Org and OrgMember.
+    existing_user = (
+        db.query(auth_models.User).filter(auth_models.User.email == user.email).first()
+    )
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Email already registered"
+        )
+
     hashed_password = auth_service.get_password_hash(user.password)
-    new_user = auth_models.User(email=user.email, password_hash=hashed_password, name=user.name)
+    new_user = auth_models.User(
+        email=user.email, password_hash=hashed_password, name=user.name
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return {"message": "User registered successfully. Please log in."}
+    return UserOut(id=str(new_user.id), email=new_user.email, name=new_user.name)
 
 
 @router.post("/login")
