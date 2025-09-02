@@ -26,7 +26,8 @@
     "types": ["vitest/globals"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": [

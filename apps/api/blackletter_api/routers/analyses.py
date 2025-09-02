@@ -7,7 +7,8 @@ import os
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from ..models.schemas import AnalysisSummary, Finding, VerdictCounts
+from ..models.schemas import AnalysisSummary, VerdictCounts
+from packages.shared.python.types import Finding
 from ..services import storage
 from ..orchestrator.state import orchestrator
 

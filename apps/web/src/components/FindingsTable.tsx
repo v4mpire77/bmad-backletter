@@ -2,13 +2,7 @@
 
 import React, { useState } from 'react';
 import FindingsDrawer from './FindingsDrawer';
-
-interface Finding {
-  id: string;
-  rule: string;
-  evidence: string;
-  verdict: string;
-}
+import type { Finding } from '@shared/types';
 
 interface FindingsTableProps {
   findings: Finding[];
@@ -30,12 +24,12 @@ export default function FindingsTable({ findings }: FindingsTableProps) {
         <tbody>
           {findings.map(f => (
             <tr
-              key={f.id}
+              key={f.rule_id}
               onClick={() => setSelected(f)}
               className="cursor-pointer hover:bg-gray-50"
             >
-              <td className="p-4">{f.rule}</td>
-              <td className="p-4">{f.evidence}</td>
+              <td className="p-4">{f.rule_id}</td>
+              <td className="p-4">{f.snippet}</td>
             </tr>
           ))}
         </tbody>

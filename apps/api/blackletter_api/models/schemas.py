@@ -7,6 +7,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from packages.shared.python.types import Document, Job, Sentence, Finding
+
 
 class ErrorResponse(BaseModel):
     """Standard error envelope for API responses."""
@@ -48,20 +50,6 @@ class RulesSummary(BaseModel):
     detector_count: int
     detectors: List[DetectorSummary]
     lexicons: List[str]
-
-
-class Finding(BaseModel):
-    detector_id: str
-    rule_id: str
-    verdict: Literal["pass", "weak", "missing", "needs_review"]
-    snippet: str
-    page: int
-    start: int
-    end: int
-    rationale: str
-    category: Optional[str] = None
-    confidence: Optional[float] = None
-    reviewed: bool = False
 
 
 class VerdictCounts(BaseModel):

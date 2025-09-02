@@ -1,15 +1,12 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import type { Finding } from '@shared/types';
 
 interface FindingsDrawerProps {
   open: boolean;
   onClose: () => void;
-  finding?: {
-    rule: string;
-    evidence: string;
-    verdict?: string;
-  } | null;
+  finding?: Finding | null;
 }
 
 export default function FindingsDrawer({ open, onClose, finding }: FindingsDrawerProps) {
@@ -59,8 +56,8 @@ export default function FindingsDrawer({ open, onClose, finding }: FindingsDrawe
       >
         <div>
           <h2 className="text-lg font-semibold mb-2">Finding Details</h2>
-          <p className="text-sm"><span className="font-medium">Rule:</span> {finding?.rule}</p>
-          <p className="text-sm"><span className="font-medium">Evidence:</span> {finding?.evidence}</p>
+          <p className="text-sm"><span className="font-medium">Rule:</span> {finding?.rule_id}</p>
+          <p className="text-sm"><span className="font-medium">Evidence:</span> {finding?.snippet}</p>
           {finding?.verdict && (
             <p className="text-sm"><span className="font-medium">Verdict:</span> {finding.verdict}</p>
           )}

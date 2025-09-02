@@ -3,8 +3,20 @@ import { render, fireEvent } from '@testing-library/react';
 import FindingsDrawer from './FindingsDrawer';
 import { vi } from 'vitest';
 
+import type { Finding } from '@shared/types';
+
 describe('FindingsDrawer', () => {
-  const finding = { rule: 'Rule 1', evidence: 'Some evidence', verdict: 'pass' };
+  const finding: Finding = {
+    detector_id: 'det-1',
+    rule_id: 'Rule 1',
+    verdict: 'pass',
+    snippet: 'Some evidence',
+    page: 1,
+    start: 0,
+    end: 0,
+    rationale: '',
+    reviewed: false,
+  };
 
   it('renders when open', () => {
     const { getByText } = render(

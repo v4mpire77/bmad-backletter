@@ -12,7 +12,7 @@ from .weak_lexicon import (
 from .detector_mapping import decide_verdict_with_downgrade
 from .token_ledger import get_token_ledger, should_apply_token_capping, token_capping_enabled
 from .rulepack_loader import load_rulepack
-from ..models.schemas import Finding
+from packages.shared.python.types import Finding
 from .storage import analysis_dir
 
 
