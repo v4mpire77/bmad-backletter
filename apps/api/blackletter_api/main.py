@@ -9,7 +9,13 @@ import uuid
 import logging
 import time
 import json
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    Request,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
@@ -90,6 +96,18 @@ app = FastAPI(
     description="API for GDPR contract analysis.",
     version="0.1.0"
 )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    """Return errors in a consistent JSON envelope."""
+
+    if isinstance(exc.detail, dict):
+        return JSONResponse(status_code=exc.status_code, content=exc.detail)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"code": "error", "message": str(exc.detail)},
+    )
 
 
 @app.middleware("http")

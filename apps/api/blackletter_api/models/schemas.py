@@ -8,6 +8,13 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
+class ErrorResponse(BaseModel):
+    """Standard error envelope for API responses."""
+
+    code: str
+    message: str
+
+
 class ExtractionArtifact(BaseModel):
     analysis_id: UUID
     text_path: str

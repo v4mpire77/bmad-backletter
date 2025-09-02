@@ -20,12 +20,16 @@ def test_analysis_summary_not_found():
     orchestrator._store.clear()
     res = client.get("/api/analyses/missing")
     assert res.status_code == 404
-    assert res.json()["detail"] == "not_found"
+    body = res.json()
+    assert body["code"] == "not_found"
+    assert isinstance(body["message"], str)
 
 
 def test_analysis_findings_not_found():
     orchestrator._store.clear()
     res = client.get("/api/analyses/missing/findings")
     assert res.status_code == 404
-    assert res.json()["detail"] == "not_found"
+    body = res.json()
+    assert body["code"] == "not_found"
+    assert isinstance(body["message"], str)
 
