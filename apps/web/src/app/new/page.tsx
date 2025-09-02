@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 const UploadPage = () => {
@@ -11,6 +11,7 @@ const UploadPage = () => {
     'idle' | 'queued' | 'extracting' | 'detecting' | 'reporting' | 'done'
   >('idle');
   const [progress, setProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock state machine logic
   useEffect(() => {
@@ -48,7 +49,7 @@ const UploadPage = () => {
     setProgress(0);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -56,7 +57,7 @@ const UploadPage = () => {
     }
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     setIsDragging(true);
   };
@@ -110,28 +111,38 @@ const UploadPage = () => {
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold text-center mb-6">Upload Document</h1>
         {uploadStep === 'idle' ? (
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-            }`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onClick={() => document.getElementById('fileInput')?.click()}
-            role="button"
-            tabIndex={0}
-            aria-label="Drag and drop area or click to select a file"
-          >
-            <p className="text-gray-500 mb-2">Drag &apos;n&apos; drop a file here, or click to select</p>
-            <p className="text-sm text-gray-400">Supports PDF, DOCX, TXT</p>
+          <>
+            <label
+              htmlFor="fileInput"
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+              }`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              role="button"
+              tabIndex={0}
+              aria-label="Drag and drop area or click to select a file"
+              aria-controls="fileInput"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+            >
+              <p className="text-gray-500 mb-2">Drag &apos;n&apos; drop a file here, or click to select</p>
+              <p className="text-sm text-gray-400">Supports PDF, DOCX, TXT</p>
+            </label>
             <input
               id="fileInput"
+              ref={fileInputRef}
               type="file"
-              className="hidden"
+              className="sr-only"
               onChange={handleFileInput}
-              aria-hidden="true"
+              data-testid="file-input"
             />
-          </div>
+          </>
         ) : (
           <div className="space-y-6">
             <div className="space-y-4">
