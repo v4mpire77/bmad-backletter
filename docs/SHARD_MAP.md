@@ -5,19 +5,19 @@ This index lists the shard-ready documents for the Blackletter project and gives
 
 ## Recommended order
 
-1. `docs/prd-blackletter.md` — Product Requirements Document (vision, users, scope, acceptance criteria).
-2. `docs/shard-ready-arc.md` — Consolidated architecture overview and system-level constraints (high-level reference).
-3. `docs/architecture-blackletter.md` — Shard: system overview, environments & deployment, technology stack.
-4. `docs/backlog-blackletter.md` — Shard: epics, stories, and initial acceptance criteria (MVP backlog).
-5. `docs/tests-blackletter.md` — Shard: testing strategy, golden fixtures, CI gates.
+1. `docs/prd/` — **SHARDED** Product Requirements Document (vision, users, scope, acceptance criteria).
+2. `docs/shard-ready-arc/` — **SHARDED** Consolidated architecture overview and system-level constraints (high-level reference).
+3. `docs/architecture-blackletter/` — **SHARDED** System overview, environments & deployment, technology stack.
+4. `docs/backlog-blackletter/` — **SHARDED** Epics, stories, and initial acceptance criteria (MVP backlog).
+5. `docs/tests-blackletter/` — **SHARDED** Testing strategy, golden fixtures, CI gates.
 
 ## Quick links & purpose
 
-- `docs/prd-blackletter.md` — The canonical PRD describing MVP features, user personas, and acceptance criteria.
-- `docs/shard-ready-arc.md` — A single-file reference of the fullstack architecture for quick handoffs.
-- `docs/architecture-blackletter.md` — Sharded architecture content intended for handoff to architects and infra.
-- `docs/backlog-blackletter.md` — The epic/story map to use for sprint planning and backlog creation.
-- `docs/tests-blackletter.md` — Testing and QA plans, golden fixtures, and CI gating rules.
+- `docs/prd/` — **SHARDED** The canonical PRD describing MVP features, user personas, and acceptance criteria.
+- `docs/shard-ready-arc/` — **SHARDED** A comprehensive fullstack architecture specification with detailed tech stack, API specs, and coding standards.
+- `docs/architecture-blackletter/` — **SHARDED** Architecture content intended for handoff to architects and infra.
+- `docs/backlog-blackletter/` — **SHARDED** The epic/story map to use for sprint planning and backlog creation.
+- `docs/tests-blackletter/` — **SHARDED** Testing and QA plans, golden fixtures, and CI gating rules.
 
 ## How to add or update a shard
 
