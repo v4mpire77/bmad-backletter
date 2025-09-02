@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import ExportDialog from '../../components/ExportDialog';
+import { addExport } from '../../lib/exportStore';
 
 const UploadPage = () => {
   const router = useRouter();
@@ -12,6 +14,7 @@ const UploadPage = () => {
   >('idle');
   const [progress, setProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
 
   // Mock state machine logic
   useEffect(() => {
@@ -80,6 +83,16 @@ const UploadPage = () => {
 
   const handleViewFindings = () => {
     router.push('/analyses/mock-1');
+  };
+
+  const handleExportConfirm = () => {
+    addExport({
+      id: Date.now().toString(),
+      name: file?.name || 'Untitled Report',
+      createdAt: new Date().toISOString(),
+    });
+    router.push('/reports');
+    setIsExportDialogOpen(false);
   };
 
   // Cancel simulation on ESC key
@@ -197,6 +210,13 @@ const UploadPage = () => {
                   View Findings
                 </button>
                 <button
+                  onClick={() => setIsExportDialogOpen(true)}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  aria-label="Export Report"
+                >
+                  Export
+                </button>
+                <button
                   onClick={handleReset}
                   className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-md transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                   aria-label="Start Over"
@@ -213,6 +233,11 @@ const UploadPage = () => {
           </p>
         )}
       </div>
+      <ExportDialog
+        isOpen={isExportDialogOpen}
+        onClose={() => setIsExportDialogOpen(false)}
+        onConfirm={handleExportConfirm}
+      />
     </div>
   );
 };

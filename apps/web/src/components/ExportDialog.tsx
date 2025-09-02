@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface ExportDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  onConfirm: () => void;
 }
 
-export default function ExportDialog({ isOpen, onClose }: ExportDialogProps) {
-  const router = useRouter();
+export default function ExportDialog({ isOpen, onClose, onConfirm }: ExportDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,8 +46,7 @@ export default function ExportDialog({ isOpen, onClose }: ExportDialogProps) {
   }, [isOpen, onClose]);
 
   const handleConfirm = () => {
-    router.push('/reports');
-    onClose();
+    onConfirm();
   };
 
   if (!isOpen) return null;
