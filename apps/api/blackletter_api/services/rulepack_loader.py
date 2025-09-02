@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 import yaml
 import os
-from apps.api.blackletter_api.models.rulepack_schema import validate_rulepack, RulepackValidationError, compare_versions
+from ..models.rulepack_schema import validate_rulepack, RulepackValidationError, compare_versions
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 RULES_DIR = BASE_DIR / "rules"

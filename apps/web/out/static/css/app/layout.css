@@ -1189,10 +1189,6 @@ nav.scrolled {
   margin-left: auto;
   margin-right: auto;
 }
-.my-8 {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -1205,9 +1201,6 @@ nav.scrolled {
 .mt-2 {
   margin-top: 0.5rem;
 }
-.mt-3 {
-  margin-top: 0.75rem;
-}
 .mt-4 {
   margin-top: 1rem;
 }
@@ -1216,9 +1209,6 @@ nav.scrolled {
 }
 .block {
   display: block;
-}
-.inline-block {
-  display: inline-block;
 }
 .flex {
   display: flex;
@@ -1250,8 +1240,8 @@ nav.scrolled {
 .h-full {
   height: 100%;
 }
-.h-screen {
-  height: 100vh;
+.max-h-64 {
+  max-height: 16rem;
 }
 .min-h-screen {
   min-height: 100vh;
@@ -1293,6 +1283,9 @@ nav.scrolled {
 .flex-col {
   flex-direction: column;
 }
+.items-start {
+  align-items: flex-start;
+}
 .items-center {
   align-items: center;
 }
@@ -1308,14 +1301,16 @@ nav.scrolled {
 .gap-2 {
   gap: 0.5rem;
 }
-.gap-3 {
-  gap: 0.75rem;
-}
 .gap-4 {
   gap: 1rem;
 }
 .gap-6 {
   gap: 1.5rem;
+}
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 .space-y-3 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
@@ -1468,13 +1463,12 @@ nav.scrolled {
   --tw-bg-opacity: 1;
   background-color: rgb(254 249 195 / var(--tw-bg-opacity));
 }
-.bg-yellow-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(254 240 138 / var(--tw-bg-opacity));
-}
 .bg-yellow-800 {
   --tw-bg-opacity: 1;
   background-color: rgb(133 77 14 / var(--tw-bg-opacity));
+}
+.p-2 {
+  padding: 0.5rem;
 }
 .p-4 {
   padding: 1rem;
@@ -1598,10 +1592,6 @@ nav.scrolled {
 .text-gray-800 {
   --tw-text-opacity: 1;
   color: rgb(31 41 55 / var(--tw-text-opacity));
-}
-.text-gray-900 {
-  --tw-text-opacity: 1;
-  color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 .text-green-600 {
   --tw-text-opacity: 1;
