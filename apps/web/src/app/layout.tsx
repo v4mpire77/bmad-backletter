@@ -2,6 +2,8 @@ import './globals.css';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
     <html lang="en">
       <head>
         <title>My App</title>
@@ -12,13 +14,9 @@ import type { ReactNode } from 'react';
           <Link href="/upload" className="text-blue-600 hover:underline">
             Home
           </Link>
-          <Link href="/analyses" className="text-blue-600 hover:underline">
-            Analyses
-          </Link>
         </nav>
         <main>{children}</main>
       </body>
     </html>
   );
 }
-
