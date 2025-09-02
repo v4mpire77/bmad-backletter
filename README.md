@@ -22,12 +22,20 @@ The orchestra agent has successfully implemented a **fully functional contract a
 ## 📋 **Quick Start**
 
 ### Backend (Ready to Run)
+
+Run the setup script to create a virtual environment and install dependencies:
+
 ```bash
-cd apps/api
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1  # Windows
-pip install -r requirements.txt
-uvicorn blackletter_api.main:app --reload
+./scripts/setup.sh            # macOS/Linux
+# or
+pwsh -NoProfile -File ./setup.ps1  # Windows PowerShell
+```
+
+Then start the API:
+
+```bash
+source .venv/bin/activate     # Windows: .\.venv\Scripts\Activate.ps1
+uvicorn blackletter_api.main:app --reload --app-dir apps/api
 ```
 
 > **Note**: The in-memory orchestrator uses thread locks for safety but
