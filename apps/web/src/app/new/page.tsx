@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 const UploadPage = () => {
@@ -11,6 +11,7 @@ const UploadPage = () => {
     'idle' | 'queued' | 'extracting' | 'detecting' | 'reporting' | 'done'
   >('idle');
   const [progress, setProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock state machine logic
   useEffect(() => {
@@ -117,7 +118,7 @@ const UploadPage = () => {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
-            onClick={() => document.getElementById('fileInput')?.click()}
+            onClick={() => fileInputRef.current?.click()}
             role="button"
             tabIndex={0}
             aria-label="Drag and drop area or click to select a file"
@@ -125,7 +126,7 @@ const UploadPage = () => {
             <p className="text-gray-500 mb-2">Drag &apos;n&apos; drop a file here, or click to select</p>
             <p className="text-sm text-gray-400">Supports PDF, DOCX, TXT</p>
             <input
-              id="fileInput"
+              ref={fileInputRef}
               type="file"
               className="hidden"
               onChange={handleFileInput}
