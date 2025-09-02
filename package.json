@@ -10,7 +10,10 @@
     "test": "pnpm -r run test",
     "test:watch": "pnpm -r run test:watch",
     "type-check": "pnpm -r run type-check",
-    "clean": "pnpm -r run clean"
+    "clean": "pnpm -r run clean",
+    "swa:start": "swa start",
+    "swa:build": "swa build",
+    "swa:deploy": "swa deploy"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "blackletter": {
+      "appLocation": "apps/web",
+      "apiLocation": "apps/api", 
+      "outputLocation": "out",
+      "appBuildCommand": "pnpm run build",
+      "apiBuildCommand": "pip install -r requirements.txt",
+      "appDevserverUrl": "http://localhost:3000",
+      "apiDevserverUrl": "http://localhost:8000",
+      "run": "pnpm run dev",
+      "appDevserverTimeout": 60000,
+      "env": "development"
+    }
+  }
+}

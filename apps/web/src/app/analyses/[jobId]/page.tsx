@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FindingsTable } from '@/components/FindingsTable';
-import { EvidenceDrawer } from '@/components/EvidenceDrawer';
+import FindingsTable from '@/components/FindingsTable';
+import EvidenceDrawer from '@/components/EvidenceDrawer';
 
 type Finding = {
   id: string;
