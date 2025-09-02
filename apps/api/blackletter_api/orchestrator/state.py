@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+import threading
 from typing import Dict, List, Any
 from uuid import uuid4
 
@@ -25,21 +26,30 @@ class AnalysisRecord:
 
 
 class Orchestrator:
-    """In-memory orchestrator for analysis state transitions."""
+    """In-memory orchestrator for analysis state transitions.
+
+    This orchestrator maintains state in-process and guards access with a
+    :class:`threading.Lock` for thread safety. It is not suitable for
+    multi-process deployments.
+    """
 
     def __init__(self) -> None:
         self._store: Dict[str, AnalysisRecord] = {}
+        self._lock = threading.Lock()
 
     def intake(self, filename: str) -> str:
-        analysis_id = str(uuid4())
-        self._store[analysis_id] = AnalysisRecord(id=analysis_id, filename=filename)
-        return analysis_id
+        with self._lock:
+            analysis_id = str(uuid4())
+            self._store[analysis_id] = AnalysisRecord(id=analysis_id, filename=filename)
+            return analysis_id
 
     def summary(self, analysis_id: str) -> AnalysisRecord:
-        return self._store[analysis_id]
+        with self._lock:
+            return self._store[analysis_id]
 
     def findings(self, analysis_id: str) -> List[Dict[str, Any]]:
-        return self._store[analysis_id].findings
+        with self._lock:
+            return self._store[analysis_id].findings
 
     def advance(
         self,
@@ -58,14 +68,16 @@ class Orchestrator:
             The updated :class:`AnalysisRecord` instance.
         """
 
-        record = self._store[analysis_id]
-        record.state = new_state
-        if finding:
-            record.findings.append(finding)
-        return record
+        with self._lock:
+            record = self._store[analysis_id]
+            record.state = new_state
+            if finding:
+                record.findings.append(finding)
+            return record
 
     def list_records(self, limit: int) -> List[AnalysisRecord]:
-        return list(self._store.values())[:limit]
+        with self._lock:
+            return list(self._store.values())[:limit]
 
 
 # module-level orchestrator instance
