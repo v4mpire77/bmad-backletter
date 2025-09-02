@@ -1,4 +1,4 @@
- # Blackletter Systems — Fullstack Architecture
+# Blackletter Systems — Fullstack Architecture
 
 **Owner:** Winston (Architect)
 
@@ -47,37 +47,6 @@ Environments: local (Windows), staging, prod.
 - PowerShell Scripts: A suite of scripts in tools/windows/ will handle bootstrapping, running, testing, and linting the entire application.
 
 ### Production (Recommended)
-
-- Web (Next.js): Vercel, for its seamless integration with Next.js and global CDN.
-- API / Worker: Render, using a Web Service for the API and a Background Worker for Celery.
-- Database: A managed Postgres service like Neon, Supabase, or Render's offering.
-- Redis: Upstash for its serverless, low-cost Redis instances.
-- Storage: An S3-compatible service like Cloudflare R2 or Supabase Storage.
-- CI/CD: GitHub Actions will be used to run tests on every pull request and deploy to staging/production environments upon merge to the respective branches.
-
-## 3. Tech Stack
-
-This table represents the definitive technology stack for the project. All development must adhere to these choices and versions.
-
-| Category | Technology | Version | Purpose & Rationale |
-|---|---:|---:|---|
-| Frontend Language | TypeScript | 5.4.x | Provides strong typing for a more robust and maintainable frontend codebase. |
-| Frontend Framework | Next.js | 14.2.x | Enables server-side rendering for fast initial page loads and a great developer experience with the App Router. |
-| UI Library | React | 18.2.x | The industry standard for building dynamic and responsive user interfaces. |
-| UI Components | shadcn/ui | latest | A collection of accessible and composable components that accelerate UI development. |
-| Styling | Tailwind CSS | 3.4.x | A utility-first CSS framework for rapid and consistent styling. |
-| Backend Language | Python | 3.11 | A modern, stable version of Python with excellent support for web development and data processing. |
-| Backend Framework | FastAPI | 0.111.x | A high-performance Python framework for building APIs with automatic validation and documentation. |
-| ORM | SQLAlchemy | 2.0.x | A powerful and flexible ORM for interacting with the PostgreSQL database. |
-| Database Migrations | Alembic | latest | Manages database schema changes in a version-controlled and repeatable manner. |
-| Async Tasks | Celery | 5.3.x | A robust distributed task queue for handling asynchronous operations like document processing. |
-| Database | PostgreSQL | 15 | A reliable, open-source relational database for storing application data. |
-| Cache / Broker | Redis | 7.x | An in-memory data store used as a message broker for Celery and for caching. |
-| File Storage | S3-Compatible | - | Provides a scalable and cost-effective solution for storing user-uploaded files. |
-| Frontend Testing | Vitest / RTL | latest | A fast and modern testing framework for React components, combined with React Testing Library. |
-| E2E Testing | Playwright | latest | A reliable framework for end-to-end testing of the full user journey. |
-| Backend Testing | Pytest | latest | The standard for testing Python applications, known for its simplicity and powerful features. |
-| CI/CD | GitHub Actions | - | Automates the build, test, and deployment pipeline directly from the repository. |
 
 ## 4. Data Models
 
@@ -260,6 +229,37 @@ The project will be organized as a monorepo to facilitate code sharing and strea
 │       │   ├── models/
 │       │   └── main.py
 │       ├── tests/
+│       └── requirements.txt
+├── packages/
+│   └── shared/         # Shared TypeScript types and utilities
+├── tools/
+│   └── windows/
+│       ├── dev.ps1
+│       └── test.ps1
+├── docker-compose.local.yml
+└── core-config.yaml
+```
+
+## 7. Development Workflow
+
+- Local Setup: Developers will run tools/windows/dev.ps1, which uses Docker Compose to spin up all necessary services (api, web, worker, db, redis).
+- Environment Variables: All secrets and configurations will be managed through .env files, with .env.example serving as a template.
+- CI/CD: The ci.yml workflow in GitHub Actions will run on every pull request, executing linters and test suites for both the frontend and backend.
+
+## 8. Testing Strategy
+
+- Backend Unit Tests (Pytest): Focus on the business logic within the services, particularly the rule engine's verdict logic and the text extraction/sentence splitting functions.
+- Backend Integration Tests (Pytest): Test the API endpoints' interaction with the database and the full processing pipeline from file upload to finding persistence.
+- Frontend Component Tests (Vitest/RTL): Test individual React components in isolation to verify rendering and user interactions.
+- E2E Smoke Test (Playwright): A single, critical-path test that simulates the entire user journey: uploading a document, polling for completion, viewing the findings, opening the evidence drawer, and exporting the report.
+
+## 9. Coding Standards
+
+- Type Sharing: All data models and types shared between the frontend and backend will reside in the packages/shared directory.
+- API Calls: The frontend will use a dedicated service layer for all API interactions; no direct fetch calls in components.
+- Environment Variables: Access environment variables only through dedicated configuration modules, never directly via process.env.
+- Error Handling: All API routes must use a standardized error handling middleware to ensure consistent error responses.
+- Database Access: The backend will use the Repository Pattern; no direct ORM calls from the router/controller layer.
 │       └── requirements.txt
 ├── packages/
 │   └── shared/         # Shared TypeScript types and utilities
