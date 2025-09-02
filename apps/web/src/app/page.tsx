@@ -64,7 +64,7 @@ export default function LandingPage() {
       </div>
 
       {/* Navigation */}
-      <nav className={`nav-fixed ${isScrolled ? 'scrolled' : ''}`}>
+      <nav className={isScrolled ? 'scrolled' : ''} id="navbar">
         <div className="nav-container">
           <div className="logo">Blackletter Systems</div>
           <ul className="nav-links">
@@ -72,7 +72,7 @@ export default function LandingPage() {
             <li><a href="#faq">FAQ</a></li>
           </ul>
           <button className="theme-toggle" onClick={toggleTheme}>
-            <span>{isDarkTheme ? '☀️ Light' : '🌙 Dark'}</span>
+            <span id="theme-icon">{isDarkTheme ? '☀️ Light' : '🌙 Dark'}</span>
           </button>
         </div>
       </nav>
@@ -129,31 +129,26 @@ export default function LandingPage() {
           
           <div className="features-grid">
             <div className="feature-card fade-in stagger-1">
-              <div className="feature-icon">⚖️</div>
               <h3>Compliance-first, not generic AI</h3>
               <p>Purpose-built for UK GDPR and SRA expectations — built to reduce risk, not just speed up text.</p>
             </div>
             
             <div className="feature-card fade-in stagger-2">
-              <div className="feature-icon">🔍</div>
               <h3>Explainable by design</h3>
               <p>Every finding shows the clause snippet, detector rule ID, and short why so reviewers can validate quickly.</p>
             </div>
             
             <div className="feature-card fade-in stagger-3">
-              <div className="feature-icon">📋</div>
               <h3>Auditable outputs</h3>
               <p>Export a clean report (PDF/HTML) with findings, snippets, and timestamps — ready for internal sign-off or vendor follow-up.</p>
             </div>
             
             <div className="feature-card fade-in stagger-4">
-              <div className="feature-icon">💰</div>
               <h3>Token-disciplined, cost-controlled</h3>
               <p>LLM usage is optional and snippet-only with hard caps. Deterministic rules do the heavy lifting.</p>
             </div>
             
             <div className="feature-card fade-in stagger-5">
-              <div className="feature-icon">🏢</div>
               <h3>Built for UK SMEs</h3>
               <p>Designed for 10–200 fee-earner firms. Windows-friendly development with a simple path to scale.</p>
             </div>

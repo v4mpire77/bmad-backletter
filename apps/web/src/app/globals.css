@@ -67,21 +67,31 @@
   }
 }
 
+/* Landing Page Custom Styles - High Priority Override */
+@layer components {
+
+/* Landing Page Styles - High Specificity */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
 /* Landing Page Styles */
 :root {
   /* Light theme colors */
-  --primary-bg: #fafafa;
-  --secondary-bg: #ffffff;
-  --card-bg: #ffffff;
-  --accent-gold: #c9a961;
-  --accent-gold-light: #d4b36a;
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
-  --text-muted: #888888;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --gradient-primary: linear-gradient(135deg, #c9a961 0%, #d4b36a 100%);
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --primary-bg: #fafafa !important;
+  --secondary-bg: #ffffff !important;
+  --card-bg: #ffffff !important;
+  --accent-gold: #c9a961 !important;
+  --accent-gold-light: #d4b36a !important;
+  --text-primary: #1a1a1a !important;
+  --text-secondary: #4a4a4a !important;
+  --text-muted: #888888 !important;
+  --border-color: rgba(0, 0, 0, 0.1) !important;
+  --gradient-primary: linear-gradient(135deg, #c9a961 0%, #d4b36a 100%) !important;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
 }
 
 .dark-theme {
@@ -101,13 +111,28 @@
 }
 
 /* Enhanced typography and readability */
-.dark-theme body,
-.dark-theme .container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  background: var(--primary-bg);
-  color: var(--text-primary);
-  line-height: 1.75;
-  transition: all 0.3s ease;
+html body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+  background: var(--primary-bg) !important;
+  color: var(--text-primary) !important;
+  line-height: 1.75 !important;
+  transition: all 0.3s ease !important;
+}
+
+body.dark-theme {
+  /* Enhanced dark theme colors */
+  --primary-bg: #0f0f0f;
+  --secondary-bg: #1a1a1a;
+  --card-bg: #242424;
+  --accent-gold: #f4d03f;
+  --accent-gold-light: #f7dc6f;
+  --text-primary: #ffffff;
+  --text-secondary: #b8b8b8;
+  --text-muted: #6b6b6b;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --gradient-primary: linear-gradient(135deg, #f4d03f 0%, #f7dc6f 100%);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* Floating Background Elements */
@@ -164,7 +189,7 @@
 }
 
 /* Navigation */
-.nav-fixed {
+nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -174,13 +199,13 @@
   transition: all 0.3s ease;
 }
 
-.nav-fixed.scrolled {
+nav.scrolled {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-color);
 }
 
-.dark-theme .nav-fixed.scrolled {
+.dark-theme nav.scrolled {
   background: rgba(15, 15, 15, 0.95);
 }
 
@@ -720,3 +745,5 @@
     display: none;
   }
 }
+
+} /* End @layer components */
