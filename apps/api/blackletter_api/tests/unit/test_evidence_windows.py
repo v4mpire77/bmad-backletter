@@ -89,6 +89,22 @@ def test_handle_boundary_cases_non_ascii():
     assert len(result["snippet"]) > 0
 
 
+def test_build_window_span_across_sentences(tmp_path, monkeypatch):
+    """build_window includes the full span when it crosses sentences."""
+    monkeypatch.setattr(storage, "DATA_ROOT", tmp_path)
+    analysis_id = "analysis1"
+    analysis_dir = storage.analysis_dir(analysis_id)
+    extraction = {"page_map": [{"page": 1, "start": 0, "end": 201}], "sentences": SAMPLE_SENTENCES}
+    (analysis_dir / "extraction.json").write_text(json.dumps(extraction), encoding="utf-8")
+
+    # Span covers sentences 4-6 with one sentence of context requested
+    result = build_window(analysis_id, start=90, end=150, n_sentences=1)
+
+    assert result["start"] == 56  # sentence 3 start
+    assert result["end"] == 201   # sentence 7 end
+    assert "This is the seventh sentence." in result["snippet"]
+
+
 # Legacy tests - using build_window_legacy for backward compatibility
 def test_build_window_standard_case():
     """Tests a standard window with default before=2, after=2 values."""
