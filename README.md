@@ -26,9 +26,9 @@ The orchestra agent has successfully implemented a **fully functional contract a
 Run the setup script to create a virtual environment and install dependencies:
 
 ```bash
-./scripts/setup.sh            # macOS/Linux
+./scripts/setup.sh                         # macOS/Linux
 # or
-pwsh -NoProfile -File ./setup.ps1  # Windows PowerShell
+pwsh -NoProfile -File tools/windows/setup.ps1  # Windows PowerShell
 ```
 
 Then start the API:
@@ -36,6 +36,14 @@ Then start the API:
 ```bash
 source .venv/bin/activate     # Windows: .\.venv\Scripts\Activate.ps1
 uvicorn blackletter_api.main:app --reload --app-dir apps/api
+```
+
+On Windows you can start the API and/or frontend with a helper script:
+
+```powershell
+pwsh -NoProfile -File tools/windows/dev.ps1      # run API and web
+pwsh -NoProfile -File tools/windows/dev.ps1 -Api # API only
+pwsh -NoProfile -File tools/windows/dev.ps1 -Web # web only
 ```
 
 > **Note**: The in-memory orchestrator uses thread locks for safety but
