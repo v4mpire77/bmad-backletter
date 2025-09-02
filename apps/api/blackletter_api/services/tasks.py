@@ -4,15 +4,16 @@ import os
 import time
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
-from uuid import uuid4
 
-from redis import Redis
+from sqlalchemy.orm import Session
 
 from .storage import analysis_dir, write_analysis_json
 from .extraction import run_extraction
 from .detector_runner import run_detectors
+from ..database import SessionLocal
+from ..models.entities import Job
 from ..models.schemas import JobState
 from .celery_app import celery_app
 
@@ -26,49 +27,38 @@ class JobRecord:
     created_at: datetime
 
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
-
-
-def _job_key(job_id: str) -> str:
-    return f"job:{job_id}"
-
-
-def new_job(analysis_id: str | None = None) -> str:
-    job_id = str(uuid4())
-    record = {
-        "id": job_id,
-        "status": JobState.queued.value,
-        "analysis_id": analysis_id or "",
-        "error_reason": "",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    redis_client.hset(_job_key(job_id), mapping=record)
-    log_extras = {"job_id": job_id, "analysis_id": analysis_id}
+def new_job(db: Session, analysis_id: str | None = None) -> str:
+    job = Job(analysis_id=analysis_id, status=JobState.queued.value)
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    log_extras = {"job_id": str(job.id), "analysis_id": analysis_id}
     logger.info("New job created and queued", extra=log_extras)
-    return job_id
+    return str(job.id)
 
 
-def get_job(job_id: str) -> Optional[JobRecord]:
-    data = redis_client.hgetall(_job_key(job_id))
-    if not data:
+def get_job(db: Session, job_id: str) -> Optional[JobRecord]:
+    job = db.get(Job, job_id)
+    if job is None:
         return None
     return JobRecord(
-        id=data["id"],
-        status=JobState(data["status"]),
-        analysis_id=data.get("analysis_id") or None,
-        error_reason=data.get("error_reason") or None,
-        created_at=datetime.fromisoformat(data["created_at"]),
+        id=str(job.id),
+        status=JobState(job.status),
+        analysis_id=str(job.analysis_id) if job.analysis_id else None,
+        error_reason=job.error_reason,
+        created_at=job.created_at,
     )
 
 
-def set_status(job_id: str, status: JobState, error_reason: str | None = None) -> None:
-    if not redis_client.exists(_job_key(job_id)):
+def set_status(
+    db: Session, job_id: str, status: JobState, error_reason: str | None = None
+) -> None:
+    job = db.get(Job, job_id)
+    if job is None:
         return
-    redis_client.hset(
-        _job_key(job_id),
-        mapping={"status": status.value, "error_reason": error_reason or ""},
-    )
+    job.status = status.value
+    job.error_reason = error_reason
+    db.commit()
 
 
 @celery_app.task(name="process_job")
@@ -77,8 +67,9 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
     log_extras = {"job_id": job_id, "analysis_id": analysis_id}
     logger.info(f"Starting processing for file: {filename}", extra=log_extras)
 
+    db = SessionLocal()
     try:
-        set_status(job_id, JobState.running)
+        set_status(db, job_id, JobState.running)
         a_dir = analysis_dir(analysis_id)
         source_path = a_dir / filename
 
@@ -98,7 +89,7 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
             latency_ms = round((t_end_ext - t_start_ext) * 1000)
             log_extras["latency_ms"] = latency_ms
             logger.error(f"Extraction failed: {e}", extra=log_extras)
-            set_status(job_id, JobState.error, error_reason=f"extraction_failed: {e}")
+            set_status(db, job_id, JobState.error, error_reason=f"extraction_failed: {e}")
             return
 
         # Stage 2: Detection
@@ -114,12 +105,14 @@ def process_job(job_id: str, analysis_id: str, filename: str, size: int) -> None
             latency_ms = round((t_end_det - t_start_det) * 1000)
             log_extras["latency_ms"] = latency_ms
             logger.error(f"Detection failed: {e}", extra=log_extras)
-            set_status(job_id, JobState.error, error_reason=f"detection_failed: {e}")
+            set_status(db, job_id, JobState.error, error_reason=f"detection_failed: {e}")
             return
 
-        set_status(job_id, JobState.done)
+        set_status(db, job_id, JobState.done)
         logger.info("Job processing completed successfully", extra=log_extras)
 
     except Exception as e:
         logger.error(f"Unhandled error in job processing: {e}", extra=log_extras)
-        set_status(job_id, JobState.error, error_reason=str(e))
+        set_status(db, job_id, JobState.error, error_reason=str(e))
+    finally:
+        db.close()

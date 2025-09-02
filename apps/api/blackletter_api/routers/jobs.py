@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
+from ..database import get_db
 from ..models.schemas import JobStatus
 from ..services.tasks import get_job
 
@@ -10,8 +12,8 @@ router = APIRouter(tags=["jobs"])
 
 
 @router.get("/jobs/{job_id}", response_model=JobStatus)
-def get_job_status(job_id: str) -> JobStatus:
-    job = get_job(job_id)
+def get_job_status(job_id: str, db: Session = Depends(get_db)) -> JobStatus:
+    job = get_job(db, job_id)
     if not job:
         raise HTTPException(
             status_code=404,

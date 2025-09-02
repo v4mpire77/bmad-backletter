@@ -9,7 +9,6 @@ client = TestClient(app)
 
 
 def test_upload_enqueues_job(monkeypatch):
-    monkeypatch.setattr(tasks, "redis_client", fakeredis.FakeRedis(decode_responses=True))
     called = {}
 
     def fake_delay(job_id, analysis_id, filename, size):

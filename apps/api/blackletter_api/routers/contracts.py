@@ -93,7 +93,7 @@ async def upload_contract(
             },
         ) from e
 
-    job_id = new_job(analysis_id=analysis_id)
+    job_id = new_job(db, analysis_id=analysis_id)
     process_job.delay(job_id, analysis_id, safe_name, size)
 
     return JobStatus(

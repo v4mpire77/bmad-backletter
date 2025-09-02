@@ -4,6 +4,10 @@ from pathlib import Path
 from typing import Dict, List, Any
 import yaml
 
+
+class RulepackError(Exception):
+    """Raised when rulepack loading fails."""
+
 # repo root is two levels up from services; adjust to find bundled rules
 BASE_DIR = Path(__file__).resolve().parents[1]
 RULES_DIR = BASE_DIR / "rules"

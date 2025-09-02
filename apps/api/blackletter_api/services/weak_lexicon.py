@@ -31,3 +31,15 @@ def get_counter_anchors() -> List[str]:
     anchors = list(lex.strengtheners or [])
     return anchors or DEFAULT_STRENGTHENERS.copy()
 
+
+def get_weak_terms_with_metadata() -> List[tuple[str, str]]:
+    """Return weak terms paired with category metadata."""
+    lex = _load()
+    if not lex:
+        return [(t, "default") for t in DEFAULT_WEAK_TERMS]
+    pairs = []
+    pairs += [(t, "hedging") for t in lex.hedging]
+    pairs += [(t, "discretionary") for t in lex.discretionary]
+    pairs += [(t, "vague") for t in lex.vague]
+    return pairs or [(t, "default") for t in DEFAULT_WEAK_TERMS]
+

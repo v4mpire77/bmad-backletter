@@ -3,3 +3,5 @@ uvicorn
 celery
 redis
 fakeredis
+sqlalchemy
+alembic
