@@ -1,0 +1,335 @@
+name: BMAD + Jules Automation Workflow
+
+on:
+  issues:
+    types: [opened, labeled, edited]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  detect-jules-label:
+    if: |
+      github.event_name == 'issues' && 
+      (github.event.action == 'labeled' && github.event.label.name == 'jules') ||
+      (github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'jules'))
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse BMAD Context
+        id: parse-bmad
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+            const title = issue.title || '';
+            
+            // Look for BMAD-specific patterns in title and body
+            const isBmadTask = title.includes('BMAD') || body.includes('@sm') || body.includes('@dev') || body.includes('@qa') || body.includes('*create') || body.includes('*review');
+            
+            if (!isBmadTask) {
+              console.log('Not a BMAD task, allowing standard Jules processing');
+              return;
+            }
+            
+            // Extract BMAD-specific information
+            const agentMatch = body.match(/@(sm|dev|qa|pm|bmad-master)\b/);
+            const commandMatch = body.match(/\*([a-z-]+(?:-[a-z-]+)*)/);
+            const epicMatch = body.match(/EPIC\d+(?:-\w+)?/i);
+            const storyMatch = body.match(/STORY\d+(?:\.\d+)?/i);
+            
+            const bmadAgent = agentMatch ? agentMatch[1] : null;
+            const bmadCommand = commandMatch ? commandMatch[0] : null;
+            const epic = epicMatch ? epicMatch[0] : null;
+            const story = storyMatch ? storyMatch[0] : null;
+            
+            core.setOutput('is_bmad_task', 'true');
+            core.setOutput('bmad_agent', bmadAgent || 'bmad-master');
+            core.setOutput('bmad_command', bmadCommand || '*help');
+            core.setOutput('epic', epic || 'Unknown');
+            core.setOutput('story', story || 'Unknown');
+
+      - name: Provide BMAD Context to Jules
+        if: steps.parse-bmad.outputs.is_bmad_task == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const bmadAgent = '${{ steps.parse-bmad.outputs.bmad_agent }}';
+            const bmadCommand = '${{ steps.parse-bmad.outputs.bmad_command }}';
+            const epic = '${{ steps.parse-bmad.outputs.epic }}';
+            const story = '${{ steps.parse-bmad.outputs.story }}';
+            const issueNumber = context.payload.issue.number;
+            
+            const bmadInstructions = `## 🎯 BMAD Workflow Context for Jules
+
+Hello @jules! This is a BMAD Method task. Please follow the structured BMAD workflow:
+
+### 📋 Task Details
+- **BMAD Agent:** \`${bmadAgent}\`
+- **Command:** \`${bmadCommand}\`
+- **Epic:** ${epic}
+- **Story:** ${story}
+
+### 🔧 BMAD Execution Steps
+
+1. **Load Agent Persona:** Switch to @${bmadAgent} agent with full BMAD context
+2. **Execute Command:** Run \`${bmadCommand}\` following BMAD best practices
+3. **Follow BMAD Workflow:**
+   - Use fresh context windows between agent switches
+   - Follow sequential task execution (don't skip steps)
+   - Update story files in \`docs/stories/\` directory
+   - Maintain proper File List for code changes
+   - Mark story status appropriately (Draft → Approved → Review → Done)
+
+### 📁 File Structure to Maintain
+\`\`\`
+docs/
+├── stories/           # Story files (update these)
+├── epics/            # Epic definitions (reference these)
+├── architecture/     # Architecture docs (reference these)
+└── qa/               # QA assessments (create if needed)
+\`\`\`
+
+### ✅ BMAD Completion Checklist
+- [ ] Agent persona correctly loaded
+- [ ] Command executed with proper context
+- [ ] Story file updated with all required sections
+- [ ] File List includes all changed files
+- [ ] Status properly updated
+- [ ] Tests included where appropriate
+- [ ] BMAD template format followed
+
+### 🎯 Quality Standards
+- Follow BMAD story template format exactly
+- Include comprehensive acceptance criteria
+- Ensure technical context is sufficient for implementation
+- Document integration points and constraints
+- Include proper testing requirements
+
+**After completion:** Tag @codex for code review by including "@codex" in your final comment.
+
+**Important:** This is a BMAD workflow task - please maintain all BMAD conventions and quality standards throughout execution.
+
+---
+*Automated BMAD context provided by workflow*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: bmadInstructions
+            });
+
+  monitor-jules-completion:
+    if: |
+      github.event_name == 'issue_comment' && 
+      github.event.comment.user.login == 'jules' &&
+      contains(github.event.comment.body, '@codex')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Codex Review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment;
+            const issueNumber = context.payload.issue.number;
+            const issue = context.payload.issue;
+            
+            // Extract relevant information from Jules' comment
+            const julesComment = comment.body;
+            const prMatch = julesComment.match(/(?:pull request|PR).*?#(\d+)/i);
+            const prNumber = prMatch ? prMatch[1] : null;
+            
+            const codexInstructions = `## 🔍 Codex Review Request
+
+@codex Please review the BMAD work completed by Jules:
+
+### 📋 Original Task
+**Title:** ${issue.title}
+**Issue:** #${issueNumber}
+${prNumber ? `**Pull Request:** #${prNumber}` : ''}
+
+### 📝 Jules Summary
+${julesComment.split('@codex')[0].trim()}
+
+### 🎯 BMAD Review Scope
+Please verify the following BMAD-specific requirements:
+
+#### 1. Story File Quality
+- [ ] Follows BMAD story template format
+- [ ] All required sections are complete
+- [ ] Acceptance criteria are comprehensive and testable
+- [ ] Technical context is sufficient for implementation
+- [ ] File List accurately reflects all changes
+
+#### 2. Code Quality (if applicable)
+- [ ] Follows project coding standards
+- [ ] Includes appropriate tests
+- [ ] Handles edge cases and error scenarios
+- [ ] Integration points are properly implemented
+- [ ] Performance considerations addressed
+
+#### 3. BMAD Workflow Compliance
+- [ ] Agent persona was correctly applied
+- [ ] Sequential task execution followed
+- [ ] Story status properly updated
+- [ ] Documentation is complete and accurate
+- [ ] Quality gates are met
+
+#### 4. Technical Review
+- [ ] Code compiles and builds successfully
+- [ ] All tests pass
+- [ ] No security vulnerabilities introduced
+- [ ] Backward compatibility maintained
+- [ ] API contracts honored
+
+### 📊 Expected Outputs
+1. **Overall Assessment:** Approved ✅ / Changes Needed ❌
+2. **BMAD Compliance Score:** Rate adherence to BMAD methodology
+3. **Code Quality Rating:** Technical implementation assessment
+4. **Specific Feedback:** Actionable recommendations for improvement
+5. **Next Steps:** Clear guidance on any required changes
+
+### 🚀 Auto-Actions
+- If **Approved**: Low-risk changes will be auto-merged
+- If **Changes Needed**: Issue will remain open for revision
+- **Documentation**: Update any relevant project documentation
+
+**Quality Gate Decision:** Please provide your recommendation for story completion status.
+
+---
+*Automated BMAD + Codex integration*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: codexInstructions
+            });
+
+  auto-close-approved:
+    if: |
+      github.event_name == 'issue_comment' && 
+      github.event.comment.user.login == 'codex' &&
+      (contains(github.event.comment.body, '✅') || 
+       contains(github.event.comment.body, 'Approved') || 
+       contains(github.event.comment.body, 'LGTM'))
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Complete BMAD Task
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.payload.issue.number;
+            const comment = context.payload.comment;
+            
+            // Extract approval details
+            const isLowRisk = comment.body.includes('low-risk') || comment.body.includes('Low Risk');
+            const needsChanges = comment.body.includes('❌') || comment.body.includes('Changes Needed');
+            
+            if (needsChanges) {
+              console.log('Codex requested changes, keeping issue open');
+              return;
+            }
+            
+            // Add completion labels
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['completed', 'bmad-automated', 'codex-approved']
+            });
+            
+            // Create completion summary
+            const completionSummary = `## ✅ BMAD Task Completed Successfully
+
+### 🎯 Workflow Summary
+- **Jules Execution:** ✅ Completed
+- **Codex Review:** ✅ Approved
+- **BMAD Compliance:** ✅ Verified
+- **Quality Gate:** ✅ Passed
+
+### 🚀 Automation Results
+- Story development and implementation completed
+- Code review passed with Codex approval
+- All BMAD methodology requirements met
+- ${isLowRisk ? 'Changes auto-merged due to low risk assessment' : 'Manual merge required for review'}
+
+### 📁 Deliverables
+- Updated story files in \`docs/stories/\`
+- Code implementation (if applicable)
+- Test coverage verification
+- Documentation updates
+
+**Status:** This BMAD task has been successfully completed through the automated Jules → Codex workflow.
+
+---
+*Automated completion by BMAD + Jules + Codex integration*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: completionSummary
+            });
+            
+            // Close the issue
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed'
+            });
+
+  create-follow-up-tasks:
+    if: |
+      github.event_name == 'issue_comment' && 
+      github.event.comment.user.login == 'codex' &&
+      contains(github.event.comment.body, 'follow-up')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Generate Follow-up Tasks
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment;
+            const originalIssue = context.payload.issue;
+            
+            // Extract follow-up recommendations from Codex comment
+            const followUpMatch = comment.body.match(/follow-up.*?:([\s\S]*?)(?=\n##|\n---|\n\*|$)/i);
+            const followUpTasks = followUpMatch ? followUpMatch[1].trim() : '';
+            
+            if (followUpTasks) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `BMAD Follow-up: ${originalIssue.title}`,
+                body: `## 🔄 BMAD Follow-up Tasks
+
+Generated from completed task: #${originalIssue.number}
+
+### 📋 Codex Recommendations
+${followUpTasks}
+
+### 🎯 Next Steps
+Please review these recommendations and create specific BMAD tasks as needed.
+
+**Parent Task:** #${originalIssue.number}
+**Generated by:** Codex automated follow-up detection
+
+---
+*Add the \`jules\` label to execute these follow-up tasks*`,
+                labels: ['bmad', 'follow-up', 'auto-generated']
+              });
+            }
