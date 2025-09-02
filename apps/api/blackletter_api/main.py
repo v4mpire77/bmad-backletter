@@ -30,7 +30,7 @@ from .routers import docs, exports
 from .routers import risk_analysis, admin
 from .routers import orchestration, gemini
 from .routers import document_qa
-from .routers import auth, devtools, settings
+from .routers import auth, devtools, settings, organizations
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -221,6 +221,7 @@ app.include_router(document_qa.router, prefix="/api")
 app.include_router(auth.router, prefix="/api")
 app.include_router(devtools.router, prefix="/api/dev")
 app.include_router(settings.router)
+app.include_router(organizations.router, prefix="/api")
 
 # V1 prefixed routes
 app.include_router(contracts.router, prefix="/v1")
