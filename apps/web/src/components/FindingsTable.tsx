@@ -7,11 +7,19 @@ import type { Finding } from '@bmad/shared/types';
 
 interface FindingsTableProps {
   findings: Finding[];
+  onSelect?: (finding: Finding) => void;
 }
 
-export default function FindingsTable({ findings }: FindingsTableProps) {
+export default function FindingsTable({ findings, onSelect }: FindingsTableProps) {
   const [selected, setSelected] = useState<Finding | null>(null);
   const handleClose = () => setSelected(null);
+  const handleRowClick = (f: Finding) => {
+    if (onSelect) {
+      onSelect(f);
+    } else {
+      setSelected(f);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -27,7 +35,7 @@ export default function FindingsTable({ findings }: FindingsTableProps) {
           {findings.map(f => (
             <tr
               key={f.id}
-              onClick={() => setSelected(f)}
+              onClick={() => handleRowClick(f)}
               className="cursor-pointer hover:bg-gray-50"
             >
               <td className="p-4">{f.rule_id}</td>
@@ -37,10 +45,12 @@ export default function FindingsTable({ findings }: FindingsTableProps) {
           ))}
         </tbody>
       </table>
-      <EvidenceDrawer isOpen={!!selected} onClose={handleClose}>
-        <p><span className="font-medium">Rule:</span> {selected?.rule_id}</p>
-        <p className="mt-2 whitespace-pre-wrap">{selected?.snippet}</p>
-      </EvidenceDrawer>
+      {!onSelect && (
+        <EvidenceDrawer isOpen={!!selected} onClose={handleClose}>
+          <p><span className="font-medium">Rule:</span> {selected?.rule_id}</p>
+          <p className="mt-2 whitespace-pre-wrap">{selected?.snippet}</p>
+        </EvidenceDrawer>
+      )}
     </div>
   );
 }

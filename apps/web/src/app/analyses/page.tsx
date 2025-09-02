@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface Analysis {
   id: string;
@@ -55,15 +56,20 @@ export default function AnalysesPage() {
       ) : (
         <ul className="divide-y rounded-2xl border">
           {items.map(a => (
-            <li key={a.id} className="flex items-center justify-between p-4">
-              <span>{a.name}</span>
-              <span
-                className={`px-2 py-1 text-xs font-semibold rounded-full ${statusStyle(
-                  a.status,
-                )}`}
+            <li key={a.id}>
+              <Link
+                href={`/analyses/${a.id}`}
+                className="flex items-center justify-between p-4 block"
               >
-                {a.status.charAt(0).toUpperCase() + a.status.slice(1)}
-              </span>
+                <span>{a.name}</span>
+                <span
+                  className={`px-2 py-1 text-xs font-semibold rounded-full ${statusStyle(
+                    a.status,
+                  )}`}
+                >
+                  {a.status.charAt(0).toUpperCase() + a.status.slice(1)}
+                </span>
+              </Link>
             </li>
           ))}
         </ul>
