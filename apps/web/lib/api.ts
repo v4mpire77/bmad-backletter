@@ -8,9 +8,7 @@ export async function createJob(file: File): Promise<{ job_id: string }> {
   return res.json();
 }
 
-export async function getJob(jobId: string) {
-  const res = await fetch(`${API}/api/jobs/${jobId}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Job lookup failed (${res.status})`);
+  if (!res.ok) throw new Error(`Job lookup failed (${res.status}): ${await res.text()}`);
   return res.json() as Promise<{ status: string; error?: string | null }>;
 }
 
