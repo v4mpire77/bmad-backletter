@@ -6,6 +6,8 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import Dict
 
 from ..services.evidence import build_window
+from ..database import SessionLocal
+from ..models.entities import OrgSetting
 
 # Only enable in development
 router = APIRouter()
@@ -18,8 +20,8 @@ DEV_TOOLS_ENABLED = os.getenv("ENABLE_DEV_TOOLS", "false").lower() == "true"
 async def preview_evidence_window(
     analysis_id: str,
     start: int = Query(..., description="Start character position"),
-    end: int = Query(..., description="End character position"), 
-    n: int = Query(2, description="Number of sentences before/after")
+    end: int = Query(..., description="End character position"),
+    n: int | None = Query(None, description="Number of sentences before/after")
 ) -> Dict:
     """
     Debug endpoint for Story 1.3 - Evidence Window Builder.
@@ -29,7 +31,7 @@ async def preview_evidence_window(
         analysis_id: Analysis ID
         start: Start character position
         end: End character position
-        n: Number of sentences (default 2)
+        n: Override sentence count; defaults to OrgSetting value
         
     Returns:
         Evidence window preview
@@ -41,7 +43,11 @@ async def preview_evidence_window(
         )
     
     try:
-        window = build_window(analysis_id, start, end, n)
+        if n is None:
+            with SessionLocal() as db:
+                settings = db.query(OrgSetting).first()
+                n = settings.evidence_window_sentences if settings else 2
+        window = build_window(analysis_id, start, end, n_sentences=n)
         return {
             "analysis_id": analysis_id,
             "window": window,

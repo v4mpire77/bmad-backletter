@@ -1,8 +1,11 @@
 import json
 
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from blackletter_api.services.evidence import build_window, handle_boundary_cases
+from blackletter_api.models.entities import Base, OrgSetting, LLMProvider, RetentionPolicy
 
 
 SAMPLE_DATA = {
@@ -106,6 +109,54 @@ def test_build_window_no_page_leakage(analysis: str) -> None:
     assert result["start"] == 202
     assert result["end"] == 222
     assert result["snippet"] == "A sentence on page 2."
+
+
+@pytest.fixture
+def session_factory():
+    def _factory(n_sentences: int):
+        engine = create_engine(
+            "sqlite:///:memory:", connect_args={"check_same_thread": False}
+        )
+        TestingSession = sessionmaker(bind=engine)
+        Base.metadata.create_all(engine)
+        session = TestingSession()
+        setting = OrgSetting(
+            llm_provider=LLMProvider.none,
+            ocr_enabled=False,
+            retention_policy=RetentionPolicy.none,
+            evidence_window_sentences=n_sentences,
+        )
+        session.add(setting)
+        session.commit()
+        return session
+
+    return _factory
+
+
+def test_build_window_uses_org_setting_contracts(analysis: str, session_factory) -> None:
+    db = session_factory(1)
+    result = build_window(analysis, 90, 94, db=db)
+
+    assert result["start"] == 56
+    assert result["end"] == 142
+    assert (
+        result["snippet"]
+        == "This is the third sentence. This is the fourth sentence. This is the fifth sentence."
+    )
+    db.close()
+
+
+def test_build_window_uses_org_setting_expands(analysis: str, session_factory) -> None:
+    db = session_factory(3)
+    result = build_window(analysis, 90, 94, db=db)
+
+    assert result["start"] == 0
+    assert result["end"] == 201
+    assert (
+        result["snippet"]
+        == "This is the first sentence. This is the second sentence. This is the third sentence. This is the fourth sentence. This is the fifth sentence. This is the sixth sentence. This is the seventh sentence."
+    )
+    db.close()
 
 
 def test_handle_boundary_cases_start_of_document() -> None:

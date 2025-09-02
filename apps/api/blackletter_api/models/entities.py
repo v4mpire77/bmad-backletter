@@ -116,6 +116,7 @@ class OrgSetting(Base):
     llm_provider = Column(Enum(LLMProvider), nullable=False, default="none")
     ocr_enabled = Column(Boolean, nullable=False, default=False)
     retention_policy = Column(Enum(RetentionPolicy), nullable=False, default="none")
+    evidence_window_sentences = Column(Integer, nullable=False, default=2)
     
     # Audit fields
     created_at = Column(DateTime, nullable=False, server_default=func.now())
