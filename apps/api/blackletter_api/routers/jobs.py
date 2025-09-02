@@ -13,7 +13,10 @@ router = APIRouter(tags=["jobs"])
 def get_job_status(job_id: str) -> JobStatus:
     job = get_job(job_id)
     if not job:
-        raise HTTPException(status_code=404, detail="not_found")
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "not_found", "message": "Job not found"},
+        )
     return JobStatus(
         id=job.id,
         job_id=job.id,

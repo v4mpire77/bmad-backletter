@@ -44,7 +44,13 @@ async def upload_contract(
         elif lower.endswith(".docx"):
             ext = ".docx"
     if ext is None:
-        raise HTTPException(status_code=415, detail="unsupported_file_type")
+        raise HTTPException(
+            status_code=415,
+            detail={
+                "code": "unsupported_file_type",
+                "message": "Only PDF or DOCX files are supported.",
+            },
+        )
 
     # Create the analysis record in the database
     analysis = Analysis(
@@ -70,10 +76,22 @@ async def upload_contract(
         db.commit()
     except ValueError as e:
         if str(e) == "file_too_large":
-            raise HTTPException(status_code=413, detail="file_too_large")
+            raise HTTPException(
+                status_code=413,
+                detail={
+                    "code": "file_too_large",
+                    "message": "File exceeds 10MB limit.",
+                },
+            )
         raise
     except OSError as e:
-        raise HTTPException(status_code=500, detail="disk_io_error") from e
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "code": "disk_io_error",
+                "message": "Could not save uploaded file.",
+            },
+        ) from e
 
     job_id = new_job(analysis_id=analysis_id)
     process_job.delay(job_id, analysis_id, safe_name, size)
