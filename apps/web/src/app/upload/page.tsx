@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "../../lib/api";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -26,7 +27,10 @@ export default function UploadPage() {
     try {
       const body = new FormData();
       body.append("file", file);
-      const res = await fetch("/api/uploads", { method: "POST", body });
+      const res = await fetch(apiUrl("/v1/docs/upload"), {
+        method: "POST",
+        body,
+      });
       if (!res.ok) throw new Error("upload_failed");
       const { analysis_id, status } = await res.json();
       setStatus(status);

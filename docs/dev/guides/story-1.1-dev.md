@@ -16,7 +16,7 @@ Accept PDF/DOCX uploads (≤10MB), enqueue analysis job, return `{ job_id, analy
 
 ## Implementation Steps
 - API Router `uploads.py` (FastAPI)
-  - POST `/api/uploads` (multipart)
+  - POST `/v1/docs/upload` (multipart)
   - Validate: content-type PDF/DOCX; size ≤10MB (fail with 400)
   - Create analysis id (UUID); call `services.tasks.enqueue('analyze', { analysis_id })`
   - Return 200 `{ job_id, analysis_id, status:'queued' }`
@@ -32,7 +32,7 @@ Accept PDF/DOCX uploads (≤10MB), enqueue analysis job, return `{ job_id, analy
   - On success, optionally display “Queued” → “Done” (mock already exists); keep interface compatible
 
 ## Data Contracts
-- POST `/api/uploads`
+- POST `/v1/docs/upload`
   - Request: multipart file `file`
   - Response 200: `{ job_id: string, analysis_id: string, status: 'queued' }`
   - Errors: 400 invalid type/size
