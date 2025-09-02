@@ -3,8 +3,7 @@ REM Blackletter Systems - Render Deployment Script (Windows)
 REM This script helps prepare and deploy the application to Render
 
 echo 🚀 Blackletter Systems - Render Deployment
-echo ==========================================
-
+echo 
 REM Check if git is initialized
 if not exist ".git" (
     echo ❌ Git repository not found. Please initialize git first:
@@ -57,7 +56,7 @@ echo ✅ Frontend package.json found
 REM Check for environment variables
 echo.
 echo 🔧 Environment Variables Required:
-echo ==================================
+echo ======
 echo Backend (set in Render dashboard):
 echo   - OPENAI_API_KEY
 echo   - GOOGLE_API_KEY (if using Gemini)
@@ -74,7 +73,7 @@ git push origin main
 
 echo.
 echo 🎉 Deployment Preparation Complete!
-echo ==================================
+echo ======
 echo.
 echo Next steps:
 echo 1. Go to https://dashboard.render.com

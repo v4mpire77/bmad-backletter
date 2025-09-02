@@ -4,7 +4,7 @@
 
 - [x] **1. Create TODO.md file** - Track pending tasks
 - [ ] **2. Resolve All Remaining Merge Conflicts**
-  - [ ] Search for conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
+  - [ ] Search for conflict markers (`<<<<<<<`, ``, `>>>>>>>`)
   - [ ] Review config files: `docker-compose.yml`, `.env.example`, `frontend/package.json`
   - [ ] Validate all files are conflict-free
 - [ ] **3. Commit All Resolved Changes**
@@ -31,12 +31,12 @@
 
 ```powershell
 # PowerShell - Search for merge conflicts
-Get-ChildItem -Recurse -Include *.* | Select-String '<<<<<<<|=======|>>>>>>>' | Format-Table -AutoSize
+Get-ChildItem -Recurse -Include *.* | Select-String '<<<<<<<||>>>>>>>' | Format-Table -AutoSize
 ```
 
 ```sh
 # Bash alternative
-grep -r '<<<<<<<\|=======' .
+grep -r '<<<<<<<\|' .
 ```
 
 ## 🚨 **Pre-Commit Validation**

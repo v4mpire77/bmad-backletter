@@ -173,7 +173,7 @@ python test_vague_terms.py
 
 ```
 🔍 Testing Vague Terms Detection System
-==================================================
+=
 📄 Document stored: test_contract.pdf
 📝 Text length: 1234 characters
 

@@ -1,12 +1,10 @@
   "name": "blackletter-systems-frontend",
   "version": "0.1.0",
   "private": true,
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-<<<<<<< HEAD
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "test": "jest",
@@ -93,7 +91,6 @@
     "typescript": "^5"
   }
 }
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a
 {
   "name": "blackletter-frontend",
   "version": "1.0.0",
@@ -153,17 +150,10 @@
   ],
   "author": "Blackletter Systems",
   "license": "PROPRIETARY"
-}
-=======
-  "name": "blackletter-systems-frontend",
-  "version": "0.1.0",
-  "private": true,
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a
-  "scripts": {
+}  "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-<<<<<<< HEAD
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "test": "jest",
@@ -215,40 +205,3 @@
   "author": "Blackletter Systems",
   "license": "PROPRIETARY"
 }
-=======
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@radix-ui/react-dialog": "^1.1.15",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-select": "^2.2.6",
-    "@radix-ui/react-separator": "^1.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-switch": "^1.2.6",
-    "@radix-ui/react-tabs": "^1.1.13",
-    "@supabase/supabase-js": "^2.56.0",
-    "@tailwindcss/forms": "^0.5.10",
-    "autoprefixer": "^10",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "cssnano": "^7.1.1",
-    "lucide-react": "^0.539.0",
-    "next": "^14.2.32",
-    "postcss": "^8",
-    "react": "^18",
-    "react-dom": "^18",
-    "recharts": "^3.1.2",
-    "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^3",
-    "vaul": "^1.1.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20.19.11",
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "^14.2.32",
-    "typescript": "^5"
-  }
-}
->>>>>>> 47931f5adb3b90222b8a8032099a98d6ea0d662a

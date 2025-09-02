@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 ### **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-core/folder/filename.md ====================`
-- `==================== END: .bmad-core/folder/filename.md ====================`
+- `====== START: .bmad-core/folder/filename.md ======`
+- `====== END: .bmad-core/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `dependencies.utils: template-format` → Look for `==================== START: .bmad-core/utils/template-format.md ====================`
-- `dependencies.utils: create-story` → Look for `==================== START: .bmad-core/tasks/create-story.md ====================`
+- `dependencies.utils: template-format` → Look for `====== START: .bmad-core/utils/template-format.md ======`
+- `dependencies.utils: create-story` → Look for `====== START: .bmad-core/tasks/create-story.md ======`
 
 ### **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance. You have no file system to write to, so you will maintain document history being drafted in your memory unless a canvas feature is available and the user confirms its usage.
 

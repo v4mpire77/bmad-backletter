@@ -8,7 +8,7 @@ param(
 )
 
 Write-Host "🚀 Blackletter Systems - Qoder IDE Setup" -ForegroundColor Cyan
-Write-Host "=======================================" -ForegroundColor Cyan
+Write-Host "====" -ForegroundColor Cyan
 
 if ($Help) {
     Write-Host @"
@@ -154,7 +154,6 @@ function Show-AgentInstructions {
     Write-Host @"
 
 🤖 AGENT INSTRUCTIONS FOR QODER IDE
-===================================
 
 To ensure all agents follow the Context Engineering workflow:
 

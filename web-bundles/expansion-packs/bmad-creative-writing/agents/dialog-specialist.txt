@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-creative-writing/folder/filename.md ====================`
-- `==================== END: .bmad-creative-writing/folder/filename.md ====================`
+- `====== START: .bmad-creative-writing/folder/filename.md ======`
+- `====== END: .bmad-creative-writing/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-creative-writing/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-creative-writing/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `====== START: .bmad-creative-writing/utils/template-format.md ======`
+- `tasks: create-story` → Look for `====== START: .bmad-creative-writing/tasks/create-story.md ======`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -39,7 +39,7 @@ These references map directly to bundle sections:
 ---
 
 
-==================== START: .bmad-creative-writing/agents/dialog-specialist.md ====================
+====== START: .bmad-creative-writing/agents/dialog-specialist.md ======
 # dialog-specialist
 
 CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
@@ -111,9 +111,9 @@ Master:
 Every line should reveal character, advance plot, or both.
 
 Remember to present all options as numbered lists for easy selection.
-==================== END: .bmad-creative-writing/agents/dialog-specialist.md ====================
+====== END: .bmad-creative-writing/agents/dialog-specialist.md ======
 
-==================== START: .bmad-creative-writing/tasks/create-doc.md ====================
+====== START: .bmad-creative-writing/tasks/create-doc.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Create Document from Template (YAML Driven)
@@ -217,9 +217,9 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 - Select options 2-9 from data/elicitation-methods only
 - Provide detailed rationale explaining decisions
 - End with "Select 1-9 or just type your question/feedback:"
-==================== END: .bmad-creative-writing/tasks/create-doc.md ====================
+====== END: .bmad-creative-writing/tasks/create-doc.md ======
 
-==================== START: .bmad-creative-writing/tasks/workshop-dialog.md ====================
+====== START: .bmad-creative-writing/tasks/workshop-dialog.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Workshop Dialog
@@ -284,9 +284,9 @@ Where dialog lacks tension:
 ## Output
 
 Refined dialog with stronger voices and dramatic impact
-==================== END: .bmad-creative-writing/tasks/workshop-dialog.md ====================
+====== END: .bmad-creative-writing/tasks/workshop-dialog.md ======
 
-==================== START: .bmad-creative-writing/tasks/execute-checklist.md ====================
+====== START: .bmad-creative-writing/tasks/execute-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Checklist Validation Task
@@ -375,9 +375,9 @@ The LLM will:
 - Execute the complete checklist validation
 - Present a final report with pass/fail rates and key findings
 - Offer to provide detailed analysis of any section, especially those with warnings or failures
-==================== END: .bmad-creative-writing/tasks/execute-checklist.md ====================
+====== END: .bmad-creative-writing/tasks/execute-checklist.md ======
 
-==================== START: .bmad-creative-writing/tasks/advanced-elicitation.md ====================
+====== START: .bmad-creative-writing/tasks/advanced-elicitation.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Advanced Elicitation Task
@@ -497,9 +497,9 @@ Choose a number (0-8) or 9 to proceed:
 - **Stay Relevant**: Tie all elicitation back to the specific content being analyzed
 - **Identify Personas**: For multi-persona methods, clearly identify which viewpoint is speaking
 - **Maintain Flow**: Keep the process moving efficiently
-==================== END: .bmad-creative-writing/tasks/advanced-elicitation.md ====================
+====== END: .bmad-creative-writing/tasks/advanced-elicitation.md ======
 
-==================== START: .bmad-creative-writing/templates/character-profile-tmpl.yaml ====================
+====== START: .bmad-creative-writing/templates/character-profile-tmpl.yaml ======
 # <!-- Powered by BMAD™ Core -->
 ---
 template:
@@ -592,9 +592,9 @@ sections:
       - Pet peeves
       - Hidden talents
       - Contradictions
-==================== END: .bmad-creative-writing/templates/character-profile-tmpl.yaml ====================
+====== END: .bmad-creative-writing/templates/character-profile-tmpl.yaml ======
 
-==================== START: .bmad-creative-writing/checklists/comedic-timing-checklist.md ====================
+====== START: .bmad-creative-writing/checklists/comedic-timing-checklist.md ======
 <!-- Powered by BMAD™ Core -->
 
 # ------------------------------------------------------------
@@ -618,9 +618,9 @@ items:
 - "[ ] Callback jokes spaced for maximum payoff"
 - "[ ] Physical comedy described with vivid imagery"
   ...
-==================== END: .bmad-creative-writing/checklists/comedic-timing-checklist.md ====================
+====== END: .bmad-creative-writing/checklists/comedic-timing-checklist.md ======
 
-==================== START: .bmad-creative-writing/data/bmad-kb.md ====================
+====== START: .bmad-creative-writing/data/bmad-kb.md ======
 <!-- Powered by BMAD™ Core -->
 
 # BMad Creative Writing Knowledge Base
@@ -830,9 +830,9 @@ The Creative Writing extension maintains compatibility with core BMad features:
 5. **Iterate Freely**: First drafts are for discovery
 
 Remember: BMad Creative Writing provides structure to liberate creativity, not constrain it.
-==================== END: .bmad-creative-writing/data/bmad-kb.md ====================
+====== END: .bmad-creative-writing/data/bmad-kb.md ======
 
-==================== START: .bmad-creative-writing/data/story-structures.md ====================
+====== START: .bmad-creative-writing/data/story-structures.md ======
 <!-- Powered by BMAD™ Core -->
 
 # Story Structure Patterns
@@ -900,4 +900,4 @@ Remember: BMad Creative Writing provides structure to liberate creativity, not c
 - **Shō**: Development
 - **Ten**: Twist
 - **Ketsu**: Conclusion
-==================== END: .bmad-creative-writing/data/story-structures.md ====================
+====== END: .bmad-creative-writing/data/story-structures.md ======

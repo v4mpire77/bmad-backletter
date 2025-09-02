@@ -32,9 +32,9 @@ python tools/context_engineering_validator.py response.txt --json
 
 **Output Example:**
 ```
-============================================================
+====
 CONTEXT ENGINEERING WORKFLOW VALIDATION REPORT
-============================================================
+====
 
 Overall Score: 85.0% ✅ PASSED
 
@@ -53,7 +53,7 @@ ALWAYS Rules Found: 7/8
 💡 RECOMMENDATIONS
 • Improve compliance with ALWAYS rules
 • Ensure all critical requirements are addressed
-============================================================
+====
 ```
 
 ### 2. Context Engineering Automation (`context_engineering_automation.py`)

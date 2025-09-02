@@ -32,9 +32,7 @@ python tools/context_engineering_validator.py response.txt --json
 
 **Output Example:**
 ```
-======================================================================
 CONTEXT ENGINEERING WORKFLOW VALIDATION REPORT
-======================================================================
 
 Overall Score: 85.0% ✅ PASSED
 
@@ -53,7 +51,6 @@ ALWAYS Rules Found: 7/8
 💡 RECOMMENDATIONS
 • Improve compliance with ALWAYS rules
 • Ensure all critical requirements are addressed
-======================================================================
 ```
 
 ### 2. Context Engineering Automation (`context_engineering_automation.py`)
@@ -163,9 +160,7 @@ python tools/bmad_context_engineering_validator.py response.txt --json
 
 **Output Example:**
 ```
-======================================================================
 BMAD-ENHANCED CONTEXT ENGINEERING WORKFLOW VALIDATION REPORT
-======================================================================
 
 Overall Score: 92.5% ✅ PASSED
 
@@ -200,7 +195,6 @@ Status: ✅ Complete
 💡 RECOMMENDATIONS
 • Apply additional advanced elicitation techniques
 • Enhance knowledge transfer documentation
-======================================================================
 ```
 
 ### 5. BMAD-Enhanced Context Engineering Automation (`bmad_context_engineering_automation.py`)

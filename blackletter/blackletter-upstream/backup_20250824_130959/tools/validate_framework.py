@@ -194,14 +194,14 @@ def main():
     
     # Print summary
     print("\nFramework Validation Results")
-    print("===========================")
+    print("======")
     print(f"Total files checked: {total_files}")
     print(f"Files with issues: {backend_result.files_with_issues + frontend_result.files_with_issues}")
     print(f"Total issues found: {total_issues}")
     
     # Print issues by type
     print("\nIssues by Type")
-    print("==============")
+    print("")
     all_types = set(backend_result.issues_by_type.keys()) | set(frontend_result.issues_by_type.keys())
     for issue_type in sorted(all_types):
         backend_count = backend_result.issues_by_type.get(issue_type, 0)
@@ -211,7 +211,7 @@ def main():
     # Print detailed issues if any
     if total_issues > 0:
         print("\nDetailed Issues")
-        print("===============")
+        print("=")
         all_issues = backend_result.detailed_issues + frontend_result.detailed_issues
         for issue in all_issues:
             print(f"\nFile: {issue['file']}")

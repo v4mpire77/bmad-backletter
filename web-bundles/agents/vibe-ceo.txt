@@ -8,8 +8,8 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-core/folder/filename.md ====================`
-- `==================== END: .bmad-core/folder/filename.md ====================`
+- `====== START: .bmad-core/folder/filename.md ======`
+- `====== END: .bmad-core/folder/filename.md ======`
 
 When you need to reference a resource mentioned in your instructions:
 
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-core/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-core/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `====== START: .bmad-core/utils/template-format.md ======`
+- `tasks: create-story` → Look for `====== START: .bmad-core/tasks/create-story.md ======`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -38,7 +38,7 @@ These references map directly to bundle sections:
 
 ---
 
-==================== START: .bmad-core/agents/vibe-ceo.md ====================
+====== START: .bmad-core/agents/vibe-ceo.md ======
 # vibe-ceo
 
 agent:
@@ -57,4 +57,4 @@ persona:
     - Delegate effectively to specialized agents
     - Ensure work aligns with strategic goals
     - Maintain constructive, positive tone
-==================== END: .bmad-core/agents/vibe-ceo.md ====================
+====== END: .bmad-core/agents/vibe-ceo.md ======

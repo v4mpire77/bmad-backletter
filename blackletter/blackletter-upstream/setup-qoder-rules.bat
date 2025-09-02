@@ -1,6 +1,6 @@
 @echo off
 echo 🚀 Blackletter Systems - Qoder IDE Setup
-echo =======================================
+echo ====
 
 REM Check if PowerShell is available
 powershell -Command "Write-Host 'PowerShell available'" >nul 2>&1
