@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from ..models.schemas import JobStatus
 from ..services.tasks import get_job
+from ..services.errors import ErrorCode, error_response
 
 
 router = APIRouter(tags=["jobs"])
@@ -13,7 +14,7 @@ router = APIRouter(tags=["jobs"])
 def get_job_status(job_id: str) -> JobStatus:
     job = get_job(job_id)
     if not job:
-        raise HTTPException(status_code=404, detail="not_found")
+        return error_response(ErrorCode.NOT_FOUND, "Job not found")
     return JobStatus(
         id=job.id,
         job_id=job.id,

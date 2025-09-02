@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -15,6 +15,7 @@ from ..models.schemas import (
 )
 from ..services import storage
 from ..services.tasks import new_job, process_job
+from ..services.errors import ErrorCode, error_response
 
 
 router = APIRouter(tags=["contracts"])
@@ -44,7 +45,9 @@ async def upload_contract(
         elif lower.endswith(".docx"):
             ext = ".docx"
     if ext is None:
-        raise HTTPException(status_code=415, detail="unsupported_file_type")
+        return error_response(
+            ErrorCode.UNSUPPORTED_FILE_TYPE, "Unsupported file type"
+        )
 
     # Create the analysis record in the database
     analysis = Analysis(
@@ -70,10 +73,10 @@ async def upload_contract(
         db.commit()
     except ValueError as e:
         if str(e) == "file_too_large":
-            raise HTTPException(status_code=413, detail="file_too_large")
+            return error_response(ErrorCode.FILE_TOO_LARGE, "File too large")
         raise
     except OSError as e:
-        raise HTTPException(status_code=500, detail="disk_io_error") from e
+        return error_response(ErrorCode.DISK_IO_ERROR, "Disk I/O error")
 
     job_id = new_job(analysis_id=analysis_id)
     process_job.delay(job_id, analysis_id, safe_name, size)

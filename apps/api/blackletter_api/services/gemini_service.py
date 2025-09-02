@@ -76,3 +76,6 @@ class GeminiService:
         resp = self.client.generate_content([{"text": f"Summarize:\n{text}"}])  # type: ignore[attr-defined]
         return getattr(resp, "text", str(resp))
 
+
+gemini_service = GeminiService()
+

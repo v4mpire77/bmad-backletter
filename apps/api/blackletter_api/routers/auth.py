@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Response, HTTPException, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 
 from .. import database
 from ..models import auth as auth_models
 from ..services.auth_service import auth_service
+from ..services.errors import ErrorCode, error_response
 
 router = APIRouter(
     prefix="/v1/auth",
@@ -34,8 +35,8 @@ async def register_user(user: UserCreate, db: Session = Depends(database.get_db)
         db.query(auth_models.User).filter(auth_models.User.email == user.email).first()
     )
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Email already registered"
+        return error_response(
+            ErrorCode.EMAIL_ALREADY_REGISTERED, "Email already registered"
         )
 
     hashed_password = auth_service.get_password_hash(user.password)
@@ -53,9 +54,9 @@ async def login(response: Response, user_credentials: UserLogin, db: Session = D
     user = db.query(auth_models.User).filter(auth_models.User.email == user_credentials.email).first()
 
     if not user or not auth_service.verify_password(user_credentials.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
+        return error_response(
+            ErrorCode.INCORRECT_CREDENTIALS,
+            "Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -66,7 +67,9 @@ async def login(response: Response, user_credentials: UserLogin, db: Session = D
     # Find first org membership
     first_membership = db.query(auth_models.OrgMember).filter(auth_models.OrgMember.user_id == user.id).first()
     if not first_membership:
-        raise HTTPException(status_code=403, detail="User has no organization membership.")
+        return error_response(
+            ErrorCode.NO_ORG_MEMBERSHIP, "User has no organization membership."
+        )
 
     new_session = auth_models.Session(
         session_token=session_token,

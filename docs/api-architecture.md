@@ -27,7 +27,8 @@ Describes RESTful contract for Blackletter services and how clients interact wit
 
 ## Error Handling
 
-- Consistent JSON envelope: `{ "detail": str, "code": str }`.
+- Errors return `{ "code": <error_code>, "detail": <message> }`.
+- `code` is one of the enums in `apps/api/blackletter_api/services/errors.py`.
 - 4xx for client issues, 5xx for server faults.
 
 ## Rate Limits

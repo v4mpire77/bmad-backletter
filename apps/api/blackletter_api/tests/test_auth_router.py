@@ -41,4 +41,21 @@ def test_register_user_duplicate_email():
     client.post('/api/v1/auth/register', json=payload)
     resp = client.post('/api/v1/auth/register', json=payload)
     assert resp.status_code == 409
-    assert resp.json()["detail"] == "Email already registered"
+    assert resp.json() == {
+        "code": "email_already_registered",
+        "detail": "Email already registered",
+    }
+
+
+def test_login_incorrect_credentials():
+    payload = {"email": "user@example.com", "password": "secret", "name": "User"}
+    client.post('/api/v1/auth/register', json=payload)
+    resp = client.post(
+        '/api/v1/auth/login', json={"email": payload["email"], "password": "wrong"}
+    )
+    assert resp.status_code == 401
+    assert resp.headers["WWW-Authenticate"] == "Bearer"
+    assert resp.json() == {
+        "code": "incorrect_credentials",
+        "detail": "Incorrect email or password",
+    }
