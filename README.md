@@ -41,6 +41,21 @@ npm install
 npm run dev
 ```
 
+## POSIX setup
+
+The repository provides a helper script for macOS and Linux environments that mirrors the Windows setup.
+
+```bash
+./scripts/setup_posix.sh
+source .venv/bin/activate
+uvicorn blackletter_api.main:app --reload --app-dir apps/api
+```
+
+Optional flags:
+
+- `--recreate-venv` rebuilds the virtual environment
+- `--skip-install` skips installing dependencies
+
 ## 🎯 **Next Development Priorities**
 
 ### Ready to Start (Epic 2 Completion)
