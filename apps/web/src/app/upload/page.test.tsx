@@ -3,6 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 import UploadPage from './page';
+import { apiUrl } from '../../lib/api';
 
 const pushMock = vi.fn();
 const originalFetch = global.fetch;
@@ -19,6 +20,7 @@ afterEach(() => {
 
 describe('UploadPage', () => {
   it('uploads a valid file and navigates', async () => {
+    process.env.NEXT_PUBLIC_API_BASE = '';
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ job_id: 'j1', analysis_id: 'a1', status: 'queued' }),
@@ -34,6 +36,10 @@ describe('UploadPage', () => {
     });
 
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/analyses/a1'));
+    expect(fetchMock).toHaveBeenCalledWith(
+      apiUrl('/v1/docs/upload'),
+      expect.objectContaining({ method: 'POST' })
+    );
     expect(getByText(/queued/i)).toBeInTheDocument();
   });
 
