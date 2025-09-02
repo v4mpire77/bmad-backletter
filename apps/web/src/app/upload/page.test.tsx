@@ -35,6 +35,10 @@ describe('UploadPage', () => {
 
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/analyses/a1'));
     expect(getByText(/queued/i)).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/v1/docs/upload',
+      expect.objectContaining({ method: 'POST' })
+    );
   });
 
   it('shows error for unsupported file type', () => {
@@ -62,5 +66,47 @@ describe('UploadPage', () => {
 
     expect(getByRole('alert')).toHaveTextContent(/file must be 10mb or less/i);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('displays server error message', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({ detail: 'Nope' }),
+    });
+    global.fetch = fetchMock as any;
+
+    const { container, getByRole } = render(<UploadPage />);
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['data'], 'bad.pdf', { type: 'application/pdf' });
+
+    fireEvent.change(input, { target: { files: [file] } });
+
+    await waitFor(() =>
+      expect(getByRole('alert')).toHaveTextContent(/nope/i)
+    );
+  });
+
+  it('retries upload after network failure', async () => {
+    const first = vi.fn().mockRejectedValue(new Error('network'));
+    const second = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ job_id: 'j2', analysis_id: 'a2', status: 'queued' }),
+    });
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(first)
+      .mockImplementationOnce(second);
+    global.fetch = fetchMock as any;
+
+    const { container, getByRole, getByText } = render(<UploadPage />);
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['data'], 'test.pdf', { type: 'application/pdf' });
+
+    fireEvent.change(input, { target: { files: [file] } });
+
+    await waitFor(() => expect(getByRole('alert')).toBeInTheDocument());
+    fireEvent.click(getByText(/retry/i));
+
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/analyses/a2'));
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
