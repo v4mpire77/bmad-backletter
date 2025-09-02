@@ -30,6 +30,10 @@ pip install -r requirements.txt
 uvicorn blackletter_api.main:app --reload
 ```
 
+> **Note**: The in-memory orchestrator uses thread locks for safety but
+> remains process-local. Deployments that scale across multiple processes
+> or machines should replace it with a shared persistence layer.
+
 ### Frontend (Ready for Development)
 ```bash
 cd apps/web

@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import re
 import json
-from typing import Iterable, List, Optional, Dict, Any
+from typing import Iterable, List, Optional, Dict, Any, Pattern
 
 from .weak_lexicon import (
     get_weak_terms,
@@ -126,6 +126,17 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
     rulepack = load_rulepack()
 
     processed_sentences = 0
+
+    # Precompile regex detectors once to avoid repeated compilation
+    compiled_regexes: Dict[str, Pattern[str]] = {}
+    for det in rulepack.detectors:
+        if det.type == "regex" and det.pattern:
+            try:
+                compiled_regexes[det.id] = re.compile(det.pattern, re.IGNORECASE)
+            except re.error:
+                # Skip malformed patterns
+                continue
+
     for sentence_data in sentences:
         sentence_text = sentence_data.get("text", "")
         page = sentence_data.get("page", 1)
@@ -175,8 +186,24 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     finding.verdict = final_verdict
                     findings.append(finding)
             elif detector_spec.type == "regex":
-                # TODO: Implement regex detector logic
-                pass # For now, skip regex detectors
+                regex = compiled_regexes.get(detector_id)
+                if regex and regex.search(sentence_text):
+                    finding = Finding(
+                        detector_id=detector_id,
+                        rule_id=detector_id,
+                        verdict="pass",
+                        snippet=sentence_text,
+                        page=page,
+                        start=start,
+                        end=end,
+                        rationale=f"Regex pattern '{regex.pattern}' matched.",
+                    )
+                    final_verdict = postprocess_weak_language(
+                        original_verdict=finding.verdict,
+                        window_text=finding.snippet,
+                    )
+                    finding.verdict = final_verdict
+                    findings.append(finding)
 
         processed_sentences += 1
 

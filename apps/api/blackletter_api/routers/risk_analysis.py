@@ -11,7 +11,8 @@ Provides endpoints for advanced contract risk analysis including:
 
 from __future__ import annotations
 
-from typing import List, Dict, Any
+from datetime import datetime
+from typing import Any, Dict, List
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -98,7 +99,7 @@ async def analyze_contract_risk(request: RiskAnalysisRequest) -> RiskAnalysisRes
             "text_analyzed": len(contract_text) > 0,
             "findings_analyzed": len(findings) > 0,
             "risk_categories_analyzed": len(risk_profile.risk_factors),
-            "analysis_timestamp": "2025-01-27T12:00:00Z"  # TODO: Use actual timestamp
+            "analysis_timestamp": datetime.utcnow().isoformat(),
         }
         
         return RiskAnalysisResponse(

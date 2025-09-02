@@ -62,6 +62,15 @@ class VerdictCounts(BaseModel):
     needs_review_count: int = 0
 
 
+class Coverage(BaseModel):
+    """Story 4.2 - Coverage model for detector coverage visualization."""
+    present: int = 0
+    total: int = 8  # Expected 8 detectors for Art 28 (a-h)
+    percentage: float = 0.0
+    missing_detectors: List[str] = Field(default_factory=list)
+    status: Literal["complete", "incomplete", "unknown"] = "unknown"
+
+
 class AnalysisSummary(BaseModel):
     id: str
     filename: str
@@ -69,6 +78,7 @@ class AnalysisSummary(BaseModel):
     size: int
     state: str
     verdicts: VerdictCounts
+    coverage: Optional[Coverage] = None  # Story 4.2 - Coverage information
 
 
 class JobState(str, Enum):
