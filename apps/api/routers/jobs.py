@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from .uploads import jobs_store
+from ..services.jobs_store import jobs_store
 
 router = APIRouter()
 
