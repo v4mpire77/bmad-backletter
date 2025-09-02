@@ -1,33 +1,23 @@
 from __future__ import annotations
+
 from functools import lru_cache
 from typing import List
 
-from .rulepack_loader import load_rulepack, Lexicon
+from .lexicon_analyzer import load_lexicon
 
 DEFAULT_WEAK_TERMS = ["may", "might", "could", "should"]
 DEFAULT_STRENGTHENERS = ["must", "shall"]
 
 
 @lru_cache(maxsize=1)
-def _load() -> Lexicon | None:
-    rp = load_rulepack()
-    return rp.lexicon if rp else None
-
-
-@lru_cache(maxsize=1)
-def get_weak_terms() -> List[str]:
-    lex = _load()
-    if not lex:
-        return DEFAULT_WEAK_TERMS.copy()
-    terms = [*(lex.hedging or []), *(lex.discretionary or []), *(lex.vague or [])]
+def get_weak_terms(language: str = "en") -> List[str]:
+    lex = load_lexicon(language)
+    terms = lex.weak_terms()
     return terms or DEFAULT_WEAK_TERMS.copy()
 
 
 @lru_cache(maxsize=1)
-def get_counter_anchors() -> List[str]:
-    lex = _load()
-    if not lex:
-        return DEFAULT_STRENGTHENERS.copy()
-    anchors = list(lex.strengtheners or [])
+def get_counter_anchors(language: str = "en") -> List[str]:
+    lex = load_lexicon(language)
+    anchors = list(lex.strengtheners)
     return anchors or DEFAULT_STRENGTHENERS.copy()
-
