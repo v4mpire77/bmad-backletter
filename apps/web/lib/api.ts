@@ -23,9 +23,7 @@ export async function pollJobUntilDone(jobId: string, timeoutMs = 60000, interva
   throw new Error("Timed out waiting for analysis");
 }
 
-export async function getFindings(jobId: string) {
-  const res = await fetch(`${API}/api/findings?job_id=${encodeURIComponent(jobId)}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Findings not ready (${res.status})`);
+  if (!res.ok) throw new Error(`Findings not ready (${res.status}): ${await res.text()}`);
   return res.json() as Promise<{
     job_id: string;
     rulepack_version?: string | null;
