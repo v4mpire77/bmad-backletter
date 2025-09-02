@@ -1,6 +1,6 @@
-'use client';
+ 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import type { Finding } from '@/lib/types';
 import { highlightAnchors } from '@/lib/anchors';
@@ -9,6 +9,7 @@ interface EvidenceDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   finding: Finding | null; // allow null to simplify parent logic
+  children?: ReactNode;
 }
 
 export default function EvidenceDrawer({ isOpen, onClose, finding }: EvidenceDrawerProps) {
