@@ -1,3 +1,4 @@
+from datetime import datetime
 from threading import Thread
 
 from blackletter_api.orchestrator.state import Orchestrator, AnalysisState
@@ -36,3 +37,13 @@ def test_concurrent_advance_no_keyerror_or_lost_updates():
     record = orch.summary(analysis_id)
     assert record.state == AnalysisState.EXTRACTED
     assert sorted(f["issue"] for f in record.findings) == list(range(5))
+
+
+def test_created_at_preserved_across_advances():
+    orch = Orchestrator()
+    analysis_id = orch.intake("contract.pdf")
+    initial_ts = orch.summary(analysis_id).created_at
+    assert isinstance(initial_ts, datetime)
+    orch.advance(analysis_id, AnalysisState.EXTRACTED)
+    updated_ts = orch.summary(analysis_id).created_at
+    assert updated_ts == initial_ts

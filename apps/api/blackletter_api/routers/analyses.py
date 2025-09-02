@@ -52,7 +52,7 @@ def list_analyses(limit: int = Query(default=50, ge=1, le=200)) -> List[Analysis
             AnalysisSummary(
                 id=rec.id,
                 filename=rec.filename,
-                created_at=datetime.now(timezone.utc).isoformat(),
+                created_at=rec.created_at.isoformat(),
                 size=0,
                 state=rec.state.value,
                 verdicts=VerdictCounts(),
