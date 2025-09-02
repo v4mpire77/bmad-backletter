@@ -1,34 +1,62 @@
-// Canonical domain type used by EvidenceDrawer and cross‑component contracts
-export type Finding = {
-  id: string;
-  rule_id: string;           // e.g. "GDPR-DSAR-001"
-  snippet: string;           // evidence window text for display
-  verdict?: 'pass' | 'weak' | 'missing' | 'needs_review';
-  // Location of the primary evidence window (min contract for Drawer)
-  location?: { page: number; start_char: number; end_char: number };
-  // Optional richer traces used by highlighter or future features
-  evidence?: Array<{ page: number; start: number; end: number }>;
-  anchors?: string[];        // phrases to highlight inside snippet
+// Canonical domain types for Evidence & Findings UI
+
+export type Anchor = {
+  text: string;
+  page: number;
+  offset: number;
 };
 
-// View type for tables/pages: keep minimal fields for listing
-export type PageFinding = Pick<Finding, 'id' | 'rule_id' | 'snippet'> & {
+export type Citation = {
+  page: number;
+  text: string;
+  start?: number;
+  end?: number;
+};
+
+export type Finding = {
+  id: string;
+  title: string;
+  verdict: 'ok' | 'weak' | 'missing';
+  evidence: string;
+  rationale?: string;
+  anchors: Anchor[];
+  citations?: Citation[];
+};
+
+// Legacy page finding used by tables/pages
+export type PageFinding = {
+  id: string;
+  rule_id: string;
+  snippet: string;
   evidence?: Array<{ page: number; start: number; end: number }>;
   anchors?: string[];
 };
 
 // Adapter: PageFinding -> Finding (for Drawer)
 export function toFinding(f: PageFinding): Finding {
-  const first = f.evidence?.[0];
+  const evidenceText = f.snippet;
+  const anchors: Anchor[] = (f.anchors ?? [])
+    .map((text) => {
+      const offset = evidenceText.toLowerCase().indexOf(text.toLowerCase());
+      if (offset === -1) return null;
+      return { text, page: f.evidence?.[0]?.page ?? 1, offset };
+    })
+    .filter(Boolean) as Anchor[];
+
+  const citations: Citation[] = (f.evidence ?? []).map((ev) => ({
+    page: ev.page,
+    text: evidenceText,
+    start: ev.start,
+    end: ev.end,
+  }));
+
   return {
     id: f.id ?? crypto.randomUUID(),
-    rule_id: f.rule_id,
-    snippet: f.snippet,
-    verdict: 'needs_review',
-    location: first
-      ? { page: first.page, start_char: first.start, end_char: first.end }
-      : { page: 1, start_char: 0, end_char: Math.max(1, f.snippet.length - 1) },
-    evidence: f.evidence ?? [],
-    anchors: f.anchors ?? [],
+    title: f.rule_id,
+    verdict: 'weak',
+    evidence: evidenceText,
+    anchors,
+    citations,
   };
 }
+
