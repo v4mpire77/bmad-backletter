@@ -24,6 +24,7 @@ apps/web/test-results/
 
 # Build outputs
 build/
+!docs/build/
 dist/
 
 # Logs
