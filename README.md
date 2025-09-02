@@ -67,7 +67,7 @@ To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MO
 
 ### Workspace setup
 
-This repository uses a [pnpm](https://pnpm.io) workspace defined in `pnpm-workspace.yaml` with packages under `apps/*` and `packages/*`.
+This repository uses a [pnpm](https://pnpm.io) workspace defined in `pnpm-workspace.yaml` with packages under `apps/*` and `packages/*`. The root `pnpm-lock.yaml` tracks dependency versions and all scripts should be invoked with `pnpm` from the repo root.
 
 Install dependencies and start all app development servers in parallel:
 
