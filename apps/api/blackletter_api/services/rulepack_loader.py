@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List, Optional
 import yaml
 
 # repo root is two levels up from services; adjust to find bundled rules
@@ -23,6 +23,12 @@ class Rulepack:
     version: str
     lexicon: Lexicon
     regex_rules: List[Dict[str, Any]]
+    author: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+class RulepackError(Exception):
+    """Raised when rulepack metadata cannot be loaded."""
 
 
 def _safe_list(x) -> List[str]:
@@ -58,6 +64,8 @@ def load_rulepacks() -> List[Rulepack]:
                     strengtheners=_safe_list(anchors.get("strengtheners")),
                 ),
                 regex_rules=list(data.get("regex_rules") or []),
+                author=meta.get("author"),
+                created_at=meta.get("created_at"),
             )
         )
     return packs
@@ -88,11 +96,35 @@ def api_rules_summary() -> Dict[str, Any]:
 
 
 # Backwards/explicit export so tests doing `from ... import api_rules_summary` don't crash
-__all__ = ["Lexicon", "Rulepack", "load_rulepacks", "api_rules_summary", "load_rulepack"]
+__all__ = [
+    "Lexicon",
+    "Rulepack",
+    "RulepackError",
+    "load_rulepacks",
+    "api_rules_summary",
+    "load_rulepack",
+    "list_rulepack_metadata",
+]
 
 
 def load_rulepack() -> Rulepack | None:
     packs = load_rulepacks()
     return packs[0] if packs else None
+
+
+def list_rulepack_metadata() -> List[Dict[str, Any]]:
+    """Return metadata for available rulepacks."""
+    packs = load_rulepacks()
+    if not packs:
+        raise RulepackError("No rulepacks available")
+    return [
+        {
+            "id": p.id,
+            "version": p.version,
+            "author": p.author,
+            "created_at": p.created_at,
+        }
+        for p in packs
+    ]
 
 

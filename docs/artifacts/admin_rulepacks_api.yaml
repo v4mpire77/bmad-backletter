@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: Admin Rulepacks API
+  version: 1.0.0
+paths:
+  /api/admin/rulepacks:
+    get:
+      summary: List available rulepacks
+      description: Retrieve metadata for available rulepacks.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    version:
+                      type: string
+                    author:
+                      type: string
+                      nullable: true
+                    created_at:
+                      type: string
+                      format: date-time
+                      nullable: true
+        "404":
+          description: No rulepacks available

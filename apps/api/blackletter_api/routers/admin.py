@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
 from ..services.metrics import get_metrics_service
 from ..services.llm_gate import get_llm_gate
+from ..services.rulepack_loader import RulepackError, list_rulepack_metadata
 from apps.api.dependencies.auth import require_role
 from apps.api.models.user import Role
 
@@ -74,11 +76,30 @@ class AggregateMetricsResponse(BaseModel):
     scope: str
 
 
+class RulepackMetadata(BaseModel):
+    id: str
+    version: str
+    author: Optional[str] = None
+    created_at: Optional[str] = None
+
+
 router = APIRouter(
     prefix="/api/admin",
     tags=["admin"],
     dependencies=[Depends(require_role(Role.ADMIN))],
 )
+
+
+@router.get("/rulepacks", response_model=List[RulepackMetadata])
+async def list_rulepacks() -> List[RulepackMetadata]:
+    """Return metadata for available rulepacks."""
+    try:
+        packs = list_rulepack_metadata()
+        return [RulepackMetadata(**p) for p in packs]
+    except RulepackError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load rulepacks: {str(e)}")
 
 
 @router.get("/metrics", response_model=AdminMetricsResponse)
