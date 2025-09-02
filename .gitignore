@@ -35,3 +35,6 @@ dist/
 
 # TypeScript
 *.tsbuildinfo
+
+bmad-core
+packages/shared/src/index.ts
