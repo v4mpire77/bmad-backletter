@@ -6,6 +6,11 @@ from io import BytesIO
 from fastapi.testclient import TestClient
 
 from blackletter_api.main import app
+from blackletter_api.routers import contracts
+
+# Stub out background job creation to avoid Redis and Celery dependencies
+contracts.new_job = lambda analysis_id=None: "job123"
+contracts.process_job.delay = lambda *args, **kwargs: None
 
 client = TestClient(app)
 
@@ -19,7 +24,10 @@ def test_upload_file_too_large():
     }
     resp = client.post("/api/contracts", files=files)
     assert resp.status_code == 413
-    assert resp.json() == {"detail": "file_too_large"}
+    assert resp.json() == {
+        "code": "file_too_large",
+        "detail": "File too large",
+    }
 
 
 def test_upload_unsupported_file_type():
@@ -29,7 +37,10 @@ def test_upload_unsupported_file_type():
     }
     resp = client.post("/api/contracts", files=files)
     assert resp.status_code == 415
-    assert resp.json() == {"detail": "unsupported_file_type"}
+    assert resp.json() == {
+        "code": "unsupported_file_type",
+        "detail": "Unsupported file type",
+    }
 
 
 def test_upload_success_small_pdf():

@@ -31,14 +31,18 @@ def test_upload_missing_file():
 def test_upload_unsupported_type(name: str, ctype: str):
     res = _post_upload(name, ctype, b"hello")
     assert res.status_code == 415
-    assert res.json()["detail"] == "unsupported_file_type"
+    data = res.json()
+    assert data["code"] == "unsupported_file_type"
+    assert data["detail"] == "Unsupported file type"
 
 
 def test_upload_too_large_triggers_413():
     big = b"x" * (10 * 1024 * 1024 + 1)
     res = _post_upload("big.pdf", "application/pdf", big)
     assert res.status_code == 413
-    assert res.json()["detail"] == "file_too_large"
+    data = res.json()
+    assert data["code"] == "file_too_large"
+    assert data["detail"] == "File too large"
 
 
 def test_contract_validation_status_schema():
