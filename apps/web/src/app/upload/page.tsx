@@ -8,11 +8,9 @@ export default function UploadPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "queued">("idle");
+  const [retryFile, setRetryFile] = useState<File | null>(null);
 
-  const handleFiles = async (files: FileList | null) => {
-    const file = files?.[0];
-    if (!file) return;
-
+  const handleFile = async (file: File) => {
     if (!/\.(pdf|docx)$/i.test(file.name)) {
       setError("Only PDF or DOCX files are allowed");
       return;
@@ -21,28 +19,32 @@ export default function UploadPage() {
       setError("File must be 10MB or less");
       return;
     }
-
+    setRetryFile(file);
     setError(null);
     try {
       const body = new FormData();
       body.append("file", file);
-      const res = await fetch("/api/uploads", { method: "POST", body });
-      if (!res.ok) throw new Error("upload_failed");
-      const { analysis_id, status } = await res.json();
-      setStatus(status);
-      router.push(`/analyses/${analysis_id}`);
-    } catch {
-      setError("Upload failed");
+      const res = await fetch("/v1/docs/upload", { method: "POST", body });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.detail || data.message || "Upload failed");
+      }
+      setStatus(data.status);
+      router.push(`/analyses/${data.analysis_id}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
     }
   };
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    handleFiles(e.dataTransfer.files);
+    const file = e.dataTransfer.files?.[0];
+    if (file) void handleFile(file);
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files);
+    const file = e.target.files?.[0];
+    if (file) void handleFile(file);
   };
 
   return (
@@ -69,9 +71,19 @@ export default function UploadPage() {
         />
       </div>
       {error && (
-        <p role="alert" className="text-sm text-red-600">
-          {error}
-        </p>
+        <div className="space-y-2">
+          <p role="alert" className="text-sm text-red-600">
+            {error}
+          </p>
+          {retryFile && (
+            <button
+              onClick={() => handleFile(retryFile)}
+              className="text-sm underline"
+            >
+              Retry
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
