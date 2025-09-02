@@ -42,4 +42,13 @@ describe('FindingsTable', () => {
     const firstVerdict = screen.getAllByRole('row')[1].querySelectorAll('td')[1];
     expect(firstVerdict).toHaveTextContent('fail');
   });
+
+  it('renders findings missing verdict without error', async () => {
+    const data = [...findings, { id: '3', rule: 'Rule C', evidence: 'Evidence 3' }];
+    render(<FindingsTable findings={data} />);
+    expect(screen.getByText('Rule C')).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(/filter/i);
+    await userEvent.type(input, 'Rule C');
+    expect(screen.getAllByRole('row')).toHaveLength(2);
+  });
 });
