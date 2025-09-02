@@ -10,7 +10,8 @@
     "test": "pnpm --recursive run test",
     "test:watch": "pnpm --recursive run test:watch",
     "type-check": "pnpm --recursive run type-check",
-    "clean": "pnpm --recursive run clean"
+    "clean": "pnpm --recursive run clean",
+    "format": "prettier apps/web --check"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",
