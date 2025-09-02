@@ -6,7 +6,9 @@ import secrets
 # Use Argon2 for password hashing
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 # Global pepper loaded from environment in production
-AUTH_PEPPER = os.getenv("AUTH_PEPPER", "a-super-secret-pepper-from-env")
+AUTH_PEPPER = os.getenv("AUTH_PEPPER")
+if not AUTH_PEPPER:
+    raise RuntimeError("AUTH_PEPPER environment variable is not set")
 
 class AuthService:
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
