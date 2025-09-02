@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import VerdictBadge from './VerdictBadge';
 import EvidenceDrawer from './EvidenceDrawer';
-import type { Finding } from '../types';
+import type { Finding } from '@bmad/shared/types';
 
 interface FindingsTableProps {
   findings: Finding[];

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import type { Finding } from '../types';
+import type { Finding } from '@bmad/shared/types';
 
 interface VerdictBadgeProps {
   verdict: Finding['verdict'] | string;
