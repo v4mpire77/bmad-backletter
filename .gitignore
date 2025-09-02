@@ -17,6 +17,7 @@ resolve_conflicts.py
 node_modules/
 apps/web/node_modules/
 apps/web/.next/
+apps/web/out/
 apps/web/.turbo/
 apps/web/coverage/
 apps/web/playwright-report/
