@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from typing import Dict, List, Tuple, Optional
+import json
 import logging
+
+from .storage import analysis_dir
 
 logger = logging.getLogger(__name__)
 
@@ -10,34 +13,67 @@ def build_window(
     analysis_id: str,
     start: int,
     end: int,
-    n_sentences: int = 2
+    n_sentences: int = 2,
 ) -> Dict:
-    """
-    Build evidence window for Story 1.3 - Evidence Window Builder.
-    
-    Given a char span in extracted text, return a window of ±N sentences 
-    (default 2) with page/offsets, respecting page boundaries.
-    
+    """Build an evidence window around a finding span.
+
+    This implementation loads sentence and page metadata from
+    ``analysis_dir/<analysis_id>/sentences.json`` produced in Story 1.2.
+
     Args:
-        analysis_id: The analysis ID to get sentence index and page map from
-        start: Start character position
-        end: End character position  
-        n_sentences: Number of sentences before/after (default 2)
-        
+        analysis_id: The analysis ID of the document being inspected.
+        start: Global start character position of the finding.
+        end: Global end character position of the finding.
+        n_sentences: Number of sentences before/after the finding.
+
     Returns:
-        Dict with: { snippet, page, start, end }
+        Dict with: { snippet, page, start, end } where start/end are global
+        offsets in the concatenated document text.
     """
-    # TODO: In actual implementation, retrieve persisted sentence index and page map from 1.2
-    # For now, return a mock response matching the expected interface
-    
-    return {
-        "snippet": f"Evidence window for span {start}-{end} with ±{n_sentences} sentences",
-        "page": 1,
-        "start": max(0, start - 100),  # Expanded start
-        "end": end + 100,  # Expanded end
-        "analysis_id": analysis_id,
-        "sentence_window": n_sentences
-    }
+    data_path = analysis_dir(analysis_id) / "sentences.json"
+    try:
+        data = json.loads(data_path.read_text(encoding="utf-8"))
+    except Exception:
+        logger.warning("sentences.json missing for analysis %s", analysis_id)
+        return {"snippet": "", "page": 0, "start": start, "end": end}
+
+    sentences: List[Dict] = data.get("sentences", [])
+    page_map: List[Dict] = data.get("page_map", [])
+
+    # Find the page containing the start offset
+    page_info: Optional[Dict] = next(
+        (p for p in page_map if p.get("start") <= start < p.get("end")), None
+    )
+    if not page_info:
+        return {"snippet": "", "page": 0, "start": start, "end": end}
+
+    page_num = int(page_info["page"])
+    page_start = int(page_info["start"])
+
+    # Sentences are stored with offsets relative to their page
+    local_start = start - page_start
+    page_sentences = [s for s in sentences if s.get("page") == page_num]
+
+    # Determine the sentence index covering the span start
+    idx = len(page_sentences) - 1
+    for i, s in enumerate(page_sentences):
+        s_start = int(s.get("start", 0))
+        s_end = int(s.get("end", 0))
+        if s_start <= local_start < s_end or local_start < s_start:
+            idx = i
+            break
+
+    start_idx = max(0, idx - n_sentences)
+    end_idx = min(len(page_sentences), idx + n_sentences + 1)
+    selected = page_sentences[start_idx:end_idx]
+    if not selected:
+        return {"snippet": "", "page": page_num, "start": start, "end": start}
+
+    snippet = " ".join(s["text"] for s in selected)
+    window_start = page_start + int(selected[0]["start"])
+    window_end = page_start + int(selected[-1]["end"])
+
+    return {"snippet": snippet, "page": page_num, "start": window_start, "end": window_end}
 
 
 def build_window_legacy(
