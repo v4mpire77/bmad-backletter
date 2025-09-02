@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN python -m venv /opt/venv \
+    && . /opt/venv/bin/activate \
+    && pip install --no-cache-dir --prefer-binary -r /tmp/requirements.txt
+
+# Copy API source code
+COPY apps/api apps/api
+
+ENV PATH="/opt/venv/bin:${PATH}" \
+    PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+
+CMD ["uvicorn", "blackletter_api.main:app", "--app-dir", "apps/api", "--host", "0.0.0.0", "--port", "8000"]

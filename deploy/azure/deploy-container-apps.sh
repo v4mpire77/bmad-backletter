@@ -47,10 +47,12 @@ ACR_PASSWORD=$(az acr credential show --name $ACR_NAME --query passwords[0].valu
 echo "🔑 Logging into Azure Container Registry..."
 echo $ACR_PASSWORD | docker login $ACR_SERVER --username $ACR_USERNAME --password-stdin
 
-# Build and push the container image
-echo "🏗️ Building and pushing container image..."
-docker build -t $ACR_SERVER/$APP_NAME:latest -f deploy/docker/Dockerfile .
-docker push $ACR_SERVER/$APP_NAME:latest
+# Build and push the container images
+echo "🏗️ Building and pushing web and api images..."
+docker build -t $ACR_SERVER/${APP_NAME}-web:latest -f deploy/docker/Dockerfile.web .
+docker push $ACR_SERVER/${APP_NAME}-web:latest
+docker build -t $ACR_SERVER/${APP_NAME}-api:latest -f deploy/docker/Dockerfile.api .
+docker push $ACR_SERVER/${APP_NAME}-api:latest
 
 # Install Container Apps extension
 echo "🔧 Installing Container Apps extension..."
