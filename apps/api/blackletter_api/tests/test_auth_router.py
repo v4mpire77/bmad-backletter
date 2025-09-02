@@ -10,9 +10,11 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def clear_users():
     db = database.SessionLocal()
-    db.query(auth_models.User).delete()
-    db.commit()
-    db.close()
+    try:
+        db.query(auth_models.User).delete()
+        db.commit()
+    finally:
+        db.close()
 
 def test_auth_routes_registered():
     # Check register endpoint exists and returns 422 for missing body
