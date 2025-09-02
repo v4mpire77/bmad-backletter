@@ -1,0 +1,10 @@
+id: aml-kyc-1
+domain: property
+title: AML/KYC referenced
+severity: amber
+source:
+  url: https://www.gov.uk/guidance/money-laundering-regulations
+  version_label: 2025-08-01
+logic:
+  contains_text: ["anti-money laundering", "know your customer"]
+remedy: "Add AML/KYC verification steps to the workflow and clause references."
