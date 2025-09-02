@@ -3,3 +3,6 @@ uvicorn
 celery
 redis
 fakeredis
+sqlalchemy
+passlib[bcrypt]
+python-jose
