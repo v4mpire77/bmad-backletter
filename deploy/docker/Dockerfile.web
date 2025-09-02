@@ -9,9 +9,13 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json apps/web/package.json
 
-# Install dependencies and build Next.js app
+# Install dependencies
 RUN pnpm -C apps/web install --frozen-lockfile
+
+# Copy source code after installing dependencies for better layer caching
 COPY apps/web apps/web
+
+# Build Next.js app
 RUN pnpm -C apps/web build
 
 ENV NODE_ENV=production
