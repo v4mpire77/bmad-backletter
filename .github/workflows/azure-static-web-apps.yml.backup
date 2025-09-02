@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'pnpm'
           
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -53,10 +52,7 @@ jobs:
           app_location: "/apps/web"
           api_location: "/apps/api"
           output_location: "out"
-          skip_app_build: true # We already built it
-        env:
-          NODE_VERSION: '18'
-          PYTHON_VERSION: '3.11'
+          skip_app_build: true
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

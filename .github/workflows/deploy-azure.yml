@@ -1,10 +1,13 @@
-name: Deploy to Azure Container Apps
+name: Deploy to Azure Container Apps (DISABLED)
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+# Disabled - Using Azure Static Web Apps instead
+# To re-enable, uncomment the 'on' section below and set up Azure service principal secrets
+
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
 
 env:
   REGISTRY: blackletteracr.azurecr.io
