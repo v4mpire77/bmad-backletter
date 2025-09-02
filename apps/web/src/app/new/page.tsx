@@ -11,42 +11,63 @@ const UploadPage = () => {
     'idle' | 'queued' | 'extracting' | 'detecting' | 'reporting' | 'done'
   >('idle');
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const wsRef = useRef<WebSocket | null>(null);
 
-  // Mock state machine logic
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (uploadStep !== 'idle' && uploadStep !== 'done') {
-      timer = setTimeout(() => {
-        switch (uploadStep) {
-          case 'queued':
-            setUploadStep('extracting');
-            setProgress(25);
-            break;
-          case 'extracting':
-            setUploadStep('detecting');
-            setProgress(50);
-            break;
-          case 'detecting':
-            setUploadStep('reporting');
-            setProgress(75);
-            break;
-          case 'reporting':
-            setUploadStep('done');
-            setProgress(100);
-            break;
-          default:
-            break;
-        }
-      }, 900); // ~0.9s per step
-    }
-    return () => clearTimeout(timer);
-  }, [uploadStep]);
-
-  const handleFileChange = (selectedFile: File) => {
+  const handleFileChange = async (selectedFile: File) => {
     setFile(selectedFile);
     setUploadStep('queued');
     setProgress(0);
+    setError(null);
+
+    try {
+      const intakeRes = await fetch('/api/intake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: selectedFile.name }),
+      });
+      if (!intakeRes.ok) throw new Error('intake_failed');
+      const { analysis_id } = await intakeRes.json();
+
+      const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const ws = new WebSocket(
+        `${protocol}://${window.location.host}/ws/analysis/${analysis_id}`
+      );
+      wsRef.current = ws;
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.step) {
+            setUploadStep(data.step);
+          }
+          if (typeof data.progress === 'number') {
+            setProgress(data.progress);
+          }
+        } catch {
+          /* ignore malformed events */
+        }
+      };
+      ws.onerror = () => {
+        setError('Connection error');
+        handleReset();
+      };
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      const uploadRes = await fetch(`/api/analyses/${analysis_id}/file`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!uploadRes.ok) throw new Error('upload_failed');
+    } catch (e) {
+      setError('Upload failed');
+      wsRef.current?.close();
+      wsRef.current = null;
+      setFile(null);
+      setUploadStep('idle');
+      setProgress(0);
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -73,14 +94,23 @@ const UploadPage = () => {
   };
 
   const handleReset = useCallback(() => {
+    wsRef.current?.close();
+    wsRef.current = null;
     setFile(null);
     setUploadStep('idle');
     setProgress(0);
+    setError(null);
   }, []);
 
   const handleViewFindings = () => {
     router.push('/analyses/mock-1');
   };
+
+  useEffect(() => {
+    return () => {
+      wsRef.current?.close();
+    };
+  }, []);
 
   // Cancel simulation on ESC key
   useEffect(() => {
@@ -207,7 +237,10 @@ const UploadPage = () => {
             )}
           </div>
         )}
-        {file && uploadStep === 'idle' && (
+        {error && (
+          <p className="mt-4 text-sm text-red-600 text-center">{error}</p>
+        )}
+        {file && uploadStep === 'idle' && !error && (
           <p className="mt-4 text-sm text-gray-500 text-center">
             Selected file: {file.name}
           </p>
