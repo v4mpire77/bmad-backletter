@@ -23,3 +23,6 @@ ambiguity:
 vagueness_time:
   - as soon as practicable
   - within a reasonable time
+counter_anchors:
+  - must
+  - shall
