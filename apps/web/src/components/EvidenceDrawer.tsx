@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface EvidenceDrawerProps {
   isOpen: boolean;
@@ -10,6 +10,19 @@ interface EvidenceDrawerProps {
 
 export default function EvidenceDrawer({ isOpen, onClose, children }: EvidenceDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
+  const snippetRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const text = snippetRef.current?.textContent ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.error('Copy failed', e);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -53,10 +66,19 @@ export default function EvidenceDrawer({ isOpen, onClose, children }: EvidenceDr
         tabIndex={-1}
         className="absolute right-0 top-0 h-full w-80 bg-white p-4 shadow-lg"
       >
-        {children}
-        <div className="mt-4 flex justify-end">
+        <div ref={snippetRef}>{children}</div>
+        <div className="mt-4 flex justify-end space-x-2">
+          <button onClick={handleCopy}>Copy</button>
           <button onClick={onClose}>Close</button>
         </div>
+        {copied && (
+          <div
+            role="status"
+            className="absolute bottom-4 right-4 rounded bg-gray-800 px-3 py-2 text-white"
+          >
+            Copied to clipboard
+          </div>
+        )}
       </div>
     </div>
   );
