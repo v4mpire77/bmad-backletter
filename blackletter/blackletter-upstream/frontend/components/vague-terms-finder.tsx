@@ -120,7 +120,7 @@ export function VagueTermsFinder({ findings, onCitationClick }: VagueTermsFinder
                 <div className="bg-gray-800/30 rounded-lg p-4 mb-3">
                   <div className="text-sm text-gray-400 mb-2">Flagged Term:</div>
                   <div className="font-mono text-amber-400 bg-amber-500/10 px-2 py-1 rounded">
-                    "{finding.vague_term.text}"
+                    &quot;{finding.vague_term.text}&quot;
                   </div>
                 </div>
 
