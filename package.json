@@ -14,7 +14,10 @@
     "clean": "pnpm -r run clean",
     "swa:start": "swa start",
     "swa:build": "swa build",
-    "swa:deploy": "swa deploy"
+    "swa:deploy": "swa deploy",
+    "bmad:refresh": "bmad refresh",
+    "bmad:list": "bmad list",
+    "bmad:validate": "test -f AGENTS.md && test -d .bmad-core"
   },
   "dependencies": {
     "bmad-method": "^4.41.0",
