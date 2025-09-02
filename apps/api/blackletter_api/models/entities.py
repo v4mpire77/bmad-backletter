@@ -7,6 +7,7 @@ from sqlalchemy import (
     Boolean,
     Float,
     Enum,
+    JSON,
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
@@ -88,6 +89,20 @@ class Metric(Base):
     
     def __repr__(self):
         return f"<Metric(id={self.id}, analysis_id={self.analysis_id}, tokens={self.tokens_per_doc}, llm={self.llm_invoked})>"
+
+
+# Report model matching ReportExport schema
+class Report(Base):
+    __tablename__ = "reports"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    analysis_id = Column(String, nullable=False, index=True)
+    filename = Column(String, nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    options = Column(JSON, nullable=False)
+
+    def __repr__(self):
+        return f"<Report(id={self.id}, analysis_id='{self.analysis_id}', filename='{self.filename}')>"
 
 
 # Story 5.1 - Organization Settings model
