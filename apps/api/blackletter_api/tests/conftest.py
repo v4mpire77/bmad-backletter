@@ -21,7 +21,7 @@ def auth_pepper_env(monkeypatch) -> None:
 from sqlalchemy import create_engine
 
 from blackletter_api import database
-from blackletter_api.models import entities, auth as auth_models  # noqa: F401
+from blackletter_api.models import entities, auth as auth_models, organization as organization_models  # noqa: F401
 
 # Rebind engine to a known absolute path and ensure tables exist
 db_path = Path(__file__).resolve().parents[3] / "test.db"
