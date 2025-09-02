@@ -175,8 +175,28 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     finding.verdict = final_verdict
                     findings.append(finding)
             elif detector_spec.type == "regex":
-                # TODO: Implement regex detector logic
-                pass # For now, skip regex detectors
+                pattern = detector_spec.pattern or ""
+                try:
+                    regex = re.compile(pattern, re.IGNORECASE)
+                except re.error:
+                    continue
+                if regex.search(sentence_text):
+                    finding = Finding(
+                        detector_id=detector_id,
+                        rule_id=detector_id,
+                        verdict="pass",
+                        snippet=sentence_text,
+                        page=page,
+                        start=start,
+                        end=end,
+                        rationale=f"Regex pattern '{pattern}' matched.",
+                    )
+                    final_verdict = postprocess_weak_language(
+                        original_verdict=finding.verdict,
+                        window_text=finding.snippet,
+                    )
+                    finding.verdict = final_verdict
+                    findings.append(finding)
 
         processed_sentences += 1
 
