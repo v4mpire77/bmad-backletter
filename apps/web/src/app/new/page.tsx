@@ -158,7 +158,14 @@ export default function NewUploadPage() {
               </div>
               <div className="flex gap-2">
                 {!running && current !== "done" && (
-                  <button className="rounded border px-3 py-1 text-sm" onClick={() => setRunning(true)}>
+                  <button
+                    className="rounded border px-3 py-1 text-sm"
+                    onClick={() => {
+                      cancelledRef.current = false;
+                      setCanceled(false);
+                      setRunning(true);
+                    }}
+                  >
                     Resume
                   </button>
                 )}

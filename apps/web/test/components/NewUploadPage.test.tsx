@@ -93,6 +93,43 @@ describe("NewUploadPage State Machine", () => {
     });
   });
 
+  test("resumes the upload simulation after canceling", () => {
+    render(<NewUploadPage />);
+    const file = new File(["contract"], "test.pdf", { type: "application/pdf" });
+
+    const input = screen.getByTestId("file-input");
+    act(() => {
+      fireEvent.change(input, { target: { files: [file] } });
+    });
+
+    const stateMachine = screen.getByTestId("state-machine");
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    expect(stateMachine).toHaveAttribute("data-state", "extracting");
+
+    const cancelButton = screen.getByRole("button", { name: /cancel/i });
+    act(() => {
+      fireEvent.click(cancelButton);
+    });
+
+    // Timer shouldn't advance while canceled
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    expect(stateMachine).toHaveAttribute("data-state", "extracting");
+
+    const resumeButton = screen.getByRole("button", { name: /resume/i });
+    act(() => {
+      fireEvent.click(resumeButton);
+    });
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(stateMachine).toHaveAttribute("data-state", "detecting");
+  });
+
   test("resets the upload simulation", () => {
     render(<NewUploadPage />);
     const file = new File(["contract"], "test.pdf", { type: "application/pdf" });
