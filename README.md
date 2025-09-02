@@ -53,6 +53,28 @@ npm run dev
 
 To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MOCKS=1` in your environment. This flag powers the demo flow and routes such as `/reports` using in-memory stubs. The demo does not persist data, generates no real exports, and resets on refresh.
 
+### Environment Variables
+
+The API reads configuration from environment variables. Define them in a `.env` file before starting services.
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | Database connection string (e.g., `postgres://user:pass@localhost/db`) |
+| `JWT_SECRET` | Secret used to sign JWT tokens |
+| `SECRET_KEY` | FastAPI application secret |
+| `CORS_ORIGINS` | Comma-separated list of allowed origins |
+| `GEMINI_API_KEY` | Optional key to enable Gemini-based analyses |
+
+### Initial Setup: Admin & Organization
+
+After configuring environment variables and starting the API:
+
+1. **Create the first admin user** – run a management script or call the admin creation endpoint to bootstrap credentials.
+2. **Provision an organization** – authenticate as the admin and create an organization via the API.
+3. **Assign the admin to the organization** – add the admin user as a member of the new org.
+
+These steps establish the initial tenant and allow additional users to be invited.
+
 ## 🎯 **Next Development Priorities**
 
 ### Ready to Start (Epic 2 Completion)
