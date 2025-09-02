@@ -1,6 +1,25 @@
-export default async function AnalysesPage() {
-  // TODO: fetch from API when ready
-  const items: { id: string; name: string; status: 'pending' | 'complete' }[] = [];
+"use client";
+
+import { useEffect, useState } from "react";
+
+type Analysis = { id: string; name: string; status: "pending" | "complete" };
+
+export default function AnalysesPage() {
+  const [items, setItems] = useState<Analysis[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/analyses")
+      .then(res => res.json())
+      .then(data => {
+        if (active) setItems(data);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <div className="space-y-3">
       <h1 className="text-2xl font-semibold">Analyses</h1>
