@@ -20,6 +20,7 @@ apps/web/.turbo/
 apps/web/coverage/
 apps/web/playwright-report/
 apps/web/test-results/
+*.tsbuildinfo
 
 # Build outputs
 build/
