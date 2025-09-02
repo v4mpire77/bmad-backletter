@@ -8,7 +8,7 @@ import uuid
 os.environ.setdefault("SECRET_KEY", "test-secret")
 
 from blackletter_api import database
-from blackletter_api.models.entities import Report
+from blackletter_api.models.entities import Analysis, Report
 from blackletter_api.routers.reports import router as reports_router
 
 app = FastAPI()
@@ -22,6 +22,7 @@ def clear_reports():
     db = database.SessionLocal()
     try:
         db.query(Report).delete()
+        db.query(Analysis).delete()
         db.commit()
     finally:
         db.close()
@@ -35,18 +36,33 @@ def test_list_reports_initially_empty():
 
 def test_create_report_and_list():
     payload = {"include_logo": True, "include_meta": False, "date_format": "MDY"}
-    res = client.post("/api/reports/test123", json=payload)
+    analysis_id = uuid.uuid4()
+    db = database.SessionLocal()
+    try:
+        analysis = Analysis(
+            id=analysis_id,
+            filename="file.txt",
+            size_bytes=123,
+            mime_type="text/plain",
+        )
+        db.add(analysis)
+        db.commit()
+    finally:
+        db.close()
+
+    res = client.post(f"/api/reports/{analysis_id}", json=payload)
     assert res.status_code == 201
     data = res.json()
-    for key in ["id", "analysis_id", "filename", "created_at", "options"]:
+    for key in ["id", "analysis_id", "filename", "file_path", "created_at", "options"]:
         assert key in data
-    assert data["analysis_id"] == "test123"
+    assert data["analysis_id"] == str(analysis_id)
     # ensure report persisted to the database
     db = database.SessionLocal()
     try:
         report = db.query(Report).filter_by(id=uuid.UUID(data["id"])).first()
         assert report is not None
-        assert report.analysis_id == "test123"
+        assert report.analysis_id == str(analysis_id)
+        assert report.file_path
     finally:
         db.close()
     # list reports now contains the created record

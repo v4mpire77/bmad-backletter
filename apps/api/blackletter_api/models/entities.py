@@ -98,11 +98,15 @@ class Report(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     analysis_id = Column(String, nullable=False, index=True)
     filename = Column(String, nullable=False)
+    file_path = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     options = Column(JSON, nullable=False)
 
     def __repr__(self):
-        return f"<Report(id={self.id}, analysis_id='{self.analysis_id}', filename='{self.filename}')>"
+        return (
+            f"<Report(id={self.id}, analysis_id='{self.analysis_id}', "
+            f"filename='{self.filename}', file_path='{self.file_path}')>"
+        )
 
 
 # Story 5.1 - Organization Settings model

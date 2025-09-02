@@ -3,3 +3,6 @@ uvicorn
 celery
 redis
 fakeredis
+
+Jinja2
+xhtml2pdf
