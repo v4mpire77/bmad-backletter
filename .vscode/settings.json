@@ -1,4 +1,21 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  "python.terminal.activateEnvironment": true
+  "python.terminal.activateEnvironment": true,
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.associations": {
+    "*.yaml": "yaml",
+    "*.yml": "yaml"
+  },
+  "tailwindCSS.includeLanguages": {
+    "typescript": "typescript",
+    "typescriptreact": "typescriptreact"
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  }
 }

@@ -2,10 +2,14 @@
   "name": "BMAD Backletter Dev Container",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11"
-    }
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "postCreateCommand": "bash .devcontainer/setup-devcontainer.sh",
   "postStartCommand": "echo 'Dev container ready — Python venv created at .venv and interpreter set for VS Code.'",
@@ -19,8 +23,23 @@
         "chat.agent.enabled": true,
         "github.copilot.chat.agent.runTasks": true,
         "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
-        "python.terminal.activateEnvironment": true
-      }
+        "python.terminal.activateEnvironment": true,
+        "typescript.preferences.includePackageJsonAutoImports": "auto",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        }
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.pylint",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "ms-azuretools.vscode-azurestaticwebapps",
+        "github.copilot",
+        "github.copilot-chat"
+      ]
     }
   }
 }
