@@ -11,9 +11,13 @@ RUN python -m venv /opt/venv \
 # Copy API source code
 COPY apps/api apps/api
 
+# Set the module path for the API app. Override at build/run time if needed.
+ARG MODULE_PATH=blackletter_api.main:app
+ENV MODULE_PATH=${MODULE_PATH}
+
 ENV PATH="/opt/venv/bin:${PATH}" \
     PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-CMD ["uvicorn", "blackletter_api.main:app", "--app-dir", "apps/api", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "${MODULE_PATH}", "--app-dir", "apps/api", "--host", "0.0.0.0", "--port", "8000"]
