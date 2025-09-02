@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 import yaml
+import os
+from apps.api.blackletter_api.models.rulepack_schema import validate_rulepack, RulepackValidationError, compare_versions
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 RULES_DIR = BASE_DIR / "rules"
@@ -40,6 +42,43 @@ def _load_yaml_file(p: Path) -> Dict[str, Any]:
         return yaml.safe_load(f) or {}
 
 
+class S3CompatibleStorage:
+    """S3-compatible storage handler for rulepacks."""
+    
+    def __init__(self, endpoint_url: str = None, access_key: str = None, secret_key: str = None, bucket: str = None):
+        self.endpoint_url = endpoint_url or os.getenv("S3_ENDPOINT_URL")
+        self.access_key = access_key or os.getenv("S3_ACCESS_KEY")
+        self.secret_key = secret_key or os.getenv("S3_SECRET_KEY")
+        self.bucket = bucket or os.getenv("S3_BUCKET")
+        self.enabled = bool(self.endpoint_url and self.access_key and self.secret_key and self.bucket)
+    
+    def get_rulepack(self, rulepack_file: str) -> Optional[Dict[str, Any]]:
+        """Get rulepack from S3-compatible storage."""
+        if not self.enabled:
+            return None
+            
+        try:
+            # Import boto3 only when needed to avoid dependency issues
+            import boto3
+            from botocore.exceptions import ClientError
+            
+            s3 = boto3.client(
+                's3',
+                endpoint_url=self.endpoint_url,
+                aws_access_key_id=self.access_key,
+                aws_secret_access_key=self.secret_key
+            )
+            
+            # Download the file content
+            response = s3.get_object(Bucket=self.bucket, Key=rulepack_file)
+            content = response['Body'].read().decode('utf-8')
+            return yaml.safe_load(content) or {}
+        except Exception as e:
+            # Log error but don't fail - fallback to filesystem
+            print(f"Warning: Failed to load rulepack from S3: {e}")
+            return None
+
+
 def api_rules_summary() -> Dict[str, Any]:
     rp = load_rulepack()
     if not rp:
@@ -62,19 +101,37 @@ def api_rules_summary() -> Dict[str, Any]:
 
 
 class RulepackLoader:
-    def __init__(self, rules_dir: Path = RULES_DIR, rulepack_file: str = "art28_v1.yaml", app_env: str = "dev"):
+    def __init__(self, rules_dir: Path = RULES_DIR, rulepack_file: str = "art28_v1.yaml", 
+                 app_env: str = "dev", s3_storage: S3CompatibleStorage = None):
         self.rules_dir = rules_dir
         self.rulepack_file = rulepack_file
         self.app_env = app_env
+        self.s3_storage = s3_storage or S3CompatibleStorage()
         self._cache: Optional[Rulepack] = None
+        self._version_cache: Dict[str, List[Rulepack]] = {}
 
     def load(self) -> Rulepack:
         if self._cache:
             return self._cache
-        path = self.rules_dir / self.rulepack_file
-        if not path.exists():
-            raise RulepackError("rulepack file not found")
-        data = _load_yaml_file(path)
+            
+        # Try to load from S3 first if enabled
+        data = None
+        if self.s3_storage.enabled:
+            data = self.s3_storage.get_rulepack(self.rulepack_file)
+        
+        # Fallback to filesystem
+        if data is None:
+            path = self.rules_dir / self.rulepack_file
+            if not path.exists():
+                raise RulepackError(f"rulepack file not found: {path}")
+            data = _load_yaml_file(path)
+        
+        # Validate the rulepack using our schema
+        try:
+            validated_rulepack = validate_rulepack(data)
+        except RulepackValidationError as e:
+            raise RulepackError(f"Invalid rulepack schema: {e.message} (field: {e.field})") from e
+        
         detectors = [
             DetectorSpec(
                 id=d.get("id"),
@@ -91,18 +148,117 @@ class RulepackLoader:
             file = lx.get("file")
             if not file:
                 continue
-            lex_data = _load_yaml_file(self.rules_dir / "lexicons" / file)
+            # Try to load from S3 first if enabled
+            lex_data = None
+            if self.s3_storage.enabled:
+                try:
+                    lex_data = self.s3_storage.get_rulepack(f"lexicons/{file}")
+                except:
+                    pass
+                    
+            # Fallback to filesystem
+            if lex_data is None:
+                lex_data = _load_yaml_file(self.rules_dir / "lexicons" / file)
+                
             name = lex_data.get("name") or file.rsplit(".", 1)[0]
             terms = [str(t) for t in lex_data.get("terms", [])]
             lexicons[name] = Lexicon(name=name, terms=terms)
         rp = Rulepack(
-            name=data.get("name", "unknown"),
-            version=data.get("version", "0"),
+            name=validated_rulepack.meta.pack_id,
+            version=validated_rulepack.meta.version,
             detectors=detectors,
             lexicons=lexicons,
         )
         self._cache = rp
         return rp
+    
+    def list_available_versions(self, pack_id: str) -> List[str]:
+        """
+        List all available versions of a rulepack.
+        
+        Args:
+            pack_id: The rulepack ID to search for
+            
+        Returns:
+            List of version strings in descending order (newest first)
+        """
+        versions = []
+        
+        # Check filesystem
+        if self.rules_dir.exists():
+            for file_path in self.rules_dir.glob(f"{pack_id}_v*.yaml"):
+                # Extract version from filename (e.g., "art28_v1.2.3.yaml" -> "1.2.3")
+                filename = file_path.stem
+                if f"{pack_id}_v" in filename:
+                    version_str = filename.replace(f"{pack_id}_v", "")
+                    versions.append(version_str)
+        
+        # If S3 is enabled, also check there
+        if self.s3_storage.enabled:
+            try:
+                import boto3
+                s3 = boto3.client(
+                    's3',
+                    endpoint_url=self.s3_storage.endpoint_url,
+                    aws_access_key_id=self.s3_storage.access_key,
+                    aws_secret_access_key=self.s3_storage.secret_key
+                )
+                
+                # List objects with prefix
+                response = s3.list_objects_v2(
+                    Bucket=self.s3_storage.bucket,
+                    Prefix=f"{pack_id}_v"
+                )
+                
+                if 'Contents' in response:
+                    for obj in response['Contents']:
+                        filename = obj['Key']
+                        if filename.endswith('.yaml'):
+                            # Extract version from filename
+                            stem = Path(filename).stem
+                            if f"{pack_id}_v" in stem:
+                                version_str = stem.replace(f"{pack_id}_v", "")
+                                if version_str not in versions:
+                                    versions.append(version_str)
+            except Exception as e:
+                print(f"Warning: Failed to list versions from S3: {e}")
+        
+        # Sort versions in descending order (newest first)
+        versions.sort(key=lambda v: [int(x) for x in v.split('.')], reverse=True)
+        return versions
+    
+    def load_version(self, pack_id: str, version: str) -> Rulepack:
+        """
+        Load a specific version of a rulepack.
+        
+        Args:
+            pack_id: The rulepack ID
+            version: The version to load
+            
+        Returns:
+            Rulepack: The loaded rulepack
+        """
+        filename = f"{pack_id}_v{version}.yaml"
+        original_file = self.rulepack_file
+        self.rulepack_file = filename
+        
+        try:
+            return self.load()
+        finally:
+            self.rulepack_file = original_file
+    
+    def get_latest_version(self, pack_id: str) -> Optional[str]:
+        """
+        Get the latest version of a rulepack.
+        
+        Args:
+            pack_id: The rulepack ID
+            
+        Returns:
+            The latest version string or None if no versions found
+        """
+        versions = self.list_available_versions(pack_id)
+        return versions[0] if versions else None
 
 
 def load_rulepack() -> Rulepack | None:
@@ -120,6 +276,7 @@ __all__ = [
     "DetectorSpec",
     "api_rules_summary",
     "load_rulepack",
+    "S3CompatibleStorage"
 ]
 
 # Backwards compatible aliases

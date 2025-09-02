@@ -120,32 +120,68 @@ apps/api/blackletter_api/
 
 ## 🎯 **NEXT PRIORITIES**
 
-### Immediate (Ready to Start)
-1. **Story 2.3: Weak Language Lexicon Enhancement**
-   - Expand weak language terms
-   - Add industry-specific lexicons
-   - Implement confidence scoring
+### 🤖 **Jules Automation In Progress**
+✅ **All priority stories have been auto-created as GitHub issues with Jules automation:**
 
-2. **Story 3.1: Findings Table Frontend**
-   - Build React components for findings display
-   - Implement sorting and filtering
-   - Add pagination and search
+1. **Story 2.3: Weak Language Lexicon Enhancement** - [Issue #171](https://github.com/v4mpire77/bmad-backletter/issues/171)
+   - ⏳ Jules is working on story creation
+   - 🔍 @codex review requested for technical validation
+   - Expand weak language terms, add industry-specific lexicons, implement confidence scoring
 
-3. **Story 2.4: Token Ledger Caps**
-   - Implement token counting logic
-   - Add rate limiting and quotas
-   - Build monitoring dashboard
+2. **Story 3.1: Findings Table Frontend** - [Issue #172](https://github.com/v4mpire77/bmad-backletter/issues/172)
+   - ⏳ Jules is working on story creation  
+   - 🔍 @codex review requested for React architecture
+   - Build React components, implement sorting/filtering, add pagination and search
 
-### Short Term (Next Sprint)
-1. **Story 4.1: Metrics Wall**
-   - Build real-time metrics display
-   - Add performance monitoring
-   - Implement alerting system
+3. **Story 2.4: Token Ledger Caps** - [Issue #173](https://github.com/v4mpire77/bmad-backletter/issues/173)
+   - ⏳ Jules is working on story creation
+   - 🔍 @codex review requested for cost management integration
+   - Implement token counting logic, add rate limiting and quotas, build monitoring dashboard
 
-2. **Story 5.1: Organization Settings**
-   - User management system
-   - Organization configuration
-   - Role-based access control
+### 🔄 **Short Term (Jules Queue)**
+4. **Story 4.1: Metrics Wall** - [Issue #174](https://github.com/v4mpire77/bmad-backletter/issues/174)
+   - ⏳ Jules queued for story creation
+   - 🔍 @codex review requested for monitoring architecture
+   - Build real-time metrics display, add performance monitoring, implement alerting system
+
+5. **Story 5.1: Organization Settings** - [Issue #176](https://github.com/v4mpire77/bmad-backletter/issues/176)
+   - ⏳ Jules queued for story creation
+   - 🔍 @codex review requested for multi-tenant design
+   - User management system, organization configuration, role-based access control
+
+### 📋 **Automation Status**
+- **Total Issues Created:** 11 (expanded automation coverage)
+- **Jules Label Applied:** ✅ All issues
+- **Codex Review Requested:** ✅ All issues  
+- **Estimated Completion:** 15-30 minutes per story
+- **Auto-close on Approval:** ✅ Enabled
+
+### 📋 **Additional Jules Automation Queue**
+6. **Story 3.2: Report Export** - [Issue #180](https://github.com/v4mpire77/bmad-backletter/issues/180)
+   - ⏳ Jules queued for story creation (may already exist)
+   - 🔍 @codex review requested for PDF/HTML generation architecture
+
+7. **Story 3.3: Dashboard History** - [Issue #181](https://github.com/v4mpire77/bmad-backletter/issues/181)
+   - ⏳ Jules queued for story creation
+   - 🔍 @codex review requested for time-series analytics
+
+8. **Story 4.2: Coverage Meter** - [Issue #182](https://github.com/v4mpire77/bmad-backletter/issues/182)
+   - ⏳ Jules queued for story creation  
+   - 🔍 @codex review requested for coverage tracking architecture
+
+9. **Story 5.2: Minimal Auth Roles** - [Issue #183](https://github.com/v4mpire77/bmad-backletter/issues/183)
+   - ⏳ Jules queued for story creation
+   - 🔍 @codex review requested for authentication security
+
+10. **Story 2.5: AI Risk Analysis Integration** - [Issue #184](https://github.com/v4mpire77/bmad-backletter/issues/184)
+    - ⏳ Jules queued for story creation
+    - 🔍 @codex review requested for LLM integration patterns
+
+11. **Story 6.1: Compliance Modes** - [Issue #185](https://github.com/v4mpire77/bmad-backletter/issues/185)
+    - ⏳ Jules queued for story creation
+    - 🔍 @codex review requested for governance architecture
+
+**Note:** Some stories like EPIC3-STORY3.2.md may already exist and be complete - Jules automation will detect this and either update or mark as complete.
 
 ## 🔧 **DEVELOPMENT SETUP**
 
@@ -192,7 +228,17 @@ The orchestra agent has successfully implemented a **fully functional contract a
 
 **The foundation is solid and ready for the next phase of development!** 🚀
 
+### 🤖 **Jules Automation Active**
+- **11 comprehensive stories** auto-created as GitHub issues  
+- **Complete Epic coverage** for Epics 2-6 development
+- **Jules agents** working on story development and validation
+- **@codex reviews** requested for all technical validation
+- **Smart detection** of existing stories (like EPIC3-STORY3.2.md)
+- **Full automation pipeline** from story creation → development → review → approval
+
+**Next development phase is now fully automated and in progress across all priority epics!** ⚡
+
 ---
 
-*Last Updated: January 2025*  
-*Status: Ready for Epic 2 completion and Epic 3/4/5 development*
+*Last Updated: September 2025*  
+*Status: Jules automation executing Epic 2-5 story creation*
