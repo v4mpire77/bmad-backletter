@@ -13,10 +13,23 @@ interface Timeseries {
 }
 
 const Sparkline = ({ data }: { data: number[] }) => {
-  if (!data || data.length === 0) return null;
+  if (!data || data.length < 2) {
+    return (
+      <div className="mt-2 text-gray-400" aria-label="sparkline-fallback">
+        –
+      </div>
+    );
+  }
   const width = 100;
   const height = 30;
   const max = Math.max(...data);
+  if (max <= 0) {
+    return (
+      <div className="mt-2 text-gray-400" aria-label="sparkline-fallback">
+        –
+      </div>
+    );
+  }
   const points = data
     .map((d, i) => {
       const x = (i / (data.length - 1)) * width;
