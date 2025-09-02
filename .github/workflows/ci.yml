@@ -37,36 +37,29 @@ jobs:
   frontend-ci:
     runs-on: ubuntu-latest
     name: "Frontend CI (Web)"
-    defaults:
-      run:
-        working-directory: ./apps/web
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js with pnpm
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: 'apps/web/pnpm-lock.yaml'
 
-      - name: Install dependencies
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install root dependencies
         run: pnpm install
-      - name: Lint
-        run: pnpm lint
 
-      - name: Unit tests
-        run: pnpm test -- --run
-
-      - name: Install Playwright browsers
-        run: pnpm e2e:install
-
-      - name: E2E tests
-        run: pnpm test:e2e
-
-      - name: Build project
-        run: NEXT_DISABLE_ESLINT=1 pnpm build
-
-      - name: Type-check with TypeScript
-        run: pnpm typecheck
+      - name: Build and test frontend
+        working-directory: ./apps/web
+        run: |
+          pnpm lint
+          pnpm test -- --run
+          pnpm e2e:install
+          pnpm test:e2e
+          NEXT_DISABLE_ESLINT=1 pnpm build
+          pnpm typecheck
