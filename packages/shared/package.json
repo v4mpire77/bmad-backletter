@@ -1,21 +1,9 @@
 {
   "name": "@bmad/shared",
-  "version": "0.0.0",
-  "private": true,
-  "types": "dist/types/index.d.ts",
-  "files": ["dist"],
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "tsc": "tsc -p tsconfig.json"
-  },
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "exports": {
-    "./types": {
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/types/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "devDependencies": {
-    "typescript": "^5.4.5"
+    "./types": "./src/index.ts"
   }
 }
