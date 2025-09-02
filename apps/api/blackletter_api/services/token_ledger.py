@@ -8,9 +8,6 @@ from pathlib import Path
 from typing import Dict, Optional, Any, Tuple
 from dataclasses import dataclass, asdict
 
-from .storage import analysis_dir
-
-
 @dataclass
 class TokenUsage:
     """Tracks token usage for a single analysis."""
