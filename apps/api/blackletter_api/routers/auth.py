@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr
 
 from .. import database
 from ..models import auth as auth_models
+from ..models.organization import OrgMember
 from ..services.auth_service import auth_service
 
 router = APIRouter(
@@ -64,7 +65,7 @@ async def login(response: Response, user_credentials: UserLogin, db: Session = D
     expires_at = auth_service.get_session_expiry()
 
     # Find first org membership
-    first_membership = db.query(auth_models.OrgMember).filter(auth_models.OrgMember.user_id == user.id).first()
+    first_membership = db.query(OrgMember).filter(OrgMember.user_id == user.id).first()
     if not first_membership:
         raise HTTPException(status_code=403, detail="User has no organization membership.")
 
@@ -85,7 +86,7 @@ async def login(response: Response, user_credentials: UserLogin, db: Session = D
         samesite="lax",
         expires=expires_at,
     )
-    return {"message": "Login successful"}
+    return {"message": "Login successful", "organization_id": str(new_session.org_id)}
 
 
 @router.post("/logout")
