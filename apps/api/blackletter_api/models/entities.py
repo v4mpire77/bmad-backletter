@@ -30,6 +30,12 @@ class RetentionPolicy(enum.Enum):
     ninety_days = "90d"
 
 
+class ComplianceMode(enum.Enum):
+    """Compliance mode for evidence collection."""
+    strict = "strict"
+    standard = "standard"
+
+
 class Analysis(Base):
     __tablename__ = "analyses"
 
@@ -111,11 +117,14 @@ class OrgSetting(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     org_id = Column(UUID(as_uuid=True), nullable=False, index=True, default=uuid.uuid4)  # Default org for MVP
-    
+
     # Story 5.1 settings fields
     llm_provider = Column(Enum(LLMProvider), nullable=False, default="none")
+    llm_enabled = Column(Boolean, nullable=False, default=True)
     ocr_enabled = Column(Boolean, nullable=False, default=False)
     retention_policy = Column(Enum(RetentionPolicy), nullable=False, default="none")
+    compliance_mode = Column(Enum(ComplianceMode), nullable=False, default="strict")
+    evidence_window = Column(Integer, nullable=False, default=2)
     
     # Audit fields
     created_at = Column(DateTime, nullable=False, server_default=func.now())
