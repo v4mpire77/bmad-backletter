@@ -40,50 +40,34 @@ jobs:
         run: python -m py_compile main.py blackletter_api/*.py || echo "Syntax check completed"
 
   frontend-ci:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     name: "Frontend CI (Web)"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.x'
           cache: 'pnpm'
 
-      - name: Install root dependencies
-        run: pnpm install
-
-      - name: Install web dependencies
-        working-directory: ./apps/web
-        run: pnpm install
-
-      - name: Lint (if available)
-        working-directory: ./apps/web
+      - name: Enable Corepack
         run: |
-          if [ "$(pnpm run lint --dry-run 2>&1 | grep 'No lint')" ]; then
-            echo "Linting disabled - skipping"
-          else
-            pnpm run lint || echo "Lint completed with warnings"
-          fi
+          corepack enable
+          corepack prepare pnpm@9 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm -w lint
 
       - name: Run tests
-        working-directory: ./apps/web
-        run: |
-          if [ -f "vitest.config.ts" ] || [ -f "vitest.config.js" ]; then
-            pnpm test -- --run || echo "Tests completed"
-          else
-            echo "No test configuration found - skipping tests"
-          fi
+        run: pnpm -w test -- --run
 
       - name: Type check
-        working-directory: ./apps/web
-        run: pnpm run typecheck || echo "Type check completed with warnings"
+        run: pnpm -w typecheck
 
       - name: Build
-        working-directory: ./apps/web
-        run: pnpm run build
+        run: pnpm -w build

@@ -119,9 +119,13 @@ Optional flags:
 
 ## 📚 **Documentation**
 
-- **Implementation Status**: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md) - Complete overview
-- **Stories**: [`docs/stories/`](docs/stories/) - All development stories with status
-- **Architecture**: [`docs/architecture/`](docs/architecture/) - System design docs
+| Doc | Description |
+| --- | ----------- |
+| [Product Requirements](docs/prd.md) | Vision, users and scope |
+| [Architecture](docs/architecture.md) | System design overview |
+| [UX Flows](docs/ux.md) | Journeys and components |
+| [ADRs](docs/adr) | Decision records |
+| [Implementation Status](docs/IMPLEMENTATION_STATUS.md) | Progress tracker |
 
 ## 🏗️ **Architecture**
 
