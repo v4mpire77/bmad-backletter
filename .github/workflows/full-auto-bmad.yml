@@ -1,0 +1,351 @@
+name: Full Auto BMAD Task Creator
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_type:
+        description: 'BMAD Task Type'
+        required: true
+        default: 'create-story'
+        type: choice
+        options:
+          - 'create-story'
+          - 'develop-feature'
+          - 'review-story'
+          - 'qa-gate'
+      epic_name:
+        description: 'Epic/Story Name (e.g., EPIC1-STORY1.1)'
+        required: true
+        default: 'EPIC1-AUTO-STORY'
+        type: string
+      context:
+        description: 'Task Context/Requirements'
+        required: true
+        default: 'Auto-generated BMAD task for development workflow'
+        type: string
+      priority:
+        description: 'Task Priority'
+        required: false
+        default: 'medium'
+        type: choice
+        options:
+          - 'high'
+          - 'medium'
+          - 'low'
+  
+  # Auto-trigger on specific events
+  push:
+    branches: [main]
+    paths:
+      - 'docs/epics/*.md'
+      - 'docs/prd/*.md'
+      - 'docs/architecture/*.md'
+  
+  # Auto-trigger on schedule (every 6 hours during work days)
+  schedule:
+    - cron: '0 */6 * * 1-5'  # Every 6 hours, Monday-Friday
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  auto-create-bmad-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine Task Parameters
+        id: task-params
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let taskType, epicName, context, priority;
+            
+            // If manually triggered, use inputs
+            if (context.eventName === 'workflow_dispatch') {
+              taskType = '${{ github.event.inputs.task_type }}';
+              epicName = '${{ github.event.inputs.epic_name }}';
+              context = '${{ github.event.inputs.context }}';
+              priority = '${{ github.event.inputs.priority }}';
+            } 
+            // If triggered by file changes, auto-determine task
+            else if (context.eventName === 'push') {
+              const changedFiles = context.payload.commits
+                .flatMap(commit => commit.added.concat(commit.modified))
+                .filter(Boolean);
+              
+              console.log('Changed files:', changedFiles);
+              
+              if (changedFiles.some(file => file.includes('epics/'))) {
+                taskType = 'create-story';
+                const epicFile = changedFiles.find(file => file.includes('epics/'));
+                epicName = epicFile ? epicFile.split('/').pop().replace('.md', '') : 'AUTO-EPIC';
+                context = `Auto-detected epic changes. Create stories for new epic: ${epicName}`;
+                priority = 'high';
+              } else if (changedFiles.some(file => file.includes('architecture/'))) {
+                taskType = 'qa-gate';
+                epicName = 'ARCH-REVIEW';
+                context = 'Architecture documentation updated. Run QA gate to validate implementation alignment.';
+                priority = 'medium';
+              } else {
+                taskType = 'create-story';
+                epicName = 'AUTO-STORY';
+                context = 'Auto-detected changes requiring story development.';
+                priority = 'medium';
+              }
+            }
+            // If scheduled, create routine tasks
+            else if (context.eventName === 'schedule') {
+              const tasks = [
+                {
+                  type: 'qa-gate',
+                  epic: 'HEALTH-CHECK',
+                  context: 'Scheduled health check - run QA gate to validate recent implementations',
+                  priority: 'low'
+                },
+                {
+                  type: 'create-story',
+                  epic: 'BACKLOG-STORY',
+                  context: 'Create next priority story from backlog based on epic progress',
+                  priority: 'medium'
+                },
+                {
+                  type: 'review-story',
+                  epic: 'STORY-REVIEW',
+                  context: 'Review existing stories for completeness and implementation readiness',
+                  priority: 'low'
+                }
+              ];
+              
+              const selectedTask = tasks[Math.floor(Math.random() * tasks.length)];
+              taskType = selectedTask.type;
+              epicName = selectedTask.epic;
+              context = selectedTask.context;
+              priority = selectedTask.priority;
+            }
+            
+            // Map task types to BMAD agents and commands
+            const taskMapping = {
+              'create-story': { agent: 'sm', command: '*create-next-story' },
+              'develop-feature': { agent: 'dev', command: 'implement story' },
+              'review-story': { agent: 'qa', command: '*review-story' },
+              'qa-gate': { agent: 'qa', command: '*qa-gate' }
+            };
+            
+            const mapping = taskMapping[taskType] || { agent: 'bmad-master', command: '*help' };
+            
+            core.setOutput('task_type', taskType);
+            core.setOutput('epic_name', epicName);
+            core.setOutput('context', context);
+            core.setOutput('priority', priority);
+            core.setOutput('bmad_agent', mapping.agent);
+            core.setOutput('bmad_command', mapping.command);
+
+      - name: Auto-Create BMAD Issue with Jules Label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const taskType = '${{ steps.task-params.outputs.task_type }}';
+            const epicName = '${{ steps.task-params.outputs.epic_name }}';
+            const taskContext = '${{ steps.task-params.outputs.context }}';
+            const priority = '${{ steps.task-params.outputs.priority }}';
+            const bmadAgent = '${{ steps.task-params.outputs.bmad_agent }}';
+            const bmadCommand = '${{ steps.task-params.outputs.bmad_command }}';
+            
+            // Generate timestamp for unique titles
+            const timestamp = new Date().toISOString().split('T')[0];
+            const timeId = Math.random().toString(36).substr(2, 4);
+            
+            const issueTitle = `Auto-BMAD: ${taskType.charAt(0).toUpperCase() + taskType.slice(1).replace('-', ' ')} - ${epicName}`;
+            
+            const issueBody = `## 🤖 Auto-Generated BMAD Task
+
+**Task Type:** ${taskType.charAt(0).toUpperCase() + taskType.slice(1).replace('-', ' ')}
+**Epic/Story:** ${epicName}
+**Priority:** ${priority.toUpperCase()}
+**Generated:** ${timestamp} (ID: ${timeId})
+
+### 🎯 BMAD Configuration
+- **Agent:** @${bmadAgent}
+- **Command:** \`${bmadCommand}\`
+- **Execution:** Fully Automated
+
+### 📋 Context & Requirements
+${taskContext}
+
+### 🔄 Automation Features
+- [x] Auto-created by workflow
+- [x] Jules label pre-applied for immediate execution
+- [x] Auto-trigger Codex review after completion
+- [x] Auto-merge on approval (if low-risk)
+- [x] Follow-up task generation enabled
+
+### 🎯 Expected Deliverables
+Based on task type \`${taskType}\`:
+
+${taskType === 'create-story' ? `
+- ✅ Complete story file in \`docs/stories/\`
+- ✅ All BMAD template sections filled
+- ✅ Comprehensive acceptance criteria
+- ✅ Technical implementation guidance
+- ✅ Testing requirements specified
+` : ''}${taskType === 'develop-feature' ? `
+- ✅ Feature implementation complete
+- ✅ All story tasks/subtasks marked done
+- ✅ Comprehensive test coverage
+- ✅ Documentation updated
+- ✅ Code reviewed and approved
+` : ''}${taskType === 'review-story' ? `
+- ✅ Story review completed
+- ✅ Acceptance criteria validated
+- ✅ Technical feasibility confirmed
+- ✅ Dependencies identified
+- ✅ Story marked ready for development
+` : ''}${taskType === 'qa-gate' ? `
+- ✅ QA gate assessment completed
+- ✅ Quality standards verified
+- ✅ Gate decision documented
+- ✅ Recommendations for improvement
+- ✅ Approval/rejection with rationale
+` : ''}
+
+### 🚀 Workflow Status
+- **Status:** Queued for Jules execution
+- **Auto-Trigger:** Enabled via \`jules\` label
+- **Review Pipeline:** Codex integration active
+- **Completion:** Will auto-close on approval
+
+---
+*This is a fully automated BMAD task. Jules will begin execution immediately upon label detection.*
+
+**Trigger Event:** ${context.eventName}
+**Workflow:** Auto BMAD Task Creator
+**Repository:** ${context.repo.owner}/${context.repo.repo}`;
+
+            // Create issue with jules label pre-applied
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: issueTitle,
+              body: issueBody,
+              labels: [
+                'jules',           // Auto-trigger Jules
+                'bmad',           // BMAD methodology
+                'auto-generated', // Automation marker
+                `priority-${priority}`,
+                `agent-${bmadAgent}`,
+                taskType
+              ]
+            });
+            
+            console.log(`✅ Auto-created BMAD task: ${issueTitle}`);
+            console.log(`🔗 Issue URL: ${issue.data.html_url}`);
+            console.log(`🏷️ Jules label applied - automation will trigger shortly`);
+            
+            // Add immediate status comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.data.number,
+              body: `🚀 **Fully Automated BMAD Workflow Initiated**
+
+This task was auto-created and is ready for immediate execution:
+
+**Next Steps:**
+1. ⏳ Jules will detect the \`jules\` label and start working
+2. 🔧 Jules will load @${bmadAgent} agent and execute \`${bmadCommand}\`
+3. 📝 Story files will be created/updated in appropriate directories
+4. 🔍 @codex will automatically review the completed work
+5. ✅ Task will auto-close on approval or remain open for revisions
+
+**Estimated completion time:** 5-15 minutes depending on task complexity.
+
+*No manual intervention required - full automation in progress!* 🤖`
+            });
+            
+            return {
+              issue_number: issue.data.number,
+              issue_url: issue.data.html_url,
+              title: issueTitle
+            };
+
+      - name: Monitor Auto-Execution
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Log the automation success
+            console.log('🎉 Full Auto BMAD Task Creation Complete!');
+            console.log('');
+            console.log('📊 Summary:');
+            console.log(`   Task Type: ${{ steps.task-params.outputs.task_type }}`);
+            console.log(`   Epic/Story: ${{ steps.task-params.outputs.epic_name }}`);
+            console.log(`   BMAD Agent: @${{ steps.task-params.outputs.bmad_agent }}`);
+            console.log(`   Command: ${{ steps.task-params.outputs.bmad_command }}`);
+            console.log(`   Priority: ${{ steps.task-params.outputs.priority }}`);
+            console.log('');
+            console.log('🔄 Automation Pipeline:');
+            console.log('   ✅ Issue created with jules label');
+            console.log('   ⏳ Jules detection and execution (in progress)');
+            console.log('   ⏳ Codex review and approval (pending)');
+            console.log('   ⏳ Auto-completion and closure (pending)');
+            console.log('');
+            console.log('💡 The complete workflow is now running automatically!');
+
+  # Optional: Create summary of auto-generated tasks
+  create-daily-summary:
+    if: github.event_name == 'schedule'
+    needs: auto-create-bmad-task
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Daily Auto-Task Summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Get all auto-generated issues from today
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'auto-generated',
+              state: 'all',
+              since: `${today}T00:00:00Z`
+            });
+            
+            const autoIssues = issues.filter(issue => 
+              issue.created_at.startsWith(today) && 
+              issue.labels.some(label => label.name === 'bmad')
+            );
+            
+            if (autoIssues.length > 0) {
+              const summaryBody = `## 📊 Daily Auto-BMAD Task Summary - ${today}
+
+**Auto-Generated Tasks:** ${autoIssues.length}
+
+### 📋 Created Tasks:
+${autoIssues.map(issue => `- [${issue.title}](${issue.html_url}) - ${issue.state === 'closed' ? '✅ Completed' : '⏳ In Progress'}`).join('\n')}
+
+### 🎯 Task Types:
+${[...new Set(autoIssues.map(issue => 
+  issue.labels.find(label => ['create-story', 'develop-feature', 'review-story', 'qa-gate'].includes(label.name))?.name || 'unknown'
+))].map(type => `- ${type}: ${autoIssues.filter(issue => issue.labels.some(label => label.name === type)).length}`).join('\n')}
+
+### 📈 Automation Stats:
+- **Total Created:** ${autoIssues.length}
+- **Completed:** ${autoIssues.filter(issue => issue.state === 'closed').length}
+- **In Progress:** ${autoIssues.filter(issue => issue.state === 'open').length}
+- **Success Rate:** ${autoIssues.length > 0 ? Math.round((autoIssues.filter(issue => issue.state === 'closed').length / autoIssues.length) * 100) : 0}%
+
+---
+*Generated by Full Auto BMAD Task Creator*`;
+
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Daily Auto-BMAD Summary - ${today}`,
+                body: summaryBody,
+                labels: ['summary', 'auto-generated', 'daily-report']
+              });
+            }
