@@ -129,21 +129,6 @@ class ContractValidationStatus(BaseModel):
     timestamp: datetime
 
 
-class DetectorSummary(BaseModel):
-    id: str
-    type: str
-    description: Optional[str] = None
-    lexicon: Optional[str] = None
-
-
-class RulesSummary(BaseModel):
-    name: str
-    version: str
-    detector_count: int
-    detectors: List[DetectorSummary]
-    lexicons: List[str]
-
-
 class QASource(BaseModel):
     """Source citation for a Q&A response."""
     page: int
