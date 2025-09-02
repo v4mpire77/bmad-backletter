@@ -26,9 +26,39 @@ def test_job_lifecycle_sync(monkeypatch):
             {"page": 1, "start": 0, "end": 100}
         ],
         "sentences": [
-            {"page": 1, "start": 0, "end": 20, "text": "This document may contain sensitive information."},
-            {"page": 1, "start": 21, "end": 45, "text": "You should review it carefully."},
-            {"page": 1, "start": 46, "end": 70, "text": "It might be important."}
+            {
+                "page": 1,
+                "start": 0,
+                "end": 20,
+                "text": "This document may contain sensitive information.",
+                "lexicon": {
+                    "weak_language": [
+                        {"term": "may", "category": "hedging", "confidence": 0.8}
+                    ]
+                },
+            },
+            {
+                "page": 1,
+                "start": 21,
+                "end": 45,
+                "text": "You should review it carefully.",
+                "lexicon": {
+                    "weak_language": [
+                        {"term": "should", "category": "hedging", "confidence": 0.9}
+                    ]
+                },
+            },
+            {
+                "page": 1,
+                "start": 46,
+                "end": 70,
+                "text": "It might be important.",
+                "lexicon": {
+                    "weak_language": [
+                        {"term": "might", "category": "hedging", "confidence": 0.7}
+                    ]
+                },
+            },
         ]
     }
 
@@ -50,8 +80,14 @@ def test_job_lifecycle_sync(monkeypatch):
                 id="D001",
                 type="lexicon",
                 lexicon="weak-language",
-                description="Detects weak language."
-            )
+                description="Detects weak language.",
+            ),
+            Detector(
+                id="R001",
+                type="regex",
+                pattern=r"review",
+                description="Matches review",
+            ),
         ],
         lexicons={
             "weak-language": Lexicon(
@@ -106,7 +142,11 @@ def test_job_lifecycle_sync(monkeypatch):
 {json.dumps(extraction_data, indent=2)}
 """)
 
-    # Expect 3 findings for the 3 sentences with weak words
-    assert len(findings) == 3
-    for finding in findings:
-        assert finding["verdict"] == "weak"
+    # Expect 4 findings: 3 lexicon hits and 1 regex match
+    assert len(findings) == 4
+    assert any(f["detector_id"] == "R001" for f in findings)
+    lex_findings = [f for f in findings if f["detector_id"] == "D001"]
+    assert len(lex_findings) == 3
+    for f in lex_findings:
+        assert f["verdict"] == "weak"
+        assert f["category"] == "hedging"

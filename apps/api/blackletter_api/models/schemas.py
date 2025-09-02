@@ -52,6 +52,8 @@ class Finding(BaseModel):
     start: int
     end: int
     rationale: str
+    category: Optional[str] = None
+    confidence: Optional[float] = None
     reviewed: bool = False
 
 
