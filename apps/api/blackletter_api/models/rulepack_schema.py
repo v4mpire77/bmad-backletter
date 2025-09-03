@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from typing import Any, Literal, Union, Optional, List
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, FieldValidationInfo
 import re
 
 
@@ -68,7 +68,7 @@ class WeakNearby(BaseModel):
     any: Union[list[str], str, None] = None  # Allow string references like "@hedges"
     all: Union[list[str], str, None] = None
 
-    @validator('any', 'all')
+    @field_validator('any', 'all')
     def validate_patterns(cls, v):
         if v is None:
             return v
@@ -92,7 +92,7 @@ class WeakNearby(BaseModel):
 
 
 class Detector(BaseModel):
-    id: str = Field(..., min_length=1, max_length=100)
+    id: str = Field(..., max_length=100)
     anchors_any: Optional[List[str]] = None
     anchors_all: Optional[List[str]] = None
     allow_carveouts: Optional[List[str]] = None
@@ -102,7 +102,7 @@ class Detector(BaseModel):
     copies_any: Optional[List[str]] = None
     audits_any: Optional[List[str]] = None
 
-    @validator('id')
+    @field_validator('id')
     def validate_id(cls, v):
         if not v:
             raise RulepackValidationError(
@@ -119,43 +119,43 @@ class Detector(BaseModel):
             )
         return v
 
-    @validator('anchors_any', 'anchors_all', 'allow_carveouts', 'redflags_any', 
-               'flowdown_any', 'copies_any', 'audits_any')
-    def validate_patterns(cls, v, field):
+    @field_validator('anchors_any', 'anchors_all', 'allow_carveouts', 'redflags_any',
+                    'flowdown_any', 'copies_any', 'audits_any')
+    def validate_patterns(cls, v, info: FieldValidationInfo):
         if v is None:
             return v
         if not isinstance(v, list):
             raise RulepackValidationError(
                 f"Pattern fields must be lists, got: {type(v)}",
-                field=f"detector.{field.name}",
+                field=f"detector.{info.field_name}",
                 value=v
             )
         for pattern in v:
             if not isinstance(pattern, str):
                 raise RulepackValidationError(
                     f"All patterns must be strings, got: {type(pattern)}",
-                    field=f"detector.{field.name}",
+                    field=f"detector.{info.field_name}",
                     value=pattern
                 )
             if not pattern.strip():
                 raise RulepackValidationError(
                     f"Pattern cannot be empty or whitespace only: '{pattern}'",
-                    field=f"detector.{field.name}",
+                    field=f"detector.{info.field_name}",
                     value=pattern
                 )
         return v
 
 
 class Meta(BaseModel):
-    pack_id: str = Field(..., min_length=1, max_length=100)
-    version: str = Field(..., regex=r'^\d+\.\d+\.\d+')  # Semantic versioning
+    pack_id: str = Field(..., max_length=100)
+    version: str = Field(...)  # Semantic versioning validated below
     evidence_window_sentences: int = Field(ge=1, le=10)  # Reasonable limits
     verdicts: List[Literal['pass', 'weak', 'missing', 'needs_review']]
     tokenizer: str = "sentence"
     author: Optional[str] = None
     created_date: Optional[str] = None
 
-    @validator('pack_id')
+    @field_validator('pack_id')
     def validate_pack_id(cls, v):
         if not v:
             raise RulepackValidationError(
@@ -172,7 +172,7 @@ class Meta(BaseModel):
             )
         return v
 
-    @validator('version')
+    @field_validator('version')
     def validate_version(cls, v):
         # Simple semantic version validation (MAJOR.MINOR.PATCH)
         if not re.match(r'^\d+\.\d+\.\d+', v):
@@ -183,7 +183,7 @@ class Meta(BaseModel):
             )
         return v
 
-    @validator('verdicts')
+    @field_validator('verdicts')
     def validate_verdicts(cls, v):
         if not v:
             raise RulepackValidationError(
@@ -207,7 +207,7 @@ class Rulepack(BaseModel):
     shared_lexicon: dict[str, Any] = Field(default_factory=dict)
     Detectors: List[Detector] = Field(..., min_items=1)
 
-    @validator('Detectors')
+    @field_validator('Detectors')
     def validate_unique_detector_ids(cls, v):
         if not v:
             raise RulepackValidationError(
@@ -225,7 +225,7 @@ class Rulepack(BaseModel):
             )
         return v
 
-    @validator('shared_lexicon')
+    @field_validator('shared_lexicon')
     def validate_lexicon(cls, v):
         if not isinstance(v, dict):
             raise RulepackValidationError(
@@ -250,22 +250,13 @@ class Rulepack(BaseModel):
 
 
 def validate_rulepack(data: dict) -> Rulepack:
-    """
-    Validate rulepack data and return a validated Rulepack object.
-    
-    Args:
-        data: Dictionary containing rulepack data
-        
-    Returns:
-        Rulepack: Validated rulepack object
-        
-    Raises:
-        RulepackValidationError: If validation fails with detailed error information
-    """
+    """Validate rulepack data and return a validated Rulepack object."""
     try:
         return Rulepack(**data)
+    except RulepackValidationError:
+        # Preserve custom validation errors
+        raise
     except Exception as e:
-        # Re-raise as RulepackValidationError with more context
         if hasattr(e, 'errors'):
             errors = e.errors()
             if errors:
