@@ -6,8 +6,6 @@ bundle:
 agents:
   - bmad-orchestrator
   - "*"
-  - infra-devops-platform
-  - vibe-ceo
 workflows:
   - brownfield-fullstack.yaml
   - brownfield-service.yaml

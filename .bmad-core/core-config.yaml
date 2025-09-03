@@ -15,28 +15,9 @@ architecture:
   architectureShardedLocation: docs/architecture
 customTechnicalDocuments: null
 devLoadAlwaysFiles:
-  - docs/architecture/tech_stack.md
-  - docs/architecture/coding_standards.md
-  - docs/architecture/source_tree.md
-  - docs/architecture/api_contracts.md
+  - docs/architecture/coding-standards.md
+  - docs/architecture/tech-stack.md
+  - docs/architecture/source-tree.md
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
-
-# Legacy blackletter config (keeping for compatibility)
-llm:
-  provider: none           # none|openai|anthropic|gemini
-  gate_policy: snippet_only
-  snippet_max_tokens: 220
-budget:
-  hard_cap_tokens_per_doc: 1500
-  on_exceed: needs_review
-cache:
-  kind: sqlite
-  key: [prompt_id, snippet_hash]
-ocr:
-  enabled: false
-security:
-  redact_pii: true         # if LLM enabled, apply redaction first
-evidence_window_sentences: 2
-enable_weak_language: true
