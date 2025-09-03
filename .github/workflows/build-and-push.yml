@@ -16,8 +16,7 @@ concurrency:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    permissions: { contents: read }
     strategy:
       fail-fast: false
       matrix:
@@ -33,6 +32,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: docker/setup-buildx-action@v3
+
       - name: Login to ACR
         env:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
@@ -40,10 +41,33 @@ jobs:
           ACR_PASSWORD:     ${{ secrets.ACR_PASSWORD }}
         run: echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
 
-      - name: Build and push ${{ matrix.name }}
+      - name: Buildx cache restore
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
+
+      - name: Build and push ${{ matrix.name }} (sha + latest)
+        env:
+          REG: ${{ secrets.ACR_LOGIN_SERVER }}
         run: |
-          TAG=${GITHUB_SHA::7}
-          IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${TAG}"
-          docker build -t "$IMAGE" -f "${{ matrix.dockerfile }}" "${{ matrix.context }}"
-          docker push "$IMAGE"
+          TAG_SHA=${GITHUB_SHA::7}
+          IMAGE_SHA="$REG/${{ matrix.image }}:${TAG_SHA}"
+          IMAGE_LATEST="$REG/${{ matrix.image }}:latest"
+          docker buildx build "${{ matrix.context }}" \
+            -f "${{ matrix.dockerfile }}" \
+            --tag "$IMAGE_SHA" --tag "$IMAGE_LATEST" \
+            --cache-from type=gha --cache-to type=gha,mode=max \
+            --push
+
+      - name: Smoke test pull/run
+        env:
+          REG: ${{ secrets.ACR_LOGIN_SERVER }}
+        run: |
+          TAG_SHA=${GITHUB_SHA::7}
+          IMAGE="$REG/${{ matrix.image }}:${TAG_SHA}"
+          docker pull "$IMAGE"
+          docker run --rm --entrypoint /bin/sh "$IMAGE" -c "echo container_ok"
+
 
