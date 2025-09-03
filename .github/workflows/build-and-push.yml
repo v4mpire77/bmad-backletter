@@ -1,15 +1,25 @@
 name: build-and-push
+
 on:
   workflow_dispatch:
   push:
+    branches: [ "**" ]
     paths:
-      - blackletter/blackletter-upstream/**/Dockerfile
-      - blackletter/blackletter-upstream/**/*
-      - deploy/docker/Dockerfile
+      - "blackletter/blackletter-upstream/**/Dockerfile"
+      - "blackletter/blackletter-upstream/**"
+      - "deploy/docker/Dockerfile"
+
+concurrency:
+  group: build-and-push-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   docker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: backend
@@ -22,13 +32,18 @@ jobs:
             image:     blackletter/frontend
     steps:
       - uses: actions/checkout@v4
-      - name: Docker login to ACR
-        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login "${{ secrets.ACR_LOGIN_SERVER }}" \
-             -u "${{ secrets.ACR_USERNAME }}" --password-stdin
+
+      - name: Login to ACR
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          ACR_USERNAME:     ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD:     ${{ secrets.ACR_PASSWORD }}
+        run: echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
+
       - name: Build and push ${{ matrix.name }}
         run: |
           TAG=${GITHUB_SHA::7}
           IMAGE="${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${TAG}"
           docker build -t "$IMAGE" -f "${{ matrix.dockerfile }}" "${{ matrix.context }}"
           docker push "$IMAGE"
-          echo "pushed=$IMAGE" >> $GITHUB_OUTPUT
+
