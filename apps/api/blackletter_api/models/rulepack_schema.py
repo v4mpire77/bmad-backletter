@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from typing import Any, Literal, Union, Optional, List
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, field_validator
+from pydantic import ValidationInfo
 import re
 
 
@@ -119,28 +120,36 @@ class Detector(BaseModel):
             )
         return v
 
-    @validator('anchors_any', 'anchors_all', 'allow_carveouts', 'redflags_any', 
-               'flowdown_any', 'copies_any', 'audits_any')
-    def validate_patterns(cls, v, field):
+    @field_validator(
+        'anchors_any',
+        'anchors_all',
+        'allow_carveouts',
+        'redflags_any',
+        'flowdown_any',
+        'copies_any',
+        'audits_any',
+        mode='after',
+    )
+    def validate_patterns(cls, v, info: ValidationInfo):
         if v is None:
             return v
         if not isinstance(v, list):
             raise RulepackValidationError(
                 f"Pattern fields must be lists, got: {type(v)}",
-                field=f"detector.{field.name}",
+                field=f"detector.{info.field_name}",
                 value=v
             )
         for pattern in v:
             if not isinstance(pattern, str):
                 raise RulepackValidationError(
                     f"All patterns must be strings, got: {type(pattern)}",
-                    field=f"detector.{field.name}",
+                    field=f"detector.{info.field_name}",
                     value=pattern
                 )
             if not pattern.strip():
                 raise RulepackValidationError(
                     f"Pattern cannot be empty or whitespace only: '{pattern}'",
-                    field=f"detector.{field.name}",
+                    field=f"detector.{info.field_name}",
                     value=pattern
                 )
         return v
@@ -148,7 +157,7 @@ class Detector(BaseModel):
 
 class Meta(BaseModel):
     pack_id: str = Field(..., min_length=1, max_length=100)
-    version: str = Field(..., regex=r'^\d+\.\d+\.\d+')  # Semantic versioning
+    version: str = Field(..., pattern=r'^\d+\.\d+\.\d+')  # Semantic versioning
     evidence_window_sentences: int = Field(ge=1, le=10)  # Reasonable limits
     verdicts: List[Literal['pass', 'weak', 'missing', 'needs_review']]
     tokenizer: str = "sentence"

@@ -37,3 +37,6 @@ dist/
 
 # TypeScript
 *.tsbuildinfo
+
+# Local git worktrees (not tracked)
+worktrees/

@@ -1,1 +1,86 @@
-"""Test for rulepack loader service."""\nimport pytest\nfrom unittest.mock import patch, MagicMock\nfrom pathlib import Path\nfrom apps.api.blackletter_api.services.rulepack_loader import RulepackLoader, S3CompatibleStorage, RulepackError\n\n\ndef test_rulepack_loader_filesystem():\n    """Test rulepack loader with filesystem storage."""\n    # This test would require actual files to be present\n    # For now, we'll just test that the class can be instantiated\n    loader = RulepackLoader()\n    assert loader is not None\n\n\n@patch('apps.api.blackletter_api.services.rulepack_loader.S3CompatibleStorage')\ndef test_rulepack_loader_s3_fallback(mock_s3_storage):\n    """Test rulepack loader falls back to filesystem when S3 fails."""\n    # Mock S3 to return None (failure)\n    mock_s3_storage_instance = MagicMock()\n    mock_s3_storage_instance.enabled = True\n    mock_s3_storage_instance.get_rulepack.return_value = None\n    mock_s3_storage.return_value = mock_s3_storage_instance\n    \n    # Create loader with mocked S3\n    loader = RulepackLoader()\n    \n    # This would normally try S3 first, then fall back to filesystem\n    # We're not testing the actual loading here, just the fallback logic\n    assert loader.s3_storage.enabled == True\n\n\ndef test_s3_compatible_storage_init():\n    """Test S3 compatible storage initialization."""\n    # Test with environment variables\n    with patch.dict('os.environ', {\n        'S3_ENDPOINT_URL': 'https://s3.example.com',\n        'S3_ACCESS_KEY': 'access_key',\n        'S3_SECRET_KEY': 'secret_key',\n        'S3_BUCKET': 'test-bucket'\n    }):\n        storage = S3CompatibleStorage()\n        assert storage.endpoint_url == 'https://s3.example.com'\n        assert storage.access_key == 'access_key'\n        assert storage.secret_key == 'secret_key'\n        assert storage.bucket == 'test-bucket'\n        assert storage.enabled == True\n\n\ndef test_s3_compatible_storage_disabled():\n    """Test S3 compatible storage is disabled when config is missing."""\n    with patch.dict('os.environ', {}, clear=True):\n        storage = S3CompatibleStorage()\n        assert storage.enabled == False\n\n\n@patch('apps.api.blackletter_api.services.rulepack_loader.boto3')\ndef test_s3_compatible_storage_get_rulepack(mock_boto3):\n    """Test getting rulepack from S3 storage."""\n    # Mock boto3 client\n    mock_client = MagicMock()\n    mock_boto3.client.return_value = mock_client\n    mock_client.get_object.return_value = {\n        'Body': MagicMock(read=MagicMock(return_value=b'name: test\\nversion: 1.0.0'))\n    }\n    \n    storage = S3CompatibleStorage(\n        endpoint_url='https://s3.example.com',\n        access_key='access_key',\n        secret_key='secret_key',\n        bucket='test-bucket'\n    )\n    \n    result = storage.get_rulepack('test_rulepack.yaml')\n    assert result is not None\n    assert 'name' in result\n    assert result['name'] == 'test'\n\n\n@patch('apps.api.blackletter_api.services.rulepack_loader.boto3')\ndef test_s3_compatible_storage_get_rulepack_error(mock_boto3):\n    """Test S3 storage returns None on error."""\n    # Mock boto3 client to raise an exception\n    mock_client = MagicMock()\n    mock_boto3.client.return_value = mock_client\n    mock_client.get_object.side_effect = Exception("S3 Error")\n    \n    storage = S3CompatibleStorage(\n        endpoint_url='https://s3.example.com',\n        access_key='access_key',\n        secret_key='secret_key',\n        bucket='test-bucket'\n    )\n    \n    result = storage.get_rulepack('test_rulepack.yaml')\n    assert result is None
+"""Tests for rulepack loader service and S3-compatible storage."""
+import os
+import pytest
+from unittest.mock import patch, MagicMock
+from apps.api.blackletter_api.services.rulepack_loader import (
+    RulepackLoader,
+    S3CompatibleStorage,
+)
+
+
+def test_rulepack_loader_instantiation() -> None:
+    """Basic smoke test that the loader can be constructed."""
+    loader = RulepackLoader()
+    assert loader is not None
+
+
+@patch('apps.api.blackletter_api.services.rulepack_loader.S3CompatibleStorage')
+def test_rulepack_loader_s3_fallback(mock_s3_storage) -> None:
+    """When S3 returns None, loader should fall back to filesystem without crashing."""
+    mock_s3 = MagicMock()
+    mock_s3.enabled = True
+    mock_s3.get_rulepack.return_value = None
+    mock_s3_storage.return_value = mock_s3
+
+    loader = RulepackLoader()
+    assert loader.s3_storage.enabled is True
+
+
+def test_s3_compatible_storage_init_env() -> None:
+    """Environment variables should configure the storage and enable it."""
+    with patch.dict(os.environ, {
+        'S3_ENDPOINT_URL': 'https://s3.example.com',
+        'S3_ACCESS_KEY': 'access_key',
+        'S3_SECRET_KEY': 'secret_key',
+        'S3_BUCKET': 'test-bucket',
+    }, clear=True):
+        storage = S3CompatibleStorage()
+        assert storage.endpoint_url == 'https://s3.example.com'
+        assert storage.access_key == 'access_key'
+        assert storage.secret_key == 'secret_key'
+        assert storage.bucket == 'test-bucket'
+        assert storage.enabled is True
+
+
+def test_s3_compatible_storage_disabled_when_missing() -> None:
+    with patch.dict(os.environ, {}, clear=True):
+        storage = S3CompatibleStorage()
+        assert storage.enabled is False
+
+
+@patch('apps.api.blackletter_api.services.rulepack_loader.boto3')
+def test_s3_compatible_storage_get_rulepack_success(mock_boto3) -> None:
+    mock_client = MagicMock()
+    mock_boto3.client.return_value = mock_client
+    mock_client.get_object.return_value = {
+        'Body': MagicMock(read=MagicMock(return_value=b'name: test\nversion: 1.0.0'))
+    }
+
+    storage = S3CompatibleStorage(
+        endpoint_url='https://s3.example.com',
+        access_key='access_key',
+        secret_key='secret_key',
+        bucket='test-bucket',
+    )
+
+    result = storage.get_rulepack('test_rulepack.yaml')
+    assert isinstance(result, dict)
+    assert result.get('name') == 'test'
+
+
+@patch('apps.api.blackletter_api.services.rulepack_loader.boto3')
+def test_s3_compatible_storage_get_rulepack_error(mock_boto3) -> None:
+    mock_client = MagicMock()
+    mock_boto3.client.return_value = mock_client
+    mock_client.get_object.side_effect = Exception('S3 Error')
+
+    storage = S3CompatibleStorage(
+        endpoint_url='https://s3.example.com',
+        access_key='access_key',
+        secret_key='secret_key',
+        bucket='test-bucket',
+    )
+
+    result = storage.get_rulepack('test_rulepack.yaml')
+    assert result is None
+

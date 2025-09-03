@@ -28,9 +28,12 @@ export default function UploadDropzone() {
 
     setLocalError(null);
     const body = new FormData();
+    // FastAPI expects field name "file"
     body.append("file", file);
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/uploads");
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+    const endpoint = `${apiBase}/api/contracts`;
+    xhr.open("POST", endpoint);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
         setStatus("uploading");
@@ -39,11 +42,22 @@ export default function UploadDropzone() {
     };
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
-        const { analysis_id, status } = JSON.parse(xhr.responseText);
-        setStatus(status);
-        router.push(`/analyses/${analysis_id}`);
+        try {
+          const parsed = JSON.parse(xhr.responseText || "{}");
+          const nextStatus = parsed?.status ?? "queued";
+          const redirectId = parsed?.analysis_id ?? parsed?.job_id ?? parsed?.id;
+          setStatus(nextStatus);
+          if (!redirectId) {
+            setNetworkError(new Error("Invalid server response"));
+            return;
+          }
+          router.push(`/analyses/${redirectId}`);
+        } catch (e) {
+          setNetworkError(new Error("Upload failed"));
+        }
       } else {
-        setNetworkError(new Error("Upload failed"));
+        const msg = xhr.responseText || "Upload failed";
+        setNetworkError(new Error(msg || "Upload failed"));
       }
     };
     xhr.onerror = () => setNetworkError(new Error("Upload failed"));
