@@ -4508,7 +4508,10 @@ etc...
 
 ### Build and Deployment Process
 
-- **Build Command**: `pnpm run build` (webpack config in `webpack.config.js`)
+codex/install-bmad-method-for-codex-web-8mou4t
+- **Build Command**: `npm run build` (webpack config in `webpack.config.js`)
+=======
+- **Build Command**: `pnpm run build` (webpack config in `webpack.config.js`)main
 - **Deployment**: Manual deployment via `scripts/deploy.sh`
 - **Environments**: Dev, Staging, Prod (see `config/environments/`)
 
@@ -4522,10 +4525,9 @@ etc...
 - Manual Testing: Primary QA method
 
 ### Running Tests
-
-```bash
 pnpm test           # Runs unit tests
 pnpm run test:integration  # Runs integration tests (requires local DB)
+main
 ```
 
 ## If Enhancement PRD Provided - Impact Analysis
@@ -4556,10 +4558,12 @@ Based on the enhancement requirements, these files will be affected:
 ### Frequently Used Commands
 
 ```bash
+=======
 pnpm run dev         # Start development server
 pnpm run build       # Production build
 pnpm run migrate     # Run database migrations
 pnpm run seed        # Seed test data
+main
 ```
 
 ### Debugging and Troubleshooting
@@ -7242,3 +7246,7 @@ inputs:
 
 <!-- END: BMAD-AGENTS -->
 
+codex/install-bmad-method-for-codex-web-8mou4t
+
+
+main
