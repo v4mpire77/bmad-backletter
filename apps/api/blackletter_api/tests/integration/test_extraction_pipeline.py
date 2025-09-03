@@ -3,7 +3,11 @@ from __future__ import annotations
 from io import BytesIO
 from pathlib import Path
 
-import fitz  # PyMuPDF
+import pytest
+
+fitz = pytest.importorskip("fitz")
+pytest.importorskip("docx2python")
+pytest.importorskip("blingfire")
 from fastapi.testclient import TestClient
 
 from blackletter_api.main import app

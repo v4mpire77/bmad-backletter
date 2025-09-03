@@ -1,0 +1,7 @@
+pytest
+pytest-asyncio
+httpx
+jsonschema
+docx2python
+blingfire
+PyMuPDF
