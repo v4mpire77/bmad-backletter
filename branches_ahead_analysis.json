@@ -1,0 +1,20 @@
+{
+  "main_sha": "1d3bf9d5c4815fe89fbb7a07a78efe0a750f611e",
+  "total_branches": 1,
+  "branches_ahead": [
+    {
+      "name": "copilot/fix-d6cc7f7b-05d8-4631-a04c-fb7bc3ddf9d7",
+      "ahead": 1,
+      "behind": 0,
+      "is_ahead": true,
+      "latest_commit": {
+        "sha": "95aa58ab3069c6cc1fcb8eedf3241ebc37c0b996",
+        "message": "Initial plan",
+        "author": "copilot-swe-agent[bot]",
+        "date": "2025-09-03 02:28:11 +0000"
+      }
+    }
+  ],
+  "ahead_count": 1,
+  "analysis_timestamp": "2025-09-03T02:31:13.561411"
+}
