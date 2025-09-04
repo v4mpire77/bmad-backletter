@@ -150,7 +150,6 @@ def test_run_detectors_handles_regex_detectors(tmp_path: Path, monkeypatch):
                 type="regex",
                 pattern=r"foo\d+",
                 description="Matches foo followed by digits",
-                case_insensitive=True,
             )
         ],
         lexicons={}
@@ -186,6 +185,75 @@ def test_run_detectors_handles_regex_detectors(tmp_path: Path, monkeypatch):
     assert finding["rule_id"] == "R001"
     assert finding["snippet"] == "This sentence has FoO123 pattern."
     assert finding["verdict"] == "pass"
+
+
+def test_run_detectors_respects_case_sensitive_flag(tmp_path: Path, monkeypatch):
+    """Ensure setting case_insensitive=False disables default matching."""
+    analysis_id = str(uuid.uuid4())
+
+    analysis_dir_temp = tmp_path / analysis_id
+    analysis_dir_temp.mkdir()
+
+    monkeypatch.setattr(
+        "blackletter_api.services.detector_runner.analysis_dir",
+        lambda aid: analysis_dir_temp
+    )
+
+    class DummyLedger:
+        def add_tokens(self, *args, **kwargs):
+            return False, None
+
+    monkeypatch.setattr(
+        "blackletter_api.services.detector_runner.get_token_ledger",
+        lambda: DummyLedger(),
+    )
+    monkeypatch.setattr(
+        "blackletter_api.services.detector_runner.should_apply_token_capping",
+        lambda: False,
+    )
+    get_weak_terms_with_metadata.cache_clear()
+    get_counter_anchors.cache_clear()
+
+    mock_rulepack = Rulepack(
+        name="regex-pack",
+        version="v1",
+        detectors=[
+            Detector(
+                id="R003",
+                type="regex",
+                pattern=r"foo\d+",
+                case_insensitive=False,
+            )
+        ],
+        lexicons={},
+    )
+
+    monkeypatch.setattr("blackletter_api.services.detector_runner.load_rulepack", lambda: mock_rulepack)
+    monkeypatch.setattr("blackletter_api.services.weak_lexicon.load_rulepack", lambda: mock_rulepack)
+
+    dummy_extraction = {
+        "text_path": "extracted.txt",
+        "page_map": [{"page": 1, "start": 0, "end": 50}],
+        "sentences": [
+            {"page": 1, "start": 0, "end": 25, "text": "This sentence has FoO123 pattern."},
+            {"page": 1, "start": 26, "end": 50, "text": "Nothing to see here."},
+        ],
+    }
+
+    extraction_path = analysis_dir_temp / "extraction.json"
+    with extraction_path.open("w") as f:
+        json.dump(dummy_extraction, f)
+
+    run_detectors(analysis_id, str(extraction_path))
+
+    findings_path = analysis_dir_temp / "findings.json"
+    assert findings_path.exists()
+
+    with findings_path.open("r") as f:
+        findings = json.load(f)
+
+    # Expect no findings because case-insensitive matching was disabled
+    assert len(findings) == 0
 
 
 def test_run_detectors_handles_multiline_regex(tmp_path: Path, monkeypatch):
