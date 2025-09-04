@@ -10,6 +10,7 @@ export default async function AnalysesPage() {
       name: a.name,
       status: a.status,
     }));
+
   return (
     <div className="space-y-3">
       <h1 className="text-2xl font-semibold">Analyses</h1>
@@ -20,7 +21,15 @@ export default async function AnalysesPage() {
           {items.map(a => (
             <li key={a.id} className="flex items-center justify-between p-4">
               <span>{a.name}</span>
-              <span className="text-xs uppercase">{a.status}</span>
+              <span
+                className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                  a.status === 'complete'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}
+              >
+                {a.status.charAt(0).toUpperCase() + a.status.slice(1)}
+              </span>
             </li>
           ))}
         </ul>
@@ -28,3 +37,4 @@ export default async function AnalysesPage() {
     </div>
   );
 }
+

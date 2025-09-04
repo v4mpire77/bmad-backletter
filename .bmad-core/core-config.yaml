@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 markdownExploder: true
 qa:
   qaLocation: docs/qa
@@ -14,9 +15,9 @@ architecture:
   architectureShardedLocation: docs/architecture
 customTechnicalDocuments: null
 devLoadAlwaysFiles:
-  - docs/architecture/coding-standards.md
-  - docs/architecture/tech-stack.md
-  - docs/architecture/source-tree.md
+  - docs/architecture/coding_standards.md
+  - docs/architecture/tech_stack.md
+  - docs/architecture/source_tree.md
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad

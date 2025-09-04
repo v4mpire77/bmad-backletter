@@ -19,7 +19,9 @@ def test_upload_file_too_large():
     }
     resp = client.post("/api/contracts", files=files)
     assert resp.status_code == 413
-    assert resp.json() == {"detail": "file_too_large"}
+    body = resp.json()
+    assert body.get("code") == "file_too_large"
+    assert isinstance(body.get("message"), str) and body.get("message")
 
 
 def test_upload_unsupported_file_type():
@@ -29,7 +31,9 @@ def test_upload_unsupported_file_type():
     }
     resp = client.post("/api/contracts", files=files)
     assert resp.status_code == 415
-    assert resp.json() == {"detail": "unsupported_file_type"}
+    body = resp.json()
+    assert body.get("code") == "unsupported_file_type"
+    assert isinstance(body.get("message"), str) and body.get("message")
 
 
 def test_upload_success_small_pdf():

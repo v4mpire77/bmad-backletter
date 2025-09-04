@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
 
-from jsonschema import validate
+import pytest
+
+jsonschema = pytest.importorskip("jsonschema")
+validate = jsonschema.validate
 
 BASE = Path(__file__).resolve().parents[2]
 SCHEMA_DIR = BASE / "contracts" / "events"

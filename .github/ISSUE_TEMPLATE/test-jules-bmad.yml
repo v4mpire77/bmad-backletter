@@ -1,0 +1,53 @@
+name: "Test Jules + BMAD Integration"
+description: "Test the automated Jules + BMAD workflow"
+labels: ["jules", "bmad", "test"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🧪 Test BMAD + Jules Integration
+        
+        This is a test issue to verify the Jules + BMAD automation workflow is functioning correctly.
+
+  - type: textarea
+    id: test_task
+    attributes:
+      label: "BMAD Test Task"
+      description: "Describe what you want Jules to test"
+      value: |
+        **Agent:** @sm
+        **Command:** *create-next-story
+        **Epic/Story:** EPIC1-TEST-STORY
+        
+        **Context:**
+        Create a simple test story to verify the BMAD + Jules integration is working properly. This should:
+        - Follow BMAD story template format
+        - Include basic acceptance criteria
+        - Demonstrate proper file structure
+        - Show integration with Codex review
+        
+        **Expected Outcome:**
+        - Jules creates a properly formatted story file
+        - File is placed in docs/stories/ directory
+        - All BMAD template sections are complete
+        - Codex reviews the work automatically
+      placeholder: "Describe the test scenario"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: test_features
+    attributes:
+      label: "Test Features"
+      description: "Select which automation features to test"
+      options:
+        - label: "Basic Jules response and BMAD context"
+          required: false
+        - label: "Story file creation and formatting"
+          required: false
+        - label: "Automatic Codex review trigger"
+          required: false
+        - label: "Auto-completion workflow"
+          required: false
+        - label: "Follow-up task generation"
+          required: false

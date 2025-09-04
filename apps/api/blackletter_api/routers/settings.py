@@ -2,13 +2,17 @@
 from __future__ import annotations
 
 import logging
-import uuid
 from typing import Dict, Any
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session, sessionmaker
 
-from ..models.entities import OrgSetting, LLMProvider, RetentionPolicy
+from ..models.entities import (
+    OrgSetting,
+    LLMProvider,
+    RetentionPolicy,
+    ComplianceMode,
+)
 from ..database import engine
 
 logger = logging.getLogger(__name__)
@@ -22,15 +26,21 @@ router = APIRouter(prefix="/api/settings", tags=["settings"])
 class OrgSettingsRequest(BaseModel):
     """Request model for updating organization settings."""
     llm_provider: str = "none"  # none|openai|anthropic|gemini
+    llm_enabled: bool = True
     ocr_enabled: bool = False
     retention_policy: str = "none"  # none|30d|90d
+    compliance_mode: str = "strict"  # strict|standard
+    evidence_window: int = 2
 
 
 class OrgSettingsResponse(BaseModel):
     """Response model for organization settings."""
     llm_provider: str
+    llm_enabled: bool
     ocr_enabled: bool
     retention_policy: str
+    compliance_mode: str
+    evidence_window: int
     privacy_note: str
     cost_note: str
     updated_at: str
@@ -60,8 +70,11 @@ async def get_org_settings(db: Session = Depends(get_db)) -> OrgSettingsResponse
             # Create default settings if none exist
             settings = OrgSetting(
                 llm_provider=LLMProvider.none,
+                llm_enabled=True,
                 ocr_enabled=False,
-                retention_policy=RetentionPolicy.none
+                retention_policy=RetentionPolicy.none,
+                compliance_mode=ComplianceMode.strict,
+                evidence_window=2,
             )
             db.add(settings)
             db.commit()
@@ -69,11 +82,14 @@ async def get_org_settings(db: Session = Depends(get_db)) -> OrgSettingsResponse
         
         return OrgSettingsResponse(
             llm_provider=settings.llm_provider.value,
+            llm_enabled=settings.llm_enabled,
             ocr_enabled=settings.ocr_enabled,
             retention_policy=settings.retention_policy.value,
+            compliance_mode=settings.compliance_mode.value,
+            evidence_window=settings.evidence_window,
             privacy_note="Your file stays private. LLM is off by default. When enabled, only short snippets are sent.",
             cost_note="Enabling LLM features may incur additional costs based on token usage. Monitor usage in admin metrics.",
-            updated_at=settings.updated_at.isoformat()
+            updated_at=settings.updated_at.isoformat(),
         )
         
     except Exception as e:
@@ -106,24 +122,50 @@ async def update_org_settings(
             retention_policy = RetentionPolicy(settings_request.retention_policy)
         except ValueError:
             raise HTTPException(
-                status_code=400, 
+                status_code=400,
                 detail=f"Invalid retention policy. Must be one of: {[p.value for p in RetentionPolicy]}"
             )
-        
+        try:
+            compliance_mode = ComplianceMode(settings_request.compliance_mode)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid compliance mode. Must be one of: {[c.value for c in ComplianceMode]}",
+            )
+
+        if settings_request.evidence_window < 1:
+            raise HTTPException(
+                status_code=400, detail="evidence_window must be a positive integer"
+            )
+
+        if not settings_request.llm_enabled and llm_provider != LLMProvider.none:
+            raise HTTPException(
+                status_code=400,
+                detail="LLM provider must be 'none' when llm_enabled is false",
+            )
+
         # Get or create settings
         settings = db.query(OrgSetting).first()
-        
+
         if settings:
             # Update existing settings
-            settings.llm_provider = llm_provider
+            settings.llm_provider = (
+                llm_provider if settings_request.llm_enabled else LLMProvider.none
+            )
+            settings.llm_enabled = settings_request.llm_enabled
             settings.ocr_enabled = settings_request.ocr_enabled
             settings.retention_policy = retention_policy
+            settings.compliance_mode = compliance_mode
+            settings.evidence_window = settings_request.evidence_window
         else:
             # Create new settings
             settings = OrgSetting(
-                llm_provider=llm_provider,
+                llm_provider=llm_provider if settings_request.llm_enabled else LLMProvider.none,
+                llm_enabled=settings_request.llm_enabled,
                 ocr_enabled=settings_request.ocr_enabled,
-                retention_policy=retention_policy
+                retention_policy=retention_policy,
+                compliance_mode=compliance_mode,
+                evidence_window=settings_request.evidence_window,
             )
             db.add(settings)
         
@@ -134,11 +176,14 @@ async def update_org_settings(
         
         return OrgSettingsResponse(
             llm_provider=settings.llm_provider.value,
+            llm_enabled=settings.llm_enabled,
             ocr_enabled=settings.ocr_enabled,
             retention_policy=settings.retention_policy.value,
+            compliance_mode=settings.compliance_mode.value,
+            evidence_window=settings.evidence_window,
             privacy_note="Your file stays private. LLM is off by default. When enabled, only short snippets are sent.",
             cost_note="Enabling LLM features may incur additional costs based on token usage. Monitor usage in admin metrics.",
-            updated_at=settings.updated_at.isoformat()
+            updated_at=settings.updated_at.isoformat(),
         )
         
     except HTTPException:
@@ -158,16 +203,16 @@ async def get_privacy_impact(db: Session = Depends(get_db)) -> Dict[str, Any]:
     """
     try:
         settings = db.query(OrgSetting).first()
-        
+
         if not settings:
             settings = OrgSetting()  # Use defaults
         
         privacy_impact = {
             "llm_data_sharing": {
-                "enabled": settings.llm_provider != LLMProvider.none,
+                "enabled": settings.llm_enabled and settings.llm_provider != LLMProvider.none,
                 "provider": settings.llm_provider.value,
-                "data_shared": "Short text snippets only (max 220 tokens)" if settings.llm_provider != LLMProvider.none else "No data shared",
-                "retention_by_provider": "Varies by provider - see their privacy policy" if settings.llm_provider != LLMProvider.none else "N/A"
+                "data_shared": "Short text snippets only (max 220 tokens)" if settings.llm_enabled and settings.llm_provider != LLMProvider.none else "No data shared",
+                "retention_by_provider": "Varies by provider - see their privacy policy" if settings.llm_enabled and settings.llm_provider != LLMProvider.none else "N/A"
             },
             "ocr_processing": {
                 "enabled": settings.ocr_enabled,

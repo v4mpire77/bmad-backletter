@@ -162,5 +162,19 @@ def run_extraction(analysis_id: str, source_file: Path, out_dir: Path) -> Path:
     out_path = out_dir / "extraction.json"
     with out_path.open("w", encoding="utf-8") as f:
         json.dump(payload, f)
+
+    # Also emit a compact sentences.json used by evidence window builder
+    try:
+        sentences_payload = {
+            "sentences": payload.get("sentences", []),
+            "page_map": payload.get("page_map", []),
+        }
+        (out_dir / "sentences.json").write_text(
+            json.dumps(sentences_payload), encoding="utf-8"
+        )
+    except Exception:
+        # Do not fail the pipeline if auxiliary file cannot be written
+        pass
+
     return out_path
 

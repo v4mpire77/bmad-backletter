@@ -1,0 +1,79 @@
+name: "BMAD Story Development Task"
+description: "Request Jules to execute BMAD workflow tasks for story development and review"
+labels: ["jules", "bmad", "story-development"]
+assignees: ["v4mpire77"]
+body:
+  - type: dropdown
+    id: task_type
+    attributes:
+      label: "BMAD Task Type"
+      description: "Select the type of BMAD task for Jules to execute"
+      options:
+        - "Create New Story (Scrum Master)"
+        - "Develop Existing Story (Developer)"
+        - "Review Story (QA/Test Architect)"
+        - "Improve Story (Scrum Master)"
+        - "Create Epic from Brief"
+        - "Shard Documentation"
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: epic_name
+    attributes:
+      label: "Epic/Story Name"
+      description: "Name of the epic or story to work on (e.g., EPIC1-STORY1.1)"
+      placeholder: "EPIC1-STORY1.1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "Context & Requirements"
+      description: "Provide specific context, requirements, or instructions for the task"
+      placeholder: |
+        For Story Creation: Describe the feature requirements
+        For Development: Specify implementation details or blockers
+        For Review: Mention specific concerns or areas to focus on
+        For Improvement: Describe what needs to be enhanced
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "Priority Level"
+      description: "Task priority for Jules execution"
+      options:
+        - "High - Execute Immediately"
+        - "Medium - Execute within 24 hours"
+        - "Low - Execute when available"
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: automation_options
+    attributes:
+      label: "Automation Options"
+      description: "Select additional automation features"
+      options:
+        - label: "Auto-trigger Codex review after completion"
+          required: false
+        - label: "Create follow-up tasks if dependencies found"
+          required: false
+        - label: "Notify team on Slack/Discord when complete"
+          required: false
+        - label: "Auto-merge if all tests pass (low-risk only)"
+          required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Instructions"
+      description: "Any additional context or special instructions for Jules"
+      placeholder: "Optional: Special considerations, constraints, or preferences"
+    validations:
+      required: false

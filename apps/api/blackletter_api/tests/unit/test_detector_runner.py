@@ -7,11 +7,10 @@ from typing import Any
 
 from blackletter_api.services.detector_runner import run_detectors
 from dataclasses import dataclass
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
-from blackletter_api.services.weak_lexicon import (
-    get_weak_terms,
-    get_counter_anchors,
+from blackletter_api.services.lexicon_analyzer import (
+    Lexicon as AnalyzerLexicon,
 )
 
 
@@ -62,8 +61,15 @@ def test_run_detectors_generates_findings_and_applies_weak_language(tmp_path: Pa
         "blackletter_api.services.detector_runner.should_apply_token_capping",
         lambda: False,
     )
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_weak_terms", lambda: ["may", "might", "could", "should"])
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_counter_anchors", lambda: [])
+    monkeypatch.setattr(
+        "blackletter_api.core.weak_language_detector.load_lexicon",
+        lambda language="en": AnalyzerLexicon(
+            version="v1",
+            language="en",
+            hedging=["may", "might", "could", "should"],
+            strengtheners=[],
+        ),
+    )
 
     # Mock the load_rulepack function
     mock_rulepack = Rulepack(
@@ -85,7 +91,6 @@ def test_run_detectors_generates_findings_and_applies_weak_language(tmp_path: Pa
         }
     )
     monkeypatch.setattr("blackletter_api.services.detector_runner.load_rulepack", lambda: mock_rulepack)
-    monkeypatch.setattr("blackletter_api.services.weak_lexicon.load_rulepack", lambda: mock_rulepack)
 
     # Create a dummy extraction.json with sentences, some containing weak language terms
     dummy_extraction = {
@@ -143,6 +148,8 @@ def test_run_detectors_generates_findings_and_applies_weak_language(tmp_path: Pa
     assert finding1["verdict"] == "weak"  # Should be downgraded by post-processor
     assert finding1["category"] == "hedging"
     assert finding1["confidence"] == 0.8
+    assert finding1["weak_language_detected"] is True
+    assert finding1["lexicon_version"] == "v1"
 
     # Check the second finding (could)
     finding2 = findings[1]
@@ -152,6 +159,8 @@ def test_run_detectors_generates_findings_and_applies_weak_language(tmp_path: Pa
     assert finding2["verdict"] == "weak"  # Should be downgraded by post-processor
     assert finding2["category"] == "hedging"
     assert finding2["confidence"] == 0.7
+    assert finding2["weak_language_detected"] is True
+    assert finding2["lexicon_version"] == "v1"
 
 
 def test_run_detectors_handles_regex_detectors(tmp_path: Path, monkeypatch):
@@ -178,8 +187,15 @@ def test_run_detectors_handles_regex_detectors(tmp_path: Path, monkeypatch):
         "blackletter_api.services.detector_runner.should_apply_token_capping",
         lambda: False,
     )
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_weak_terms", lambda: ["may", "might", "could", "should"])
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_counter_anchors", lambda: [])
+    monkeypatch.setattr(
+        "blackletter_api.core.weak_language_detector.load_lexicon",
+        lambda language="en": AnalyzerLexicon(
+            version="v1",
+            language="en",
+            hedging=["may", "might", "could", "should"],
+            strengtheners=[],
+        ),
+    )
 
     mock_rulepack = Rulepack(
         name="regex-pack",
@@ -196,7 +212,6 @@ def test_run_detectors_handles_regex_detectors(tmp_path: Path, monkeypatch):
     )
 
     monkeypatch.setattr("blackletter_api.services.detector_runner.load_rulepack", lambda: mock_rulepack)
-    monkeypatch.setattr("blackletter_api.services.weak_lexicon.load_rulepack", lambda: mock_rulepack)
 
     dummy_extraction = {
         "text_path": "extracted.txt",
@@ -251,8 +266,15 @@ def test_run_detectors_regex_no_match(tmp_path: Path, monkeypatch):
         "blackletter_api.services.detector_runner.should_apply_token_capping",
         lambda: False,
     )
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_weak_terms", lambda: ["may", "might", "could", "should"])
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_counter_anchors", lambda: [])
+    monkeypatch.setattr(
+        "blackletter_api.core.weak_language_detector.load_lexicon",
+        lambda language="en": AnalyzerLexicon(
+            version="v1",
+            language="en",
+            hedging=["may", "might", "could", "should"],
+            strengtheners=[],
+        ),
+    )
 
     mock_rulepack = Rulepack(
         name="regex-pack",
@@ -269,7 +291,6 @@ def test_run_detectors_regex_no_match(tmp_path: Path, monkeypatch):
     )
 
     monkeypatch.setattr("blackletter_api.services.detector_runner.load_rulepack", lambda: mock_rulepack)
-    monkeypatch.setattr("blackletter_api.services.weak_lexicon.load_rulepack", lambda: mock_rulepack)
 
     dummy_extraction = {
         "text_path": "extracted.txt",
@@ -319,8 +340,15 @@ def test_run_detectors_regex_malformed_pattern(tmp_path: Path, monkeypatch):
         "blackletter_api.services.detector_runner.should_apply_token_capping",
         lambda: False,
     )
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_weak_terms", lambda: ["may", "might", "could", "should"])
-    monkeypatch.setattr("blackletter_api.services.detector_runner.get_counter_anchors", lambda: [])
+    monkeypatch.setattr(
+        "blackletter_api.core.weak_language_detector.load_lexicon",
+        lambda language="en": AnalyzerLexicon(
+            version="v1",
+            language="en",
+            hedging=["may", "might", "could", "should"],
+            strengtheners=[],
+        ),
+    )
 
     mock_rulepack = Rulepack(
         name="regex-pack",
@@ -337,7 +365,6 @@ def test_run_detectors_regex_malformed_pattern(tmp_path: Path, monkeypatch):
     )
 
     monkeypatch.setattr("blackletter_api.services.detector_runner.load_rulepack", lambda: mock_rulepack)
-    monkeypatch.setattr("blackletter_api.services.weak_lexicon.load_rulepack", lambda: mock_rulepack)
 
     dummy_extraction = {
         "text_path": "extracted.txt",
@@ -388,12 +415,13 @@ def test_run_detectors_combined_lexicon_and_regex(tmp_path: Path, monkeypatch):
         lambda: False,
     )
     monkeypatch.setattr(
-        "blackletter_api.services.detector_runner.get_weak_terms",
-        lambda: ["may", "might", "could", "should"],
-    )
-    monkeypatch.setattr(
-        "blackletter_api.services.detector_runner.get_counter_anchors",
-        lambda: [],
+        "blackletter_api.core.weak_language_detector.load_lexicon",
+        lambda language="en": AnalyzerLexicon(
+            version="v1",
+            language="en",
+            hedging=["may", "might", "could", "should"],
+            strengtheners=[],
+        ),
     )
 
     mock_rulepack = Rulepack(
