@@ -9,6 +9,7 @@ import re
 
 class RulepackValidationError(Exception):
     """Raised when a rulepack fails validation with detailed error information."""
+
     def __init__(self, message: str, field: Optional[str] = None, value: Any = None):
         self.message = message
         self.field = field
@@ -18,45 +19,45 @@ class RulepackValidationError(Exception):
 
 class Version:
     """Semantic versioning helper class."""
-    
+
     def __init__(self, version_str: str):
         if not re.match(r'^\d+\.\d+\.\d+', version_str):
             raise ValueError(f"Invalid semantic version format: {version_str}")
         self.version_str = version_str
         self.parts = tuple(map(int, version_str.split('.')))
         self.major, self.minor, self.patch = self.parts
-    
+
     def __str__(self):
         return self.version_str
-    
+
     def __eq__(self, other):
         if isinstance(other, str):
             return self.version_str == other
         if isinstance(other, Version):
             return self.parts == other.parts
         return False
-    
+
     def __lt__(self, other):
         if isinstance(other, str):
             other = Version(other)
         elif not isinstance(other, Version):
             return NotImplemented
         return self.parts < other.parts
-    
+
     def __le__(self, other):
         if isinstance(other, str):
             other = Version(other)
         elif not isinstance(other, Version):
             return NotImplemented
         return self.parts <= other.parts
-    
+
     def __gt__(self, other):
         if isinstance(other, str):
             other = Version(other)
         elif not isinstance(other, Version):
             return NotImplemented
         return self.parts > other.parts
-    
+
     def __ge__(self, other):
         if isinstance(other, str):
             other = Version(other)
@@ -66,7 +67,8 @@ class Version:
 
 
 class WeakNearby(BaseModel):
-    any: Union[list[str], str, None] = None  # Allow string references like "@hedges"
+    # Allow string references like "@hedges"
+    any: Union[list[str], str, None] = None
     all: Union[list[str], str, None] = None
 
     @field_validator('any', 'all')
@@ -226,7 +228,8 @@ class Rulepack(BaseModel):
             )
         detector_ids = [detector.id for detector in v]
         if len(detector_ids) != len(set(detector_ids)):
-            duplicates = [id for id in detector_ids if detector_ids.count(id) > 1]
+            duplicates = [
+                id for id in detector_ids if detector_ids.count(id) > 1]
             raise RulepackValidationError(
                 f"Duplicate detector IDs found: {set(duplicates)}",
                 field="Detectors",
@@ -270,7 +273,8 @@ def validate_rulepack(data: dict) -> Rulepack:
             errors = e.errors()
             if errors:
                 error = errors[0]
-                field = ".".join(str(loc) for loc in error['loc']) if error.get('loc') else None
+                field = ".".join(str(loc) for loc in error['loc']) if error.get(
+                    'loc') else None
                 raise RulepackValidationError(
                     error['msg'],
                     field=field,
@@ -282,17 +286,17 @@ def validate_rulepack(data: dict) -> Rulepack:
 def compare_versions(version1: str, version2: str) -> int:
     """
     Compare two semantic versions.
-    
+
     Args:
         version1: First version string
         version2: Second version string
-        
+
     Returns:
         int: -1 if version1 < version2, 0 if equal, 1 if version1 > version2
     """
     v1 = Version(version1)
     v2 = Version(version2)
-    
+
     if v1 < v2:
         return -1
     elif v1 > v2:
