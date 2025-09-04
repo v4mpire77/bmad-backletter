@@ -122,6 +122,7 @@ Optional flags:
 - **Implementation Status**: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md) - Complete overview
 - **Stories**: [`docs/stories/`](docs/stories/) - All development stories with status
 - **Architecture**: [`docs/architecture/`](docs/architecture/) - System design docs
+- **Development Path**: [`docs/DEVELOPMENT_PATH.md`](docs/DEVELOPMENT_PATH.md) - Active code locations and archived docs
 
 ## 🏗️ **Architecture**
 
