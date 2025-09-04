@@ -27,7 +27,8 @@ class Detector(BaseModel):
     description: Optional[str] = None
     # For regex detectors
     pattern: Optional[str] = None
-    case_insensitive: bool = False
+    # Preserve backwards-compatible case-insensitive matching by default
+    case_insensitive: bool = True
     multiline: bool = False
     # For lexicon detectors, reference to a lexicon name or file
     lexicon: Optional[str] = None

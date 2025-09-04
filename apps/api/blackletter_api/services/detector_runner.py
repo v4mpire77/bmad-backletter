@@ -176,9 +176,8 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                     findings.append(finding)
             elif detector_spec.type == "regex":
                 pattern = detector_spec.pattern or ""
-                flags = 0
-                if getattr(detector_spec, "case_insensitive", False):
-                    flags |= re.IGNORECASE
+                # Default to case-insensitive matching for backwards compatibility
+                flags = re.IGNORECASE if getattr(detector_spec, "case_insensitive", True) else 0
                 if getattr(detector_spec, "multiline", False):
                     flags |= re.MULTILINE
                 try:
