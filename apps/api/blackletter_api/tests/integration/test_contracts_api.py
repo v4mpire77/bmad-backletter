@@ -1,9 +1,13 @@
-import pytest
+import os
+import shutil
 import uuid
+from io import BytesIO
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from io import BytesIO
+from blackletter_api.services import storage
 
 from blackletter_api.main import app
 from blackletter_api.database import Base, get_db
@@ -31,23 +35,32 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
-client = TestClient(app)
+
+@pytest.fixture
+def auth_client(tmp_path):
+    """Return a TestClient with auth header and isolated DATA_ROOT."""
+    data_root = tmp_path / "data"
+    storage.DATA_ROOT = data_root
+    with TestClient(app) as c:
+        c.headers["Authorization"] = "Bearer test-token"
+        yield c
+    shutil.rmtree(data_root, ignore_errors=True)
 
 
 # --- Test Cases ---
 
-def test_upload_contract_success():
+def test_upload_contract_success(auth_client):
     """
     Tests the successful upload of a valid contract file.
     Verifies that the API responds correctly and that an Analysis record
     is created in the database.
     """
     # Create a dummy file to upload
-    dummy_file_content = b"This is a test pdf content."
-    dummy_file = ("test_contract.pdf", BytesIO(dummy_file_content), "application/pdf")
+    sample_content = b"controller instructions"
+    dummy_file = ("test_contract.pdf", BytesIO(sample_content), "application/pdf")
 
     # Make the request to the test client
-    response = client.post(
+    response = auth_client.post(
         "/api/contracts",
         files={"file": dummy_file}
     )
@@ -69,14 +82,11 @@ def test_upload_contract_success():
     assert analysis_record is not None
     assert analysis_record.filename == "test_contract.pdf"
     # The size is updated after saving, so we need to check it from the original content
-    assert analysis_record.size_bytes == len(dummy_file_content)
+    assert analysis_record.size_bytes == len(sample_content)
     assert analysis_record.mime_type == "application/pdf"
 
 def teardown_module(module):
-    """
-    Clean up the test database file after all tests in this module run.
-    """
-    import os
+    """Clean up the test database file after all tests run."""
     Base.metadata.drop_all(bind=engine)
     if os.path.exists("./test_temp.db"):
         os.remove("./test_temp.db")
