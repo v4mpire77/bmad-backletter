@@ -5,6 +5,7 @@ import pytest
 
 jsonschema = pytest.importorskip("jsonschema")
 validate = jsonschema.validate
+ValidationError = jsonschema.ValidationError
 
 BASE = Path(__file__).resolve().parents[2]
 SCHEMA_DIR = BASE / "contracts" / "events"
@@ -85,6 +86,30 @@ def test_envelope_schema():
     schema = load_schema("envelope.schema.json")
     event = sample_event("client.contract.received.v1")
     validate(event, schema)
+
+
+def test_gdpr_findings_missing_rule_id():
+    schema = load_schema("gdpr.findings.ready.v1.schema.json")
+    event = sample_event("gdpr.findings.ready.v1")
+    del event["payload"]["findings"][0]["rule_id"]
+    with pytest.raises(ValidationError):
+        validate(event, schema)
+
+
+def test_gdpr_findings_invalid_start_offset_type():
+    schema = load_schema("gdpr.findings.ready.v1.schema.json")
+    event = sample_event("gdpr.findings.ready.v1")
+    event["payload"]["findings"][0]["start_offset"] = "0"
+    with pytest.raises(ValidationError):
+        validate(event, schema)
+
+
+def test_legal_findings_snippet_too_long():
+    schema = load_schema("legal.findings.ready.v1.schema.json")
+    event = sample_event("legal.findings.ready.v1")
+    event["payload"]["findings"][0]["snippet"] = "a" * 6000
+    with pytest.raises(ValidationError):
+        validate(event, schema)
 
 
 TOPICS = [
