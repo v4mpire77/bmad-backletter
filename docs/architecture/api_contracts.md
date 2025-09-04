@@ -78,6 +78,16 @@ This is the authoritative shape for a single finding object.
 }
 ```
 
+The `snippet` together with the `start` and `end` offsets represents the diff data that highlights the portion of the contract
+under review. All string fields are UTF-8 encoded. Length limits are enforced as follows:
+
+- `id` and `rule_id`: up to 100 characters.
+- `snippet`: up to 5,000 characters.
+- `rationale`: up to 2,000 characters.
+
+`rule_id` is mandatory and is used by the frontend to resolve and display rule chips, providing users with the rule name and
+metadata associated with each finding.
+
 ### Error Model
 
 All client-facing errors will use this standard shape.

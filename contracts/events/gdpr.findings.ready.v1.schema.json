@@ -29,13 +29,25 @@
             "type": "object",
             "required": ["id", "rule_id", "verdict", "snippet", "start_offset", "end_offset"],
             "properties": {
-              "id": {"type": "string"},
-              "rule_id": {"type": "string"},
+              "id": {"type": "string", "maxLength": 100},
+              "rule_id": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Unique rule identifier used for UI rule chips"
+              },
               "verdict": {"type": "string", "enum": ["Pass", "Weak", "Missing", "Needs-review"]},
-              "snippet": {"type": "string"},
+              "snippet": {
+                "type": "string",
+                "maxLength": 5000,
+                "contentEncoding": "utf-8"
+              },
               "start_offset": {"type": "integer"},
               "end_offset": {"type": "integer"},
-              "rationale": {"type": "string"}
+              "rationale": {
+                "type": "string",
+                "maxLength": 2000,
+                "contentEncoding": "utf-8"
+              }
             }
           }
         }
