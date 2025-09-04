@@ -1,35 +1,115 @@
 {
   "name": "blackletter-automation-tests",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.15.1",
-  "scripts": {
-    "dev": "pnpm -r --parallel run dev",
-    "build": "pnpm -r run build",
-    "lint": "pnpm -r run lint",
-    "lint:fix": "pnpm -r run lint:fix",
-    "test": "pnpm -r run test",
-    "test:watch": "pnpm -r run test:watch",
-    "type-check": "pnpm -r run type-check",
-    "clean": "pnpm -r run clean",
-    "swa:start": "swa start",
-    "swa:build": "swa build",
-    "swa:deploy": "swa deploy",
-    "bmad:refresh": "bmad-method install -f -i codex-web",
-    "bmad:list": "bmad-method list:agents",
-    "bmad:validate": "bmad-method validate"
-  },
-  "dependencies": {
-    "bmad-method": "^4.42.1",
-    "codex": "^0.2.3",
-    "js-yaml": "^4.1.0",
-    "micromatch": "^4.0.8"
-  },
-  "devDependencies": {
-    "@octokit/core": "^7.0.3",
-    "@octokit/plugin-paginate-rest": "11.3.3",
-    "eslint": "9.9.0",
-    "prettier": "3.3.3",
-    "vitest": "1.6.0"
-  }
-}
+  "engines": {
+    "node": ">=20",
+    {
+      "name": "blackletter-automation-tests",
+      "version": "1.0.0",
+      "private": true,
+      "type": "module",
+      "packageManager": "pnpm@10.15.1",
+      "engines": {
+        "node": ">=20",
+        "pnpm": ">=10"
+      },
+        {
+          "name": "blackletter-automation-tests",
+          "version": "1.0.0",
+          "private": true,
+          "type": "module",
+          "packageManager": "pnpm@10.15.1",
+          "engines": {
+            "node": ">=20",
+            "pnpm": ">=10"
+          },
+          "scripts": {
+            "dev": "pnpm -r --parallel run dev",
+            "build": "pnpm -r run build",
+            "lint": "pnpm -r run lint",
+            "lint:fix": "pnpm -r run lint:fix",
+            "test": "pnpm -r run test",
+            "test:watch": "pnpm -r run test:watch",
+            "type-check": "pnpm -r run type-check",
+            "clean": "pnpm -r run clean",
+            "swa:start": "swa start",
+            "swa:build": "swa build",
+            "swa:deploy": "swa deploy",
+            "bmad:refresh": "bmad-method install -f -i codex-web",
+            "bmad:list": "bmad-method list:agents",
+            "bmad:validate": "bmad-method validate"
+          },
+          "dependencies": {
+            "bmad-method": "^4.42.1",
+            {
+              "name": "blackletter-automation-tests",
+              "version": "1.0.0",
+              "private": true,
+              "type": "module",
+              "packageManager": "pnpm@10.15.1",
+              "engines": {
+                "node": ">=20",
+                "pnpm": ">=10"
+              },
+              "scripts": {
+                "dev": "pnpm -r --parallel run dev",
+                "build": "pnpm -r run build",
+                "lint": "pnpm -r run lint",
+                "lint:fix": "pnpm -r run lint:fix",
+                "test": "pnpm -r run test",
+                "test:watch": "pnpm -r run test:watch",
+                "type-check": "pnpm -r run type-check",
+                "clean": "pnpm -r run clean",
+                "swa:start": "swa start",
+                "swa:build": "swa build",
+                "swa:deploy": "swa deploy",
+                "bmad:refresh": "bmad-method install -f -i codex-web",
+                "bmad:list": "bmad-method list:agents",
+                "bmad:validate": "bmad-method validate"
+              },
+              "dependencies": {
+                "bmad-method": "^4.42.1",
+                {
+                  "name": "blackletter-automation-tests",
+                  "version": "1.0.0",
+                  "private": true,
+                  "type": "module",
+                  "packageManager": "pnpm@10.15.1",
+                  "engines": {
+                    "node": ">=20",
+                    "pnpm": ">=10"
+                  },
+                  "scripts": {
+                    "dev": "pnpm -r --parallel run dev",
+                    "build": "pnpm -r run build",
+                    "lint": "pnpm -r run lint",
+                    "lint:fix": "pnpm -r run lint:fix",
+                    "test": "pnpm -r run test",
+                    "test:watch": "pnpm -r run test:watch",
+                    "type-check": "pnpm -r run type-check",
+                    "clean": "pnpm -r run clean",
+                    "swa:start": "swa start",
+                    "swa:build": "swa build",
+                    "swa:deploy": "swa deploy",
+                    "bmad:refresh": "bmad-method install -f -i codex-web",
+                    "bmad:list": "bmad-method list:agents",
+                    "bmad:validate": "bmad-method validate"
+                  },
+                  "dependencies": {
+                    "bmad-method": "^4.42.1",
+                    "codex": "^0.2.3",
+                    "js-yaml": "^4.1.0",
+                    "micromatch": "^4.0.8"
+                  },
+                  "devDependencies": {
+                    "@octokit/core": "^7.0.3",
+                    "@octokit/plugin-paginate-rest": "11.3.3",
+                    "eslint": "9.9.0",
+                    "prettier": "3.3.3",
+                    "vitest": "1.6.0"
+                  }
+                }
+                }

@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import fitz  # PyMuPDF
+import pytest
+
+fitz = pytest.importorskip("fitz")
+pytest.importorskip("docx2python")
+pytest.importorskip("blingfire")
 
 from blackletter_api.services.extraction import extract_pdf
 

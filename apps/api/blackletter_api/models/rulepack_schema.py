@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 from typing import Any, Literal, Union, Optional, List
-from pydantic import BaseModel, Field, field_validator, FieldValidationInfo
+from pydantic import BaseModel, Field, field_validator
+from pydantic import ValidationInfo
 import re
 
 
 class RulepackValidationError(Exception):
     """Raised when a rulepack fails validation with detailed error information."""
-    def __init__(self, message: str, field: str = None, value: Any = None):
+    def __init__(self, message: str, field: Optional[str] = None, value: Any = None):
         self.message = message
         self.field = field
         self.value = value
@@ -119,9 +120,17 @@ class Detector(BaseModel):
             )
         return v
 
-    @field_validator('anchors_any', 'anchors_all', 'allow_carveouts', 'redflags_any',
-                    'flowdown_any', 'copies_any', 'audits_any')
-    def validate_patterns(cls, v, info: FieldValidationInfo):
+    @field_validator(
+        'anchors_any',
+        'anchors_all',
+        'allow_carveouts',
+        'redflags_any',
+        'flowdown_any',
+        'copies_any',
+        'audits_any',
+        mode='after',
+    )
+    def validate_patterns(cls, v, info: ValidationInfo):
         if v is None:
             return v
         if not isinstance(v, list):
@@ -147,8 +156,8 @@ class Detector(BaseModel):
 
 
 class Meta(BaseModel):
-    pack_id: str = Field(..., max_length=100)
-    version: str = Field(...)  # Semantic versioning validated below
+    pack_id: str = Field(..., min_length=1, max_length=100)
+    version: str = Field(..., pattern=r'^\d+\.\d+\.\d+')  # Semantic versioning
     evidence_window_sentences: int = Field(ge=1, le=10)  # Reasonable limits
     verdicts: List[Literal['pass', 'weak', 'missing', 'needs_review']]
     tokenizer: str = "sentence"
@@ -205,7 +214,7 @@ class Meta(BaseModel):
 class Rulepack(BaseModel):
     meta: Meta
     shared_lexicon: dict[str, Any] = Field(default_factory=dict)
-    Detectors: List[Detector] = Field(..., min_items=1)
+    Detectors: List[Detector] = Field(..., min_length=1)
 
     @field_validator('Detectors')
     def validate_unique_detector_ids(cls, v):
