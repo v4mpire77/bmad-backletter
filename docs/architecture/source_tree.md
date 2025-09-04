@@ -5,7 +5,7 @@ This document details the source tree structure and module organization for the 
 ## 1. Root Directory Structure
 
 ```
-blackletter/
+bmad-backletter/
   apps/
     web/                     # Next.js 14 app
       app/
@@ -26,13 +26,13 @@ blackletter/
         tests/
       pyproject.toml
       requirements.txt
-  docs/
-    prd.md
-    architecture.md
-    prd/
-    architecture/
-    stories/
-  core-config.yaml           # Central config: LLM gate, caps, OCR toggle
+    docs/
+      prd.md
+      architecture.md
+      prd/
+      architecture/
+      stories/
+  .bmad-core/core-config.yaml   # Central config: LLM gate, caps, OCR toggle
   README.md
 ```
 
