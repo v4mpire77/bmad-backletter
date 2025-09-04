@@ -1,5 +1,5 @@
 from typing import List, Dict, Literal, Optional, Union
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 Severity = Literal["critical","high","medium","low"]
 
@@ -76,7 +76,7 @@ class RuleSet(BaseModel):
     meta: Meta
     rules: List[Rule]
 
-    @validator("rules")
+    @field_validator("rules")
     def unique_ids(cls, v):
         ids = [r.id for r in v]
         dupes = set([i for i in ids if ids.count(i) > 1])
