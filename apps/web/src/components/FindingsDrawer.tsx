@@ -55,6 +55,7 @@ export default function FindingsDrawer({ open, onClose, finding }: FindingsDrawe
       <div
         ref={drawerRef}
         tabIndex={-1}
+        data-testid="findings-drawer"
         className="absolute right-0 top-0 h-full w-80 bg-white p-6 shadow-lg space-y-4"
       >
         <div>
@@ -66,7 +67,7 @@ export default function FindingsDrawer({ open, onClose, finding }: FindingsDrawe
           )}
         </div>
         <div className="flex justify-end">
-          <button onClick={onClose} className="text-sm underline">Close</button>
+          <button onClick={onClose} className="text-sm underline" data-testid="close-button">Close</button>
         </div>
       </div>
     </div>

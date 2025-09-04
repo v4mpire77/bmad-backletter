@@ -10,6 +10,7 @@ describe('highlightAnchors', () => {
     const html = highlightAnchors(sample, anchors);
     expect(html).toContain('<mark');
     expect(html).toContain('quick');
+    expect(html).toContain('style="background-color:#fef08a;color:#000"');
   });
 
   it('highlights multiple anchors', () => {
