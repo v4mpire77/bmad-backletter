@@ -1,0 +1,27 @@
+name: api-appsvc
+on: { push: { branches: [main] }, workflow_dispatch: {} }
+permissions: { id-token: write, contents: read }
+env:
+  ACR: ${{ vars.AZURE_ACR_NAME }}
+  ACR_LOGIN: ${{ vars.AZURE_ACR_LOGIN_SERVER }}
+  RG: ${{ vars.AZURE_RESOURCE_GROUP }}
+  API_APP: ${{ vars.AZURE_WEBAPP_API }}
+jobs:
+  build_push_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: az acr login --name $ACR
+      - run: |
+          docker build -t $ACR_LOGIN/blackletter-api:${{ github.sha }} -f apps/api/Dockerfile .
+          docker push $ACR_LOGIN/blackletter-api:${{ github.sha }}
+      - run: |
+          az webapp config container set -g $RG -n $API_APP \
+            --docker-custom-image-name $ACR_LOGIN/blackletter-api:${{ github.sha }} \
+            --docker-registry-server-url https://$ACR_LOGIN
+          az webapp restart -g $RG -n $API_APP
