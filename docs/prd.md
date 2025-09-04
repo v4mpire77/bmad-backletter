@@ -36,7 +36,7 @@ The functional requirements (FRs) detail the specific features and behaviors of 
 * **FR13:** The system must allow users to see a "diff" or a redline of a contract, showing proposed changes to mitigate identified risks.
 * **FR14:** The system must offer a subscription-based model for access to its services.
 
-### Non Functional
+### Non-Functional Requirements
 The non-functional requirements (NFRs) describe the qualities of the system, which are crucial for user experience and trust.
 
 * **NFR1: Security:** All data, including uploaded documents and client information, must be encrypted both in transit and at rest.
