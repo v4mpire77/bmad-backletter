@@ -58,6 +58,8 @@ class Finding(BaseModel):
     page: int
     start: int
     end: int
+    original_text: str = ""
+    suggested_text: str = ""
     rationale: str
     category: Optional[str] = None
     confidence: Optional[float] = None
