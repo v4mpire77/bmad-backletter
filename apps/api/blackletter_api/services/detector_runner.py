@@ -63,11 +63,14 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
 
         if cap_exceeded:
             # Create a special finding for token cap exceeded
+            cap_message = f"Analysis stopped due to token cap: {cap_reason}"
             cap_finding = Finding(
                 detector_id="token_cap",
                 rule_id="token_cap",
                 verdict="needs_review",
-                snippet=f"Analysis stopped due to token cap: {cap_reason}",
+                snippet=cap_message,
+                original_text=cap_message,
+                suggested_text=None,
                 page=1,
                 start=0,
                 end=0,
@@ -138,6 +141,8 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                             rule_id=detector_id,
                             verdict="pass",
                             snippet=sentence_text,
+                            original_text=sentence_text,
+                            suggested_text=None,
                             page=page,
                             start=start,
                             end=end,
@@ -178,6 +183,8 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                         rule_id=detector_id,
                         verdict="pass",
                         snippet=snippet,
+                        original_text=window["snippet"] or sentence_text,
+                        suggested_text=None,
                         page=page_val,
                         start=start_val,
                         end=end_val,
@@ -210,6 +217,8 @@ def run_detectors(analysis_id: str, extraction_json_path: str) -> List[Finding]:
                         rule_id=detector_id,
                         verdict="pass",
                         snippet=snippet,
+                        original_text=window["snippet"] or sentence_text,
+                        suggested_text=None,
                         page=page_val,
                         start=start_val,
                         end=end_val,
