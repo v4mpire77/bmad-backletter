@@ -1,72 +1,54 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const UploadPage = () => {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadStep, setUploadStep] = useState<
-    'idle' | 'queued' | 'extracting' | 'detecting' | 'reporting' | 'done'
-  >('idle');
+  const [uploadStep, setUploadStep] = useState<'idle' | 'queued' | 'processing' | 'done'>(
+    'idle',
+  );
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const wsRef = useRef<WebSocket | null>(null);
+  const jobRef = useRef<string | null>(null);
 
+  const pollJob = useCallback(async (jobId: string) => {
+    const interval = setInterval(async () => {
+      const res = await fetch(`/api/jobs/${jobId}`);
+      if (!res.ok) {
+        return;
+      }
+      const data = await res.json();
+      if (data.status === 'running') {
+        setUploadStep('processing');
+        setProgress(50);
+      }
+      if (data.status === 'done') {
+        clearInterval(interval);
+        setUploadStep('done');
+        setProgress(100);
+        router.push(`/analyses/${jobId}`);
+      }
+    }, 1000);
+  }, [router]);
   const handleFileChange = async (selectedFile: File) => {
     setFile(selectedFile);
     setUploadStep('queued');
     setProgress(0);
-    setError(null);
-
-    try {
-      const intakeRes = await fetch('/api/intake', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: selectedFile.name }),
-      });
-      if (!intakeRes.ok) throw new Error('intake_failed');
-      const { analysis_id } = await intakeRes.json();
-
-      const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      const ws = new WebSocket(
-        `${protocol}://${window.location.host}/ws/analysis/${analysis_id}`
-      );
-      wsRef.current = ws;
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data.step) {
-            setUploadStep(data.step);
-          }
-          if (typeof data.progress === 'number') {
-            setProgress(data.progress);
-          }
-        } catch {
-          /* ignore malformed events */
-        }
-      };
-      ws.onerror = () => {
-        setError('Connection error');
-        handleReset();
-      };
-
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      const uploadRes = await fetch(`/api/analyses/${analysis_id}/file`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (!uploadRes.ok) throw new Error('upload_failed');
-    } catch (e) {
-      setError('Upload failed');
-      wsRef.current?.close();
-      wsRef.current = null;
-      setFile(null);
-      setUploadStep('idle');
-      setProgress(0);
+    const fd = new FormData();
+    fd.append('file', selectedFile);
+    const res = await fetch('/api/contracts', {
+      method: 'POST',
+      body: fd,
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const jobId = data.job_id || data.id;
+      jobRef.current = jobId;
+      pollJob(jobId);
     }
   };
 
@@ -94,8 +76,6 @@ const UploadPage = () => {
   };
 
   const handleReset = useCallback(() => {
-    wsRef.current?.close();
-    wsRef.current = null;
     setFile(null);
     setUploadStep('idle');
     setProgress(0);
@@ -103,12 +83,14 @@ const UploadPage = () => {
   }, []);
 
   const handleViewFindings = () => {
-    router.push('/analyses/mock-1');
+    if (jobRef.current) {
+      router.push(`/analyses/${jobRef.current}`);
+    }
   };
 
   useEffect(() => {
     return () => {
-      wsRef.current?.close();
+      // Cleanup if needed
     };
   }, []);
 
@@ -127,7 +109,7 @@ const UploadPage = () => {
   }, [uploadStep, handleReset]);
 
   const getStepStatus = (step: string) => {
-    const steps = ['queued', 'extracting', 'detecting', 'reporting', 'done'];
+    const steps = ['queued', 'processing', 'done'];
     const currentIndex = steps.indexOf(uploadStep);
     const stepIndex = steps.indexOf(step);
 
@@ -168,9 +150,7 @@ const UploadPage = () => {
             <div className="space-y-4">
               <div className="flex justify-between text-sm font-medium">
                 <span>Queued</span>
-                <span>Extracting</span>
-                <span>Detecting</span>
-                <span>Reporting</span>
+                <span>Processing</span>
                 <span>Done</span>
               </div>
               <div className="relative pt-1">
@@ -186,31 +166,37 @@ const UploadPage = () => {
               <div className="flex justify-between text-xs text-gray-500">
                 <span
                   aria-current={getStepStatus('queued') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('queued') === 'completed' ? 'text-green-600' : getStepStatus('queued') === 'active' ? 'text-blue-600 font-semibold' : ''}
+                  className={
+                    getStepStatus('queued') === 'completed'
+                      ? 'text-green-600'
+                      : getStepStatus('queued') === 'active'
+                      ? 'text-blue-600 font-semibold'
+                      : ''
+                  }
                 >
                   Queued
                 </span>
                 <span
-                  aria-current={getStepStatus('extracting') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('extracting') === 'completed' ? 'text-green-600' : getStepStatus('extracting') === 'active' ? 'text-blue-600 font-semibold' : ''}
+                  aria-current={getStepStatus('processing') === 'active' ? 'step' : undefined}
+                  className={
+                    getStepStatus('processing') === 'completed'
+                      ? 'text-green-600'
+                      : getStepStatus('processing') === 'active'
+                      ? 'text-blue-600 font-semibold'
+                      : ''
+                  }
                 >
-                  Extracting
-                </span>
-                <span
-                  aria-current={getStepStatus('detecting') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('detecting') === 'completed' ? 'text-green-600' : getStepStatus('detecting') === 'active' ? 'text-blue-600 font-semibold' : ''}
-                >
-                  Detecting
-                </span>
-                <span
-                  aria-current={getStepStatus('reporting') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('reporting') === 'completed' ? 'text-green-600' : getStepStatus('reporting') === 'active' ? 'text-blue-600 font-semibold' : ''}
-                >
-                  Reporting
+                  Processing
                 </span>
                 <span
                   aria-current={getStepStatus('done') === 'active' ? 'step' : undefined}
-                  className={getStepStatus('done') === 'completed' ? 'text-green-600' : getStepStatus('done') === 'active' ? 'text-blue-600 font-semibold' : ''}
+                  className={
+                    getStepStatus('done') === 'completed'
+                      ? 'text-green-600'
+                      : getStepStatus('done') === 'active'
+                      ? 'text-blue-600 font-semibold'
+                      : ''
+                  }
                 >
                   Done
                 </span>

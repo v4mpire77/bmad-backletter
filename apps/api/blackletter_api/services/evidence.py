@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Dict, List, Tuple, Optional
+from sqlalchemy.orm import Session
 import json
 import logging
 
@@ -13,7 +14,8 @@ def build_window(
     analysis_id: str,
     start: int,
     end: int,
-    n_sentences: int = 2,
+    n_sentences: Optional[int] = None,
+    db: Optional[Session] = None,
 ) -> Dict:
     """Build an evidence window around a finding span.
 
@@ -25,11 +27,32 @@ def build_window(
         start: Global start character position of the finding.
         end: Global end character position of the finding.
         n_sentences: Number of sentences before/after the finding.
+            If not provided, fetched from OrgSetting or defaults to 2.
 
     Returns:
         Dict with: { snippet, page, start, end } where start/end are global
         offsets in the concatenated document text.
     """
+    if n_sentences is None:
+        settings = None
+        try:
+            from ..models.entities import OrgSetting
+            if db is not None:
+                settings = db.query(OrgSetting).first()
+            else:
+                from ..database import SessionLocal
+
+                with SessionLocal() as session:
+                    settings = session.query(OrgSetting).first()
+        except Exception:
+            settings = None
+
+        if settings and getattr(settings, "evidence_window_sentences", None):
+            n_sentences = settings.evidence_window_sentences
+
+    if n_sentences is None:
+        n_sentences = 2
+
     data_path = analysis_dir(analysis_id) / "sentences.json"
     try:
         data = json.loads(data_path.read_text(encoding="utf-8"))

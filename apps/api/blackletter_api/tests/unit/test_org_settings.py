@@ -1,10 +1,19 @@
 """Tests for Story 5.1 - Org Settings (LLM/OCR/Retention)"""
 import pytest
 from unittest.mock import MagicMock, patch
-from fastapi.testclient import TestClient
+from fastapi import HTTPException
 
-from blackletter_api.models.entities import OrgSetting, LLMProvider, RetentionPolicy
-from blackletter_api.routers.settings import OrgSettingsRequest, OrgSettingsResponse
+from blackletter_api.models.entities import (
+    OrgSetting,
+    LLMProvider,
+    RetentionPolicy,
+    ComplianceMode,
+)
+from blackletter_api.routers.settings import (
+    OrgSettingsRequest,
+    OrgSettingsResponse,
+    update_org_settings,
+)
 
 
 def test_llm_provider_enum():
@@ -22,55 +31,75 @@ def test_retention_policy_enum():
     assert RetentionPolicy.ninety_days.value == "90d"
 
 
+def test_compliance_mode_enum():
+    """Test compliance mode enum values."""
+    assert ComplianceMode.strict.value == "strict"
+    assert ComplianceMode.standard.value == "standard"
+
+
 def test_org_setting_model():
-    """Test OrgSetting model creation with explicit values."""
-    setting = OrgSetting(
-        llm_provider=LLMProvider.none,
-        ocr_enabled=False,
-        retention_policy=RetentionPolicy.none
-    )
-    
+    """Test OrgSetting model defaults."""
+    setting = OrgSetting()
+
     assert setting.llm_provider == LLMProvider.none
+    assert setting.llm_enabled is True
     assert setting.ocr_enabled is False
     assert setting.retention_policy == RetentionPolicy.none
+    assert setting.compliance_mode == ComplianceMode.strict
+    assert setting.evidence_window == 2
 
 
 def test_org_settings_request_model():
     """Test OrgSettingsRequest model validation."""
     request = OrgSettingsRequest(
         llm_provider="openai",
+        llm_enabled=False,
         ocr_enabled=True,
-        retention_policy="30d"
+        retention_policy="30d",
+        compliance_mode="standard",
+        evidence_window=3,
     )
-    
+
     assert request.llm_provider == "openai"
+    assert request.llm_enabled is False
     assert request.ocr_enabled is True
     assert request.retention_policy == "30d"
+    assert request.compliance_mode == "standard"
+    assert request.evidence_window == 3
 
 
 def test_org_settings_request_defaults():
     """Test OrgSettingsRequest model with defaults."""
     request = OrgSettingsRequest()
-    
+
     assert request.llm_provider == "none"
+    assert request.llm_enabled is True
     assert request.ocr_enabled is False
     assert request.retention_policy == "none"
+    assert request.compliance_mode == "strict"
+    assert request.evidence_window == 2
 
 
 def test_org_settings_response_model():
     """Test OrgSettingsResponse model."""
     response = OrgSettingsResponse(
         llm_provider="anthropic",
+        llm_enabled=True,
         ocr_enabled=True,
         retention_policy="90d",
+        compliance_mode="standard",
+        evidence_window=4,
         privacy_note="Test privacy note",
         cost_note="Test cost note",
         updated_at="2025-01-01T00:00:00"
     )
-    
+
     assert response.llm_provider == "anthropic"
+    assert response.llm_enabled is True
     assert response.ocr_enabled is True
     assert response.retention_policy == "90d"
+    assert response.compliance_mode == "standard"
+    assert response.evidence_window == 4
     assert "privacy" in response.privacy_note
     assert "cost" in response.cost_note
 
@@ -152,18 +181,52 @@ def test_update_org_settings_validation():
         RetentionPolicy("invalid_policy")
 
 
+@pytest.mark.asyncio
+async def test_update_org_settings_llm_disabled_requires_none():
+    """llm_provider must be 'none' when llm_enabled is false."""
+    request = OrgSettingsRequest(
+        llm_provider="openai",
+        llm_enabled=False,
+        ocr_enabled=False,
+        retention_policy="none",
+        compliance_mode="strict",
+        evidence_window=2,
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        await update_org_settings(request, db=MagicMock())
+    assert exc.value.status_code == 400
+
+
+@pytest.mark.asyncio
+async def test_update_org_settings_evidence_window_positive():
+    """evidence_window must be positive."""
+    request = OrgSettingsRequest(
+        llm_provider="none",
+        llm_enabled=True,
+        ocr_enabled=False,
+        retention_policy="none",
+        compliance_mode="strict",
+        evidence_window=0,
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        await update_org_settings(request, db=MagicMock())
+    assert exc.value.status_code == 400
+
 def test_privacy_impact_llm_disabled():
     """Test privacy impact when LLM is disabled."""
     setting = OrgSetting(
         llm_provider=LLMProvider.none,
+        llm_enabled=False,
         ocr_enabled=False,
-        retention_policy=RetentionPolicy.none
+        retention_policy=RetentionPolicy.none,
     )
     
     # Simulate privacy impact logic
     privacy_impact = {
         "llm_data_sharing": {
-            "enabled": setting.llm_provider != LLMProvider.none,
+            "enabled": setting.llm_enabled and setting.llm_provider != LLMProvider.none,
             "provider": setting.llm_provider.value,
             "data_shared": "No data shared"
         },
@@ -187,14 +250,15 @@ def test_privacy_impact_llm_enabled():
     """Test privacy impact when LLM is enabled."""
     setting = OrgSetting(
         llm_provider=LLMProvider.anthropic,
+        llm_enabled=True,
         ocr_enabled=True,
-        retention_policy=RetentionPolicy.thirty_days
+        retention_policy=RetentionPolicy.thirty_days,
     )
     
     # Simulate privacy impact logic
     privacy_impact = {
         "llm_data_sharing": {
-            "enabled": setting.llm_provider != LLMProvider.none,
+            "enabled": setting.llm_enabled and setting.llm_provider != LLMProvider.none,
             "provider": setting.llm_provider.value,
             "data_shared": "Short text snippets only (max 220 tokens)"
         },
@@ -230,15 +294,18 @@ def test_audit_trail():
     """Test that settings changes are audited."""
     setting = OrgSetting(
         llm_provider=LLMProvider.openai,
+        llm_enabled=True,
         ocr_enabled=True,
-        retention_policy=RetentionPolicy.ninety_days
+        retention_policy=RetentionPolicy.ninety_days,
     )
-    
+
     # Verify audit fields exist
-    assert hasattr(setting, 'created_at')
-    assert hasattr(setting, 'updated_at')
-    
+    assert hasattr(setting, "created_at")
+    assert hasattr(setting, "updated_at")
+
     # Verify the setting values
     assert setting.llm_provider == LLMProvider.openai
+    assert setting.llm_enabled is True
     assert setting.ocr_enabled is True
     assert setting.retention_policy == RetentionPolicy.ninety_days
+

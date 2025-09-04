@@ -1,4 +1,4 @@
 # Windows one-liner runner
 $ErrorActionPreference = "Stop"
-npm ci
-npm run test
+pnpm install --frozen-lockfile
+pnpm run test

@@ -86,9 +86,10 @@ dependencies:
   checklists:
     - story-dod-checklist.md
   tasks:
-    - apply-qa-fixes.md
-    - execute-checklist.md
-    - validate-next-story.md
+  - apply-qa-fixes.md
+  - execute-checklist.md
+  - validate-next-story.md
+  - kb-create.md
 ```
 ====== END: .bmad-core/agents/dev.md ======
 

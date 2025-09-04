@@ -62,6 +62,8 @@ class Finding(BaseModel):
     category: Optional[str] = None
     confidence: Optional[float] = None
     reviewed: bool = False
+    weak_language_detected: bool = False
+    lexicon_version: Optional[str] = None
 
 
 class VerdictCounts(BaseModel):

@@ -34,7 +34,7 @@
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "list:agents": "node tools/cli.js list:agents",
-    "prepare": "husky",
+  "prepare": "git rev-parse --is-inside-work-tree >NUL 2>&1 && husky || echo \"skip husky (no .git here)\"",
     "preview:release": "node tools/preview-release-notes.js",
     "release:major": "gh workflow run \"Manual Release\" -f version_bump=major",
     "release:minor": "gh workflow run \"Manual Release\" -f version_bump=minor",

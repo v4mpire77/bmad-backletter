@@ -1,0 +1,73 @@
+name: build-and-push
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "**" ]
+    paths:
+      - "blackletter/blackletter-upstream/**/Dockerfile"
+      - "blackletter/blackletter-upstream/**"
+      - "deploy/docker/Dockerfile"
+
+concurrency:
+  group: build-and-push-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions: { contents: read }
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: backend
+            dockerfile: blackletter/blackletter-upstream/src/backend/Dockerfile
+            context:   blackletter/blackletter-upstream/src/backend
+            image:     blackletter/backend
+          - name: frontend
+            dockerfile: blackletter/blackletter-upstream/frontend/Dockerfile
+            context:   blackletter/blackletter-upstream/frontend
+            image:     blackletter/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login to ACR
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          ACR_USERNAME:     ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD:     ${{ secrets.ACR_PASSWORD }}
+        run: echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
+
+      - name: Buildx cache restore
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
+
+      - name: Build and push ${{ matrix.name }} (sha + latest)
+        env:
+          REG: ${{ secrets.ACR_LOGIN_SERVER }}
+        run: |
+          TAG_SHA=${GITHUB_SHA::7}
+          IMAGE_SHA="$REG/${{ matrix.image }}:${TAG_SHA}"
+          IMAGE_LATEST="$REG/${{ matrix.image }}:latest"
+          docker buildx build "${{ matrix.context }}" \
+            -f "${{ matrix.dockerfile }}" \
+            --tag "$IMAGE_SHA" --tag "$IMAGE_LATEST" \
+            --cache-from type=gha --cache-to type=gha,mode=max \
+            --push
+
+      - name: Smoke test pull/run
+        env:
+          REG: ${{ secrets.ACR_LOGIN_SERVER }}
+        run: |
+          TAG_SHA=${GITHUB_SHA::7}
+          IMAGE="$REG/${{ matrix.image }}:${TAG_SHA}"
+          docker pull "$IMAGE"
+          docker run --rm --entrypoint /bin/sh "$IMAGE" -c "echo container_ok"
+
+

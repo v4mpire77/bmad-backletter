@@ -1,0 +1,22 @@
+[2025-09-02 10:23:13] BROADCAST: Starting PR merge process: #146 → #7 (backward merge strategy)
+[2025-09-02 10:23:13] PROGRESS: INIT - Merge process initialized, updating main branch
+[2025-09-02 10:23:14] PROGRESS: MAIN_UPDATED - Main branch updated to latest
+[2025-09-02 10:23:14] PROGRESS: PRS_IDENTIFIED - Found 61 PRs for backward merge
+[2025-09-02 10:23:14] PROGRESS: PR_START - Starting merge of PR #145
+[2025-09-02 10:23:16] EMERGENCY: REBASE_CONFLICT - PR #145 has rebase conflicts requiring manual resolution
+[2025-09-02 21:42:31] INIT: Starting complete branch merge process
+[2025-09-02 21:42:31] PROGRESS: INIT - Branch merge process initialized
+[2025-09-02 21:42:31] PROGRESS: MAIN_UPDATED - Main branch updated to latest
+[2025-09-02 21:42:31] PROGRESS: BRANCHES_IDENTIFIED - Found 181 branches for merging
+[2025-09-02 21:44:33] INIT: Starting complete branch merge process
+[2025-09-02 21:44:33] PROGRESS: INIT - Branch merge process initialized
+[2025-09-02 21:44:33] PROGRESS: MAIN_UPDATED - Main branch updated to latest
+[2025-09-02 21:44:34] PROGRESS: BRANCHES_IDENTIFIED - Found 181 branches for merging
+[2025-09-02 21:44:34] PROGRESS: BRANCH_FAILED - Could not merge bmad-merge-plan due to conflicts
+[2025-09-02 21:45:05] INIT: Starting complete branch merge process
+[2025-09-02 21:45:05] PROGRESS: INIT - Branch merge process initialized
+[2025-09-02 21:45:06] PROGRESS: MAIN_UPDATED - Main branch updated to latest
+[2025-09-02 21:45:06] PROGRESS: BRANCHES_IDENTIFIED - Found 181 branches for merging
+[2025-09-02 21:45:06] PROGRESS: BRANCH_MERGED_RESOLVED - Merged bmad-merge-plan with conflict resolution
+[2025-09-02 21:51:53] PROGRESS: PUSH_FAILED - Failed to push merged changes to main
+[2025-09-02 21:51:53] PROGRESS: COMPLETE - Final branch merge process completed - Success: 84, Failed: 97

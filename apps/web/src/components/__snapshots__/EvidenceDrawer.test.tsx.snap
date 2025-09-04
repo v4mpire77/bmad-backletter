@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`EvidenceDrawer > renders loading state 1`] = `<div />`;
+
+exports[`EvidenceDrawer > renders with anchors 1`] = `
+<div
+  aria-hidden="true"
+>
+  <div
+    hidden=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+  />
+</div>
+`;
+
+exports[`EvidenceDrawer > renders with citations 1`] = `
+<div
+  aria-hidden="true"
+>
+  <div
+    hidden=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+  />
+</div>
+`;
+
+exports[`EvidenceDrawer > renders with empty rationale 1`] = `
+<div
+  aria-hidden="true"
+>
+  <div
+    hidden=""
+    style="position: fixed; top: 1px; left: 1px; width: 1px; height: 0px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border-width: 0px; display: none;"
+  />
+</div>
+`;

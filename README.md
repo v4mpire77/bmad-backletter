@@ -26,9 +26,9 @@ The orchestra agent has successfully implemented a **fully functional contract a
 Run the setup script to create a virtual environment and install dependencies:
 
 ```bash
-./scripts/setup.sh            # macOS/Linux
+./scripts/setup.sh                         # macOS/Linux
 # or
-pwsh -NoProfile -File ./setup.ps1  # Windows PowerShell
+pwsh -NoProfile -File tools/windows/setup.ps1  # Windows PowerShell
 ```
 
 Then start the API:
@@ -38,6 +38,14 @@ source .venv/bin/activate     # Windows: .\.venv\Scripts\Activate.ps1
 uvicorn blackletter_api.main:app --reload --app-dir apps/api
 ```
 
+On Windows you can start the API and/or frontend with a helper script:
+
+```powershell
+pwsh -NoProfile -File tools/windows/dev.ps1      # run API and web
+pwsh -NoProfile -File tools/windows/dev.ps1 -Api # API only
+pwsh -NoProfile -File tools/windows/dev.ps1 -Web # web only
+```
+
 > **Note**: The in-memory orchestrator uses thread locks for safety but
 > remains process-local. Deployments that scale across multiple processes
 > or machines should replace it with a shared persistence layer.
@@ -45,13 +53,57 @@ uvicorn blackletter_api.main:app --reload --app-dir apps/api
 ### Frontend (Ready for Development)
 ```bash
 cd apps/web
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
+
+> **Note**: These commands assume a `pnpm-workspace.yaml` exists at the repository root to enable pnpm workspace features.
 
 ### Demo Mode
 
 To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MOCKS=1` in your environment. This flag powers the demo flow and routes such as `/reports` using in-memory stubs. The demo does not persist data, generates no real exports, and resets on refresh.
+
+## Development
+
+### Workspace setup
+
+This repository uses a [pnpm](https://pnpm.io) workspace defined in `pnpm-workspace.yaml` with packages under `apps/*` and `packages/*`. The root `pnpm-lock.yaml` tracks dependency versions and all scripts should be invoked with `pnpm` from the repo root.
+
+Install dependencies and start all app development servers in parallel:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Common scripts can be run from the repo root:
+
+```bash
+pnpm build         # build all packages
+pnpm lint          # lint all packages
+pnpm lint:fix      # fix lint issues
+pnpm test          # run tests
+pnpm test:watch    # watch tests
+pnpm type-check    # type checking
+pnpm clean         # remove build artifacts
+```
+
+These commands work in Windows PowerShell and Unix shells.
+
+### POSIX setup
+
+The repository provides a helper script for macOS and Linux environments that mirrors the Windows setup.
+
+```bash
+./scripts/setup_posix.sh
+source .venv/bin/activate
+uvicorn blackletter_api.main:app --reload --app-dir apps/api
+```
+
+Optional flags:
+
+- `--recreate-venv` rebuilds the virtual environment
+- `--skip-install` skips installing dependencies
 
 ## 🎯 **Next Development Priorities**
 
@@ -70,6 +122,7 @@ To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MO
 - **Implementation Status**: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md) - Complete overview
 - **Stories**: [`docs/stories/`](docs/stories/) - All development stories with status
 - **Architecture**: [`docs/architecture/`](docs/architecture/) - System design docs
+- **Development Path**: [`docs/DEVELOPMENT_PATH.md`](docs/DEVELOPMENT_PATH.md) - Active code locations and archived docs
 
 ## 🏗️ **Architecture**
 
