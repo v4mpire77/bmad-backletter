@@ -18,3 +18,11 @@ The `useEvidenceHighlighting` hook memoizes highlight results to avoid unnecessa
 
 `EvidenceDrawer` accepts an optional `onOpenPage(page, offset)` callback. Wire this to a PDF viewer or page map to jump users to the cited location.
 
+## Keyboard Navigation
+
+- When the drawer opens, focus moves to the first highlighted diff segment (`<mark data-anchorkey>`).
+- `Tab` advances through diff segments in document order and then through action buttons such as citation links and the Close button.
+- `Shift+Tab` reverses the traversal.
+- Focus is trapped within the drawer, wrapping from the last element back to the first.
+- Press `Esc` to close the drawer.
+

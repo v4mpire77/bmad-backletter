@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import DOMPurify from 'isomorphic-dompurify';
 import VerdictBadge from './VerdictBadge';
@@ -20,11 +20,53 @@ function verdictToBadge(v: Finding['verdict']) {
 
 export default function EvidenceDrawer({ isOpen, onClose, finding, onOpenPage }: EvidenceDrawerProps) {
   const highlighted = useEvidenceHighlighting(finding?.evidence ?? '', finding?.anchors ?? []);
+  const panelRef = useRef<HTMLDivElement>(null);
   if (!finding) return null;
 
-  const rationale = finding.rationale
-    ? DOMPurify.sanitize(finding.rationale)
-    : '';
+  const rationale = finding.rationale ? DOMPurify.sanitize(finding.rationale) : '';
+
+  // When opened, focus the first diff segment and keep focus trapped within the drawer.
+  // Tab cycles through diff segments then action buttons; Shift+Tab reverses this order.
+  useEffect(() => {
+    if (!isOpen || !panelRef.current) return;
+    const panel = panelRef.current;
+
+    const getFocusable = () =>
+      panel.querySelectorAll<HTMLElement>(
+        '[data-anchorkey], button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+
+    const firstFocusable =
+      panel.querySelector<HTMLElement>('[data-anchorkey]') ||
+      panel.querySelector<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])');
+    firstFocusable?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const items = Array.from(getFocusable());
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          (last as HTMLElement).focus();
+        }
+      } else if (document.activeElement === last) {
+        e.preventDefault();
+        (first as HTMLElement).focus();
+      }
+    };
+
+    panel.addEventListener('keydown', handleKeyDown);
+    return () => panel.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -51,7 +93,10 @@ export default function EvidenceDrawer({ isOpen, onClose, finding, onOpenPage }:
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+            <Dialog.Panel
+              ref={panelRef}
+              className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
               <div className="flex items-center justify-between">
                 <Dialog.Title className="text-lg font-semibold" data-testid="drawer-title">
                   {finding.title}
