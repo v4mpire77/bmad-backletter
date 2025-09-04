@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       bmad-method:
-        specifier: ^4.41.0
+        specifier: ^4.42.1
         version: 4.42.1(@types/node@24.3.0)
       codex:
         specifier: ^0.2.3

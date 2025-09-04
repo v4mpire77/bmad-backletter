@@ -14,10 +14,13 @@
     "clean": "pnpm -r run clean",
     "swa:start": "swa start",
     "swa:build": "swa build",
-    "swa:deploy": "swa deploy"
+    "swa:deploy": "swa deploy",
+    "bmad:refresh": "bmad-method install -f -i codex",
+    "bmad:list": "bmad-method list:agents",
+    "bmad:validate": "bmad-method validate"
   },
   "dependencies": {
-    "bmad-method": "^4.41.0",
+    "bmad-method": "^4.42.1",
     "codex": "^0.2.3",
     "js-yaml": "^4.1.0",
     "micromatch": "^4.0.8"
