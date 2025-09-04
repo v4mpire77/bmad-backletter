@@ -1,11 +1,15 @@
 import json
+import shutil
 import uuid
 from io import BytesIO
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from blackletter_api.services import storage
+from blackletter_api.services import detector_runner
 
 from blackletter_api.main import app
 from blackletter_api.database import Base, get_db
@@ -35,7 +39,16 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
-client = TestClient(app)
+
+@pytest.fixture
+def auth_client(tmp_path):
+    """Authenticated client with isolated DATA_ROOT."""
+    data_root = tmp_path / "data"
+    storage.DATA_ROOT = data_root
+    with TestClient(app) as c:
+        c.headers["Authorization"] = "Bearer test-token"
+        yield c
+    shutil.rmtree(data_root, ignore_errors=True)
 
 
 # --- Patches for services ---
@@ -96,6 +109,7 @@ def fake_run_detectors(analysis_id, extraction_json_path):
 artifact_service.SessionLocal = TestingSessionLocal
 tasks.redis_client = DummyRedis()
 tasks.run_extraction = fake_run_extraction
+detector_runner.run_detectors = fake_run_detectors
 tasks.run_detectors = fake_run_detectors
 
 
@@ -107,10 +121,16 @@ tasks.process_job.delay = run_sync
 
 
 # --- Test Case ---
-def test_contract_processing_flow(tmp_path):
-    content = "controller instructions"
-    dummy_file = ("test.pdf", BytesIO(content.encode("utf-8")), "application/pdf")
-    response = client.post("/v1/contracts", files={"file": dummy_file})
+SAMPLE_CONTRACT_TEXT = "controller instructions"
+
+
+def test_contract_processing_flow(auth_client):
+    dummy_file = (
+        "test.pdf",
+        BytesIO(SAMPLE_CONTRACT_TEXT.encode("utf-8")),
+        "application/pdf",
+    )
+    response = auth_client.post("/v1/contracts", files={"file": dummy_file})
     assert response.status_code == 201
     data = response.json()
     analysis_id = data["analysis_id"]
@@ -130,18 +150,15 @@ def test_contract_processing_flow(tmp_path):
     assert art is not None
     assert evid is not None
 
-    resp_findings = client.get(f"/v1/docs/{analysis_id}/findings")
+    resp_findings = auth_client.get(f"/v1/docs/{analysis_id}/findings")
     assert resp_findings.status_code == 200
-    assert resp_findings.json()[0]["snippet"] == content
+    assert resp_findings.json()[0]["snippet"] == SAMPLE_CONTRACT_TEXT
 
-    resp_html = client.get(f"/v1/exports/{analysis_id}.html")
+    resp_html = auth_client.get(f"/v1/exports/{analysis_id}.html")
     assert resp_html.status_code == 200
-    assert content in resp_html.text
+    assert SAMPLE_CONTRACT_TEXT in resp_html.text
 
 
 def teardown_module(module):
     Base.metadata.drop_all(bind=engine)
     Path("./test_temp.db").unlink(missing_ok=True)
-    import shutil
-
-    shutil.rmtree(".data", ignore_errors=True)
