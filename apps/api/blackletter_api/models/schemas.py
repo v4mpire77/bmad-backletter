@@ -66,6 +66,8 @@ class Finding(BaseModel):
     reviewed: bool = False
     weak_language_detected: bool = False
     lexicon_version: Optional[str] = None
+    original_text: str
+    suggested_text: Optional[str] = None
 
 
 class VerdictCounts(BaseModel):
