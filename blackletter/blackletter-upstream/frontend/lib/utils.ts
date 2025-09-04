@@ -238,15 +238,55 @@ export function isValidFileSize(file: File, maxSizeBytes: number): boolean {
 }
 
 /**
- * Copy text to clipboard
+ * Strip HTML tags from a string
+ */
+function stripHtml(html: string): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+}
+
+/**
+ * Copy text to clipboard with permissions and fallback handling
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
+    const sanitizedText = stripHtml(text);
     try {
-        await navigator.clipboard.writeText(text);
-        return true;
+        if (navigator.permissions) {
+            try {
+                const permission = await navigator.permissions.query({
+                    name: 'clipboard-write' as PermissionName,
+                });
+                if (permission.state === 'denied') {
+                    throw new Error('Clipboard permission denied');
+                }
+            } catch (permErr) {
+                console.warn('Clipboard permission query failed:', permErr);
+            }
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(sanitizedText);
+            return true;
+        }
+        throw new Error('Clipboard API not available');
     } catch (error) {
         console.error('Failed to copy to clipboard:', error);
-        return false;
+        try {
+            const textarea = document.createElement('textarea');
+            textarea.value = sanitizedText;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const success = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            return success;
+        } catch (fallbackError) {
+            console.error('Fallback copy failed:', fallbackError);
+            return false;
+        }
     }
 }
 

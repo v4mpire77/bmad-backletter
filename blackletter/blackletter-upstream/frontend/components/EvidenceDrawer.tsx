@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Finding } from '@/lib/types';
 import { highlightAnchors } from '@/lib/anchors';
+import { copyToClipboard } from '@/lib/utils';
 
 interface EvidenceDrawerProps {
   isOpen: boolean;
@@ -37,8 +38,8 @@ export default function EvidenceDrawer({ isOpen, onClose, finding }: EvidenceDra
   // Highlight anchors in the evidence text
   const highlightedEvidence = highlightAnchors(finding.evidence, finding.anchors);
 
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(finding.evidence);
+  const handleCopyToClipboard = async () => {
+    await copyToClipboard(highlightedEvidence);
     // Could add a toast notification here
   };
 
