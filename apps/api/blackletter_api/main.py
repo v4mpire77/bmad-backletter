@@ -9,6 +9,8 @@ import uuid
 import logging
 import time
 import json
+import asyncio
+import anyio
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +26,7 @@ from .routers import risk_analysis, admin
 from .routers import orchestration, gemini
 from .routers import document_qa
 from .routers import auth, devtools, settings
+from .orchestrator.state import orchestrator, AnalysisState
 
 # Create the database tables
 entities.Base.metadata.create_all(bind=engine)
@@ -145,33 +148,42 @@ def read_root() -> dict[str, bool | str]:
 @app.websocket("/ws/analysis/{analysis_id}")
 async def websocket_endpoint(websocket: WebSocket, analysis_id: str):
     await manager.connect(websocket)
-    try:
-        # Send initial connection confirmation
-        await manager.send_personal_message(
-            json.dumps({
-                "type": "connection",
+
+    def listener(event_id: str, state: AnalysisState) -> None:
+        if event_id != analysis_id:
+            return
+        message = json.dumps(
+            {
+                "type": "progress",
                 "analysis_id": analysis_id,
-                "message": "Connected to real-time analysis updates"
-            }), 
-            websocket
+                "state": state.value,
+            }
         )
-        
-        # Keep connection alive and handle incoming messages
-        while True:
-            data = await websocket.receive_text()
-            # Echo back for now, could be used for control messages
-            await manager.send_personal_message(
-                json.dumps({
-                    "type": "echo",
+        anyio.from_thread.run(manager.broadcast, message)
+
+    orchestrator.subscribe(listener)
+
+    try:
+        await manager.send_personal_message(
+            json.dumps(
+                {
+                    "type": "connection",
                     "analysis_id": analysis_id,
-                    "data": data
-                }), 
-                websocket
-            )
+                    "message": "Connected to real-time analysis updates",
+                }
+            ),
+            websocket,
+        )
+
+        while True:
+            await websocket.receive_text()
+            # Client messages are ignored for now
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        pass
     except Exception as e:
         logger.error(f"WebSocket error: {e}")
+    finally:
+        orchestrator.unsubscribe(listener)
         manager.disconnect(websocket)
 
 

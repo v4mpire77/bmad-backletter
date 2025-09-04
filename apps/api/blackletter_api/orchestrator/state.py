@@ -3,11 +3,21 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 import threading
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Callable
 from uuid import uuid4
 
 
 class AnalysisState(str, Enum):
+    """Possible states of an analysis."""
+
+    # High level progress states for WebSocket updates
+    QUEUED = "queued"
+    EXTRACTING = "extracting"
+    DETECTING = "detecting"
+    REPORTING = "reporting"
+    DONE = "done"
+
+    # Legacy internal states
     RECEIVED = "RECEIVED"
     EXTRACTED = "EXTRACTED"
     SEGMENTED = "SEGMENTED"
@@ -36,6 +46,7 @@ class Orchestrator:
     def __init__(self) -> None:
         self._store: Dict[str, AnalysisRecord] = {}
         self._lock = threading.Lock()
+        self._listeners: List[Callable[[str, AnalysisState], None]] = []
 
     def intake(self, filename: str) -> str:
         with self._lock:
@@ -73,11 +84,29 @@ class Orchestrator:
             record.state = new_state
             if finding:
                 record.findings.append(finding)
-            return record
+        # Notify listeners outside the lock to avoid deadlocks
+        for listener in list(self._listeners):
+            try:
+                listener(analysis_id, new_state)
+            except Exception:
+                # Listener errors should not break orchestrator flow
+                pass
+        return record
 
     def list_records(self, limit: int) -> List[AnalysisRecord]:
         with self._lock:
             return list(self._store.values())[:limit]
+
+    def subscribe(self, listener: Callable[[str, AnalysisState], None]) -> None:
+        """Register a callback to receive state change events."""
+        with self._lock:
+            self._listeners.append(listener)
+
+    def unsubscribe(self, listener: Callable[[str, AnalysisState], None]) -> None:
+        """Remove a previously registered listener."""
+        with self._lock:
+            if listener in self._listeners:
+                self._listeners.remove(listener)
 
 
 # module-level orchestrator instance
