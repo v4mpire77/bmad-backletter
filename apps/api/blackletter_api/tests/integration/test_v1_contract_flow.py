@@ -97,6 +97,8 @@ def fake_run_detectors(analysis_id, extraction_json_path):
         "start": s["start"],
         "end": s["end"],
         "rationale": "demo",
+        "original_text": s["text"],
+        "suggested_text": s["text"],
     }
     findings_path = analysis_dir(analysis_id) / "findings.json"
     findings_path.write_text(json.dumps([finding]), encoding="utf-8")

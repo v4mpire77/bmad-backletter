@@ -104,4 +104,14 @@ def get_analysis_findings(analysis_id: str) -> List[Finding]:
             status_code=404,
             detail={"code": "not_found", "message": "Analysis not found"},
         ) from exc
-    return [Finding(**f) for f in rec_findings]
+    enriched = []
+    for f in rec_findings:
+        enriched.append(
+            {
+                **f,
+                "rule_id": f.get("rule_id") or f.get("detector_id", ""),
+                "original_text": f.get("original_text") or f.get("snippet", ""),
+                "suggested_text": f.get("suggested_text") or f.get("snippet", ""),
+            }
+        )
+    return [Finding(**f) for f in enriched]
