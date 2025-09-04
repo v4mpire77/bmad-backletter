@@ -6,12 +6,17 @@
 set -e
 
 # Configuration
-REPO="v4mpire77/bmad-backletter"
+REPO="letter-orgz/blackletter.systems"
 MAIN_BRANCH="main"
 TEST_COMMAND="python -m pytest apps/api/blackletter_api/tests -q || echo 'Tests skipped - no test failures blocking merge'"
 CONFLICT_RESOLVER="./scripts/resolve_all_conflicts.sh"
-LOG_FILE=".codex/pr-manager-log.txt"
-PROGRESS_FILE=".codex/pr-progress.json"
+
+# Artifact directory: default to XDG cache (~/.cache) to avoid writing into the repository.
+# Override with PR_ARTIFACT_DIR environment variable if you want a different location.
+ARTIFACT_DIR="${PR_ARTIFACT_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/blackletter/pr-manager}"
+LOG_FILE="${ARTIFACT_DIR}/pr-manager-log.txt"
+PROGRESS_FILE="${ARTIFACT_DIR}/pr-progress.json"
+REPORT_FILE="${ARTIFACT_DIR}/pr-resolution-report.md"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -21,8 +26,8 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 
-# Ensure directories exist
-mkdir -p .codex
+# Ensure artifact directory exists (default: XDG cache)
+mkdir -p "$ARTIFACT_DIR"
 
 # Logging function
 log_action() {
