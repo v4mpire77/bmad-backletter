@@ -90,6 +90,18 @@ pnpm clean         # remove build artifacts
 
 These commands work in Windows PowerShell and Unix shells.
 
+### BMAD development method
+
+The repository no longer vendors the BMAD framework source. To set up the
+AI‑assisted workflow, install the method into your workspace:
+
+```bash
+npx bmad-method-install
+```
+
+This command copies the required `.bmad-core` configuration without adding the
+entire framework to your project tree.
+
 ### POSIX setup
 
 The repository provides a helper script for macOS and Linux environments that mirrors the Windows setup.
