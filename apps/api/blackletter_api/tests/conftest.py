@@ -19,9 +19,11 @@ def auth_pepper_env(monkeypatch) -> None:
     monkeypatch.setenv("SECRET_KEY", "test-secret")
 
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from blackletter_api import database
 from blackletter_api.models import entities, auth as auth_models, organization as organization_models  # noqa: F401
+from blackletter_api.models.entities import Base
 
 # Rebind engine to a known absolute path and ensure tables exist
 db_path = Path(__file__).resolve().parents[3] / "test.db"
@@ -51,8 +53,23 @@ class DummyRedis:
     def exists(self, key):
         return key in self.store
 
+
 try:
     from blackletter_api.services import tasks as _tasks_service
     _tasks_service.redis_client = DummyRedis()
 except Exception:  # pragma: no cover
     pass
+
+
+@pytest.fixture(scope="function")
+def db_session_mock():
+    """Creates a mock database session for testing."""
+    engine = create_engine("sqlite:///:memory:")
+    Base.metadata.create_all(bind=engine)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db_session = SessionLocal()
+    try:
+        yield db_session
+    finally:
+        db_session.close()
+        Base.metadata.drop_all(bind=engine)

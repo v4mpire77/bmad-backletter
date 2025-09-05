@@ -14,26 +14,30 @@ from blackletter_api.routers.reports import router as reports_router
 app = FastAPI()
 app.include_router(reports_router, prefix="/api")
 
-client = TestClient(app)
+
+@pytest.fixture
+def client(db_session_mock):
+    app.dependency_overrides[database.get_db] = lambda: db_session_mock
+    test_client = TestClient(app)
+    try:
+        yield test_client
+    finally:
+        app.dependency_overrides.clear()
 
 
 @pytest.fixture(autouse=True)
-def clear_reports():
-    db = database.SessionLocal()
-    try:
-        db.query(Report).delete()
-        db.commit()
-    finally:
-        db.close()
+def clear_reports(db_session_mock):
+    db_session_mock.query(Report).delete()
+    db_session_mock.commit()
 
 
-def test_list_reports_initially_empty():
+def test_list_reports_initially_empty(client):
     res = client.get("/api/reports")
     assert res.status_code == 200
     assert res.json() == []
 
 
-def test_create_report_and_list():
+def test_create_report_and_list(client, db_session_mock):
     payload = {"include_logo": True, "include_meta": False, "date_format": "MDY"}
     res = client.post("/api/reports/test123", json=payload)
     assert res.status_code == 201
@@ -42,13 +46,9 @@ def test_create_report_and_list():
         assert key in data
     assert data["analysis_id"] == "test123"
     # ensure report persisted to the database
-    db = database.SessionLocal()
-    try:
-        report = db.query(Report).filter_by(id=uuid.UUID(data["id"])).first()
-        assert report is not None
-        assert report.analysis_id == "test123"
-    finally:
-        db.close()
+    report = db_session_mock.query(Report).filter_by(id=uuid.UUID(data["id"])).first()
+    assert report is not None
+    assert report.analysis_id == "test123"
     # list reports now contains the created record
     res2 = client.get("/api/reports")
     assert res2.status_code == 200
