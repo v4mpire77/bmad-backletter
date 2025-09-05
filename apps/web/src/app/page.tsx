@@ -89,8 +89,8 @@ export default function LandingPage() {
             <Link href="/new" className="btn-primary" aria-label="Start free trial of GDPR Checker">
               Start Free 14-Day Trial
             </Link>
-            <Link href="/reports" className="btn-secondary" aria-label="View interactive demo dashboard">
-              Watch Interactive Demo
+            <Link href="/dashboard" className="btn-secondary" aria-label="Try the Blackletter demo dashboard">
+              Try the Demo
             </Link>
           </div>
           <div className="hero-micro fade-in stagger-4">
