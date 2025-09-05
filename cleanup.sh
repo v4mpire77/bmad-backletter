@@ -33,7 +33,7 @@ ignore_and_untrack "$BACKUP_DIR"
 # 1. Archive redundant repositories
 ########################################
 for repo in BMAD-METHOD-main blackletter; do
-  if [ -d "$repo" ]; then
+  if [ -d "$repo" ] && [ ! -d "$BACKUP_DIR/$repo" ]; then
     echo "Archiving $repo/ to $BACKUP_DIR/"
     mv "$repo" "$BACKUP_DIR/"
     ignore_and_untrack "$repo"
