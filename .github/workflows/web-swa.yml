@@ -9,6 +9,15 @@ jobs:
         with: { node-version: '18.x', cache: 'pnpm', cache-dependency-path: 'pnpm-lock.yaml' }
       - run: npm i -g pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+      - run: pnpm --filter ./apps/web run e2e:install
+      - run: pnpm --filter ./apps/web run test:e2e
       - run: pnpm --filter ./apps/web build
       - uses: Azure/static-web-apps-deploy@v2
         with:
