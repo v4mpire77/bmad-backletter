@@ -54,18 +54,38 @@ def new_job(analysis_id: str | None = None) -> str:
     return job_id
 
 
-def enqueue_job(job_id: str, analysis_id: str, filename: str, size: int) -> None:
+def enqueue_job(
+    job_id: str,
+    analysis_id: str,
+    filename: str,
+    size: int,
+    backend: str | None = None,
+) -> None:
     """Enqueue the document processing job.
 
-    When the ``JOB_SYNC`` environment variable is set to ``"1"`` the task is
-    executed synchronously within the current process.  This behaviour makes
-    tests deterministic and avoids the need for a running Celery worker.  In
-    all other cases the job is dispatched to Celery using ``delay``.
+    Parameters
+    ----------
+    job_id, analysis_id, filename, size:
+        Identifiers and metadata for the job to enqueue.
+    backend:
+        Execution backend. ``"sync"`` processes the job immediately within the
+        current process, while ``"celery"`` dispatches the job to a Celery
+        worker.  If ``None`` the backend defaults to ``"celery"``.
+
+    Notes
+    -----
+    The previous implementation relied on the ``JOB_SYNC`` environment
+    variable.  Explicitly passing the backend makes behaviour clearer and
+    simplifies testing.
     """
-    if os.getenv("JOB_SYNC") == "1":
+
+    chosen = backend or "celery"
+    if chosen == "sync":
         process_job(job_id, analysis_id, filename, size)
-    else:
+    elif chosen == "celery":
         process_job.delay(job_id, analysis_id, filename, size)
+    else:
+        raise ValueError(f"Unknown backend '{chosen}'")
 
 
 def get_job(job_id: str) -> Optional[JobRecord]:
