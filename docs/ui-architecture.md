@@ -31,13 +31,15 @@ This document outlines the frontend architecture for the Blackletter project.
 
 ```
 apps/web/
-  app/
-    layout.tsx
-    page.tsx                   # landing/login (or upload)
-    dashboard/
-      page.tsx
-      loading.tsx
-      error.tsx
+    app/
+      layout.tsx
+      page.tsx                   # redirect to /landing
+      landing/
+        page.tsx                 # marketing landing page
+      dashboard/
+        page.tsx
+        loading.tsx
+        error.tsx
     analyses/
       [id]/
         page.tsx                 # findings table + evidence drawer

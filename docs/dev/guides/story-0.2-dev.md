@@ -4,7 +4,7 @@ Status: Approved
 Precise instructions to finish optional “How it works” links while preserving accessibility and performance.
 
 ## Scope
-- Route: `/landing` (optional redirect from `/`)
+- Route: `/landing` (redirect from `/`)
 - Files: `apps/web/src/app/landing/page.tsx`, `apps/web/src/content/landing.ts`
 
 ## Implementation

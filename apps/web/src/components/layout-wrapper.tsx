@@ -5,7 +5,7 @@ import SiteHeader from '@/components/site-header';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLandingPage = pathname === '/';
+  const isLandingPage = pathname === '/landing' || pathname === '/';
 
   if (isLandingPage) {
     return <>{children}</>;
