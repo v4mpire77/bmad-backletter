@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
 import threading
 from typing import Dict, List, Any
@@ -22,6 +23,7 @@ class AnalysisRecord:
     id: str
     filename: str
     state: AnalysisState = AnalysisState.RECEIVED
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     findings: List[Dict[str, Any]] = field(default_factory=list)
 
 

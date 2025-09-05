@@ -16,6 +16,16 @@ def test_list_analyses_empty():
     assert body == []
 
 
+def test_list_analyses_preserves_created_at():
+    orchestrator._store.clear()
+    analysis_id = orchestrator.intake("contract.pdf")
+    created_at = orchestrator.summary(analysis_id).created_at.isoformat()
+    res = client.get("/api/analyses?limit=50")
+    assert res.status_code == 200
+    body = res.json()
+    assert body[0]["created_at"] == created_at
+
+
 def test_analysis_summary_not_found():
     orchestrator._store.clear()
     res = client.get("/api/analyses/missing")
