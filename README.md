@@ -63,6 +63,18 @@ pnpm dev
 
 To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MOCKS=1` in your environment. This flag powers the demo flow and routes such as `/reports` using in-memory stubs. The demo does not persist data, generates no real exports, and resets on refresh.
 
+### Deploying `apps/web` on Vercel (monorepo)
+
+When deploying the Next.js frontend to Vercel, use these checks to avoid `404: NOT_FOUND` pages:
+
+1. In **Settings → Build & Development**, set **Root Directory** to `apps/web` and the **Framework Preset** to **Next.js**, then redeploy.
+2. Ensure the domain you're visiting is attached to this project under **Project → Domains**.
+3. Compare the URL you open with the deployment's **Build Output → Routes** list to confirm the route exists.
+4. Do not run `next export` or set `output: "export"` in `next.config.js`; Vercel should run `next build`.
+5. If Vercel's 404 page shows a code and ID, click the info box for per-error guidance.
+
+Helpful references: [Vercel 404 guide](https://vercel.com/guides/why-is-my-deployed-project-giving-404), [Stack Overflow discussion](https://stackoverflow.com/questions/65771294/nextjs-deployed-to-vercel-404-page-not-found).
+
 ## Development
 
 ### Workspace setup
