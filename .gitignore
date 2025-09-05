@@ -44,3 +44,6 @@ worktrees/
 # PR manager runtime artifacts (default cache location)
 # The script writes to ${XDG_CACHE_HOME:-$HOME/.cache}/blackletter/pr-manager by default.
 .cache/blackletter/
+
+# BMAD Method source (installed separately via npx)
+BMAD-METHOD-main/
