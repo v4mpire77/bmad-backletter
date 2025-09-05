@@ -14,7 +14,7 @@ from ..models.schemas import (
     ValidationResults,
 )
 from ..services import storage
-from ..services.tasks import new_job, process_job
+from ..services.tasks import enqueue_job, new_job
 
 
 router = APIRouter(tags=["contracts"])
@@ -94,7 +94,7 @@ async def upload_contract(
         ) from e
 
     job_id = new_job(analysis_id=analysis_id)
-    process_job.delay(job_id, analysis_id, safe_name, size)
+    enqueue_job(job_id, analysis_id, safe_name, size)
 
     return JobStatus(
         id=job_id,
