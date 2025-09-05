@@ -64,9 +64,9 @@ export default function EvidenceDrawer({ isOpen, onClose, finding, onOpenPage }:
               )}
 
               <div className="mt-4">
-                <h4 className="text-sm font-medium">Evidence</h4>
+                <h3 className="text-sm font-medium">Evidence</h3>
                 <div
-                  className="mt-2 max-h-64 overflow-y-auto border p-2 text-sm" 
+                  className="mt-2 max-h-64 overflow-y-auto border p-2 text-sm"
                   data-testid="evidence-panel"
                   // eslint-disable-next-line react/no-danger
                   dangerouslySetInnerHTML={{ __html: highlighted }}
@@ -75,7 +75,7 @@ export default function EvidenceDrawer({ isOpen, onClose, finding, onOpenPage }:
 
               {finding.citations && finding.citations.length > 0 && (
                 <div className="mt-4" data-testid="citations">
-                  <h4 className="text-sm font-medium">Citations</h4>
+                  <h3 className="text-sm font-medium">Citations</h3>
                   <ul className="mt-2 space-y-2">
                     {finding.citations.map((c, i) => (
                       <li key={i} className="flex items-start justify-between gap-2 text-sm" data-testid="citation-item">
@@ -109,4 +109,3 @@ export default function EvidenceDrawer({ isOpen, onClose, finding, onOpenPage }:
     </Transition>
   );
 }
-
