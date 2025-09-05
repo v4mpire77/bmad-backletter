@@ -7,13 +7,36 @@ set -euo pipefail
 BACKUP_DIR="_cleanup_backup"
 mkdir -p "$BACKUP_DIR"
 
+# Ensure .gitignore exists and back it up
+if [ -f .gitignore ]; then
+  cp .gitignore "$BACKUP_DIR/root.gitignore.bak"
+else
+  touch .gitignore
+fi
+
+ignore_and_untrack() {
+  local dir="$1"
+  if git ls-files "$dir" | grep -q .; then
+    git rm -r --cached "$dir"
+    echo "Removed $dir from Git index"
+  fi
+  if ! grep -Fxq "$dir/" .gitignore; then
+    echo "$dir/" >> .gitignore
+    echo "Added $dir/ to .gitignore"
+  fi
+}
+
+# Ignore backup directory
+ignore_and_untrack "$BACKUP_DIR"
+
 ########################################
 # 1. Archive redundant repositories
 ########################################
 for repo in BMAD-METHOD-main blackletter; do
   if [ -d "$repo" ]; then
-    echo "Archiving $repo/"
+    echo "Archiving $repo/ to $BACKUP_DIR/"
     mv "$repo" "$BACKUP_DIR/"
+    ignore_and_untrack "$repo"
   fi
 done
 
@@ -21,10 +44,12 @@ done
 # 2. Consolidate AI configurations
 ########################################
 mkdir -p .ai
+ignore_and_untrack ".ai"
 for cfg in .bmad-core .bmad-creative-writing .bmad-infrastructure-devops; do
   if [ -d "$cfg" ]; then
     echo "Moving $cfg to .ai/"
     mv "$cfg" .ai/
+    ignore_and_untrack "$cfg"
   fi
 done
 
@@ -32,20 +57,15 @@ done
 for tool in .claude .codex .cursor .crush .gemini .roomodes .qwen \
             .trae .windsurf .clinerules .kilocodemodes .qoder; do
   if [ -d "$tool" ]; then
-    echo "Archiving $tool/"
+    echo "Archiving $tool/ to $BACKUP_DIR/"
     mv "$tool" "$BACKUP_DIR/"
+    ignore_and_untrack "$tool"
   fi
 done
 
 ########################################
 # 3. Merge .gitignore files
 ########################################
-if [ -f .gitignore ]; then
-  cp .gitignore "$BACKUP_DIR/root.gitignore.bak"
-else
-  touch .gitignore
-fi
-
 for src in "$BACKUP_DIR"/BMAD-METHOD-main/.gitignore \
            "$BACKUP_DIR"/blackletter/.gitignore \
            "$BACKUP_DIR"/blackletter/blackletter-upstream/.gitignore; do
