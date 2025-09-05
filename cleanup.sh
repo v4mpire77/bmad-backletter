@@ -56,7 +56,7 @@ done
 # Archive old tool-specific configs
 for tool in .claude .codex .cursor .crush .gemini .roomodes .qwen \
             .trae .windsurf .clinerules .kilocodemodes .qoder; do
-  if [ -d "$tool" ]; then
+  if [ -d "$tool" ] && [ ! -d "$BACKUP_DIR/$tool" ]; then
     echo "Archiving $tool/ to $BACKUP_DIR/"
     mv "$tool" "$BACKUP_DIR/"
     ignore_and_untrack "$tool"
