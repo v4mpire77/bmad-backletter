@@ -1,50 +1,44 @@
+!docs/build/
+# BMAD Method source (installed separately via npx)
+# Build outputs
+# Cleanup backups and consolidated configs
+# IDE
+# Local git worktrees (not tracked)
+# Logs
+# Node/Next.js
 # OS
-.DS_Store
-Thumbs.db
-
+# PR manager runtime artifacts (default cache location)
 # Python
-__pycache__/
+# The script writes to ${XDG_CACHE_HOME:-$HOME/.cache}/blackletter/pr-manager by default.
+# TypeScript
+*.db
+*.log
 *.py[cod]
-.pytest_cache/
-.venv/
+*.sqlite
+*.tsbuildinfo
+.DS_Store
+.ai/
+.cache/blackletter/
 .env
 .env.local
-*.db
-*.sqlite
-resolve_conflicts.py
-
-# Node/Next.js
-node_modules/
-apps/web/node_modules/
+.idea/
+.pytest_cache/
+.venv/
+.vscode/
+BMAD-METHOD-main/
+Thumbs.db
+__pycache__/
+_cleanup_backup/
 apps/web/.next/
-apps/web/out/
 apps/web/.turbo/
 apps/web/coverage/
+apps/web/node_modules/
+apps/web/out/
 apps/web/playwright-report/
 apps/web/test-results/
-
-# Build outputs
+blackletter/
 build/
-!docs/build/
 dist/
-
-# Logs
-*.log
-
-# IDE
-.vscode/
-.idea/
-
-# TypeScript
-*.tsbuildinfo
-
-# Local git worktrees (not tracked)
+node_modules/
+resolve_conflicts.py
 worktrees/
-
-# PR manager runtime artifacts (default cache location)
-# The script writes to ${XDG_CACHE_HOME:-$HOME/.cache}/blackletter/pr-manager by default.
-.cache/blackletter/
-
-# BMAD Method source (installed separately via npx)
-BMAD-METHOD-main/
-**/BMAD-METHOD-main/

@@ -1,59 +1,81 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# This script cleans up the repository by removing bundled dependencies and frameworks
-# that should not be in source control.
+# Safe cleanup script for consolidating the repository while keeping a backup.
+# Moves redundant directories to _cleanup_backup/ and merges .gitignore files.
 
-echo "Starting repository cleanup..."
+BACKUP_DIR="_cleanup_backup"
+mkdir -p "$BACKUP_DIR"
 
-# --- Step 1: Remove node_modules from Git tracking ---
-echo "Removing node_modules from source control..."
-if [ -d "node_modules" ]; then
-    git rm -r --cached node_modules || true
-    echo "Staged removal of node_modules."
+# Ensure .gitignore exists and back it up
+if [ -f .gitignore ]; then
+  cp .gitignore "$BACKUP_DIR/root.gitignore.bak"
 else
-    echo "node_modules directory not found, skipping."
+  touch .gitignore
 fi
 
-# --- Step 2: Remove BMAD-METHOD-main from Git tracking ---
-echo "Removing bundled BMAD-METHOD-main project..."
-if [ -d "BMAD-METHOD-main" ]; then
-    git rm -r --cached BMAD-METHOD-main || true
-    # Also physically remove the directory after removing from git
-    rm -rf BMAD-METHOD-main
-    echo "Removed BMAD-METHOD-main project."
-else
-    echo "BMAD-METHOD-main directory not found, skipping."
-fi
+ignore_and_untrack() {
+  local dir="$1"
+  if git ls-files "$dir" | grep -q .; then
+    git rm -r --cached "$dir"
+    echo "Removed $dir from Git index"
+  fi
+  if ! grep -Fxq "$dir/" .gitignore; then
+    echo "$dir/" >> .gitignore
+    echo "Added $dir/ to .gitignore"
+  fi
+}
 
-# --- Step 3: Update .gitignore ---
-echo "Updating .gitignore..."
+# Ignore backup directory
+ignore_and_untrack "$BACKUP_DIR"
 
-# Create .gitignore if it doesn't exist
-touch .gitignore
+########################################
+# 1. Archive redundant repositories
+########################################
+for repo in BMAD-METHOD-main blackletter; do
+  if [ -d "$repo" ]; then
+    echo "Archiving $repo/ to $BACKUP_DIR/"
+    mv "$repo" "$BACKUP_DIR/"
+    ignore_and_untrack "$repo"
+  fi
+done
 
-# Add node_modules if not already present
-grep -qxF 'node_modules/' .gitignore || echo '
-# Dependencies
-node_modules/' >> .gitignore
+########################################
+# 2. Consolidate AI configurations
+########################################
+mkdir -p .ai
+ignore_and_untrack ".ai"
+for cfg in .bmad-core .bmad-creative-writing .bmad-infrastructure-devops; do
+  if [ -d "$cfg" ]; then
+    echo "Moving $cfg to .ai/"
+    mv "$cfg" .ai/
+    ignore_and_untrack "$cfg"
+  fi
+done
 
-# Add BMAD-METHOD-main if not already present
-grep -qxF 'BMAD-METHOD-main/' .gitignore || echo '
-# Bundled Frameworks
-BMAD-METHOD-main/' >> .gitignore
+# Archive old tool-specific configs
+for tool in .claude .codex .cursor .crush .gemini .roomodes .qwen \
+            .trae .windsurf .clinerules .kilocodemodes .qoder; do
+  if [ -d "$tool" ]; then
+    echo "Archiving $tool/ to $BACKUP_DIR/"
+    mv "$tool" "$BACKUP_DIR/"
+    ignore_and_untrack "$tool"
+  fi
+done
 
-# Deduplicate entries
+########################################
+# 3. Merge .gitignore files
+########################################
+for src in "$BACKUP_DIR"/BMAD-METHOD-main/.gitignore \
+           "$BACKUP_DIR"/blackletter/.gitignore \
+           "$BACKUP_DIR"/blackletter/blackletter-upstream/.gitignore; do
+  if [ -f "$src" ]; then
+    echo -e "\n# Merged from ${src#$BACKUP_DIR/}" >> .gitignore
+    cat "$src" >> .gitignore
+  fi
+done
+
+# Deduplicate and sort .gitignore entries
 sort -u .gitignore -o .gitignore
 
-echo ".gitignore updated."
-
-# --- Step 4: Final Instructions ---
-echo ""
-echo "Cleanup script finished."
-echo "Please review the changes with 'git status'."
-echo "Then, commit the changes to finalize the cleanup:"
-echo 'git add .gitignore cleanup.sh'
-echo 'git commit -m "chore: Clean up repository by removing node_modules and BMAD method"'
-echo ""
-echo "After committing, all developers will need to run 'pnpm install' to regenerate their local dependencies."
-echo "To set up the development methodology, run 'npx bmad-method-install'."
+echo "Cleanup completed. Review $BACKUP_DIR before committing."
