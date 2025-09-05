@@ -46,7 +46,7 @@ done
 mkdir -p .ai
 ignore_and_untrack ".ai"
 for cfg in .bmad-core .bmad-creative-writing .bmad-infrastructure-devops; do
-  if [ -d "$cfg" ]; then
+  if [ -d "$cfg" ] && [ ! -d ".ai/$cfg" ]; then
     echo "Moving $cfg to .ai/"
     mv "$cfg" .ai/
     ignore_and_untrack "$cfg"
