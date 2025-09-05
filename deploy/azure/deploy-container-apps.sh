@@ -14,7 +14,8 @@ APP_NAME="blackletter"
 echo "🚀 Starting Azure Container Apps deployment..."
 
 # Check if Azure CLI is installed
-if ! command -v az &> /dev/null; then
+if ! command -v az &> /dev/null;
+then
     echo "❌ Azure CLI is not installed. Please install it first:"
     echo "https://docs.microsoft.com/en-us/cli/azure/install-azure-cli"
     exit 1
@@ -22,7 +23,8 @@ fi
 
 # Login to Azure (if not already logged in)
 echo "🔐 Checking Azure login status..."
-if ! az account show &> /dev/null; then
+if ! az account show &> /dev/null;
+then
     echo "Please login to Azure:"
     az login
 fi
@@ -47,10 +49,12 @@ ACR_PASSWORD=$(az acr credential show --name $ACR_NAME --query passwords[0].valu
 echo "🔑 Logging into Azure Container Registry..."
 echo $ACR_PASSWORD | docker login $ACR_SERVER --username $ACR_USERNAME --password-stdin
 
-# Build and push the container image
-echo "🏗️ Building and pushing container image..."
-docker build -t $ACR_SERVER/$APP_NAME:latest -f deploy/docker/Dockerfile .
-docker push $ACR_SERVER/$APP_NAME:latest
+# Build and push the container images
+echo "🏗️ Building and pushing web and api images..."
+docker build -t $ACR_SERVER/${APP_NAME}-web:latest -f deploy/docker/Dockerfile.web .
+docker push $ACR_SERVER/${APP_NAME}-web:latest
+docker build -t $ACR_SERVER/${APP_NAME}-api:latest -f deploy/docker/Dockerfile.api .
+docker push $ACR_SERVER/${APP_NAME}-api:latest
 
 # Install Container Apps extension
 echo "🔧 Installing Container Apps extension..."
@@ -61,21 +65,14 @@ echo "📝 Registering providers..."
 az provider register --namespace Microsoft.App
 az provider register --namespace Microsoft.OperationalInsights
 
-# Replace registry placeholders in the Bicep template so it references the pushed image
-echo "📋 Updating Bicep template with registry credentials..."
-sed -i "s/your-registry.azurecr.io/$ACR_SERVER/g" deploy/azure/container-apps.bicep
-sed -i "s/your-registry-username/$ACR_USERNAME/g" deploy/azure/container-apps.bicep
-sed -i "s/your-registry-password/$ACR_PASSWORD/g" deploy/azure/container-apps.bicep
-
 # Deploy using Bicep template
 echo "🚀 Deploying to Azure Container Apps..."
 az deployment group create \
-    --resource-group $RESOURCE_GROUP \
-    --name container-apps \
-    --template-file deploy/azure/container-apps.bicep \
-    --parameters \
-        appNamePrefix=$APP_NAME \
-        imageTag=latest
+  --resource-group $RESOURCE_GROUP \
+  --template-file deploy/azure/container-apps.bicep \
+  --parameters \
+    appNamePrefix=$APP_NAME \
+    imageTag=latest
 
 # Get the deployment outputs
 WEB_URL=$(az deployment group show --resource-group $RESOURCE_GROUP --name container-apps --query properties.outputs.webUrl.value --output tsv)
@@ -84,6 +81,11 @@ API_URL=$(az deployment group show --resource-group $RESOURCE_GROUP --name conta
 echo "✅ Deployment complete!"
 echo "🌐 Web App URL: $WEB_URL"
 echo "🔗 API URL: $API_URL"
+
+# Update the Bicep template with actual registry details
+sed -i "s/your-registry.azurecr.io/$ACR_SERVER/g" deploy/azure/container-apps.bicep
+sed -i "s/your-registry-username/$ACR_USERNAME/g" deploy/azure/container-apps.bicep
+sed -i "s/your-registry-password/$ACR_PASSWORD/g" deploy/azure/container-apps.bicep
 
 echo "📋 Next steps:"
 echo "1. Test your application at: $WEB_URL"
