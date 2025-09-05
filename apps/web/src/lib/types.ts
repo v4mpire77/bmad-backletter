@@ -25,12 +25,18 @@ export type Finding = {
 
 // Legacy page finding used by tables/pages
 export type PageFinding = {
-  id: string;
+  id?: string;
   rule_id: string;
   snippet: string;
   evidence?: Array<{ page: number; start: number; end: number }>;
   anchors?: string[];
 };
+
+export function ensurePageFindingIds(
+  findings: PageFinding[],
+): Array<PageFinding & { id: string }> {
+  return findings.map((f) => ({ ...f, id: f.id ?? crypto.randomUUID() }));
+}
 
 // Adapter: PageFinding -> Finding (for Drawer)
 export function toFinding(f: PageFinding): Finding {

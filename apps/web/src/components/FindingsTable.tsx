@@ -3,7 +3,7 @@ import React from 'react';
 import type { PageFinding } from '@/lib/types';
 
 type Props = {
-  findings: PageFinding[];
+  findings: Array<PageFinding & { id: string }>;
   onRowClick?: (f: PageFinding) => void;
 };
 
@@ -20,7 +20,7 @@ export default function FindingsTable({ findings, onRowClick }: Props) {
         <tbody>
           {findings.map((f) => (
             <tr
-              key={f.id ?? `${f.rule_id}-${f.snippet.slice(0, 16)}`}
+              key={f.id}
               className="cursor-pointer hover:bg-muted/50"
               onClick={() => onRowClick?.(f)}
             >
