@@ -1,0 +1,24 @@
+FROM node:20-bookworm
+
+# Install pnpm
+RUN corepack enable pnpm
+
+WORKDIR /app
+
+# Copy workspace files for deterministic installs
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json apps/web/package.json
+
+# Install dependencies
+RUN pnpm -C apps/web install --frozen-lockfile
+
+# Copy source code after installing dependencies for better layer caching
+COPY apps/web apps/web
+
+# Build Next.js app
+RUN pnpm -C apps/web build
+
+ENV NODE_ENV=production
+EXPOSE 3000
+
+CMD ["pnpm", "-C", "apps/web", "start", "--", "--hostname", "0.0.0.0", "--port", "3000"]
