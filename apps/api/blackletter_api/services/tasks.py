@@ -54,6 +54,20 @@ def new_job(analysis_id: str | None = None) -> str:
     return job_id
 
 
+def enqueue_job(job_id: str, analysis_id: str, filename: str, size: int) -> None:
+    """Enqueue the document processing job.
+
+    When the ``JOB_SYNC`` environment variable is set to ``"1"`` the task is
+    executed synchronously within the current process.  This behaviour makes
+    tests deterministic and avoids the need for a running Celery worker.  In
+    all other cases the job is dispatched to Celery using ``delay``.
+    """
+    if os.getenv("JOB_SYNC") == "1":
+        process_job(job_id, analysis_id, filename, size)
+    else:
+        process_job.delay(job_id, analysis_id, filename, size)
+
+
 def get_job(job_id: str) -> Optional[JobRecord]:
     data = redis_client.hgetall(_job_key(job_id))
     if not data:
