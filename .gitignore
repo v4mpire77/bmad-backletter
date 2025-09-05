@@ -46,5 +46,4 @@ worktrees/
 .cache/blackletter/
 
 # BMAD Method source (installed separately via npx)
-BMAD-METHOD-main/
-blackletter/blackletter-upstream/BMAD-METHOD-main/
+BMAD-METHOD-main
