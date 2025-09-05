@@ -47,3 +47,4 @@ worktrees/
 
 # BMAD Method source (installed separately via npx)
 BMAD-METHOD-main/
+**/BMAD-METHOD-main/
