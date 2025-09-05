@@ -102,6 +102,16 @@ npx bmad-method-install
 This command copies the required `.bmad-core` configuration without adding the
 entire framework to your project tree.
 
+### Development Tools
+
+**Cleanup Script**
+
+The repository includes a `cleanup.sh` script to archive and untrack vendor directories and other non-essential files. This helps keep the repository clean and focused. To run it:
+
+```bash
+./cleanup.sh
+```
+
 ### POSIX setup
 
 The repository provides a helper script for macOS and Linux environments that mirrors the Windows setup.
