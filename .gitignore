@@ -39,6 +39,28 @@ apps/web/test-results/
 blackletter/
 build/
 dist/
+codex/remove-bmad-method-main-from-source-control
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
+
+# Local git worktrees (not tracked)
+worktrees/
+
+# PR manager runtime artifacts (default cache location)
+# The script writes to ${XDG_CACHE_HOME:-$HOME/.cache}/blackletter/pr-manager by default.
+.cache/blackletter/
+
+# BMAD Method source (installed separately via npx)
+BMAD-METHOD-main
 node_modules/
 resolve_conflicts.py
 worktrees/
+main
