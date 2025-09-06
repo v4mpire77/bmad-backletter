@@ -1,11 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import Link from 'next/link';
 
-export default function LandingPage() {
+const LandingPage = memo(function LandingPage() {
   const [isDarkTheme, setIsDarkTheme] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const toggleTheme = useCallback(() => {
+    setIsDarkTheme(prev => !prev);
+  }, []);
 
   useEffect(() => {
     // Apply theme to body
@@ -21,7 +25,19 @@ export default function LandingPage() {
       setIsScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Throttle scroll events for better performance
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll, { passive: true });
 
     // Initialize fade-in animations
     const elements = document.querySelectorAll('.fade-in');
@@ -33,26 +49,30 @@ export default function LandingPage() {
     });
 
     // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e: Event) {
-        e.preventDefault();
-        const href = (e.currentTarget as HTMLAnchorElement).getAttribute('href');
-        const target = document.querySelector(href || '');
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
+    const handleAnchorClick = (e: Event) => {
+      e.preventDefault();
+      const href = (e.currentTarget as HTMLAnchorElement).getAttribute('href');
+      const target = document.querySelector(href || '');
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    };
+
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    anchors.forEach(anchor => {
+      anchor.addEventListener('click', handleAnchorClick);
     });
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+      anchors.forEach(anchor => {
+        anchor.removeEventListener('click', handleAnchorClick);
+      });
+    };
   }, []);
-
-  const toggleTheme = () => {
-    setIsDarkTheme(!isDarkTheme);
-  };
 
   return (
     <>
@@ -231,4 +251,6 @@ export default function LandingPage() {
       </div>
     </>
   );
-}
+});
+
+export default LandingPage;

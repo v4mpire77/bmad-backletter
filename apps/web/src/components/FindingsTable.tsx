@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import type { PageFinding } from '@/lib/types';
 
 type Props = {
@@ -7,7 +7,11 @@ type Props = {
   onRowClick?: (f: PageFinding) => void;
 };
 
-export default function FindingsTable({ findings, onRowClick }: Props) {
+const FindingsTable = memo(function FindingsTable({ findings, onRowClick }: Props) {
+  const handleRowClick = useCallback((finding: PageFinding) => {
+    onRowClick?.(finding);
+  }, [onRowClick]);
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left">
@@ -22,7 +26,7 @@ export default function FindingsTable({ findings, onRowClick }: Props) {
             <tr
               key={f.id ?? `${f.rule_id}-${f.snippet.slice(0, 16)}`}
               className="cursor-pointer hover:bg-muted/50"
-              onClick={() => onRowClick?.(f)}
+              onClick={() => handleRowClick(f)}
             >
               <td className="py-2 pr-4 whitespace-nowrap">{f.rule_id}</td>
               <td className="py-2">{f.snippet}</td>
@@ -32,4 +36,6 @@ export default function FindingsTable({ findings, onRowClick }: Props) {
       </table>
     </div>
   );
-}
+});
+
+export default FindingsTable;
