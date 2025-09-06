@@ -1,0 +1,8 @@
+docs/**
+rules/**
+tests/**
+tools/**
+AGENTS.md
+ARCHITECTURE.md
+SECURITY.md
+CHANGELOG.md

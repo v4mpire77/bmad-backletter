@@ -65,27 +65,7 @@ for req in "${REQ_PATHS[@]}"; do
 done
 
 # -- Node dependency installation --
-# pnpm is preferred in this workspace; install if missing
-if command -v pnpm >/dev/null 2>&1; then
-  echo "[node] pnpm found: $(command -v pnpm)"
-else
-  if command -v npm >/dev/null 2>&1; then
-    echo "[node] pnpm not found; installing pnpm via npm (may require sudo depending on your environment)"
-    npm install -g pnpm
-  else
-    echo "WARNING: npm not found; please install Node/npm and re-run the script to set up JS dependencies." >&2
-  fi
-fi
-
-# Run pnpm at workspace root (will handle workspace installs) and in apps/web explicitly
-if command -v pnpm >/dev/null 2>&1; then
-  echo "[node] running pnpm install at repo root"
-  pnpm install --filter ./... || pnpm install || true
-  if [ -d "apps/web" ]; then
-    echo "[node] running pnpm install in apps/web"
-    (cd apps/web && pnpm install) || true
-  fi
-fi
+# Node module installer removed as part of cleanup
 
 # Copy .env.example -> .env if .env doesn't exist
 if [ -f .env ] ; then

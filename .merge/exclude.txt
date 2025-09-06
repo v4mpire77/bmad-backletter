@@ -1,0 +1,11 @@
+backup_*/**
+.cursor/**
+.cursorrules
+.qoder/**
+n8n/**
+rag/**
+fixtures/**
+src/**
+.env*
+core-config.yaml
+*secrets*

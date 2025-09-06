@@ -19,9 +19,9 @@ RUN python3 -m venv /opt/venv \
   && pip install --no-cache-dir --prefer-binary -r /tmp/requirements.txt
 
 # Install web dependencies and build Next.js
-RUN npm install --prefix apps/web
+# (Node module installer removed as part of cleanup)
 COPY apps/web apps/web
-RUN npm run build --prefix apps/web
+# RUN npm run build --prefix apps/web
 
 # Copy API source (deps already installed in venv)
 COPY apps/api apps/api

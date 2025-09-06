@@ -1,15 +1,46 @@
-# Node / Next
+# Dependencies
 node_modules/
-.next/
-out/
-.vscode/
+pnpm-lock.yaml
+bun.lock
+deno.lock
+pnpm-workspace.yaml
+package-lock.json
 
-# Python
-__pycache__/
-.venv/
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Build output
+build/*.txt
+web-bundles/
+
+# Environment variables
 .env
-.env.*
 
-# Supabase local
-supabase/.temp/
-docker/
+# System files
+.DS_Store
+Thumbs.db
+
+# Development tools and configs
+.prettierignore
+.prettierrc
+
+# IDE and editor configs
+.windsurf/
+.trae/
+.bmad*/.cursor/
+
+# AI assistant files
+CLAUDE.md
+.ai/*
+.claude
+.gemini
+
+# Project-specific
+.bmad-core
+.bmad-creator-tools
+test-project-install/*
+sample-project/*
+flattened-codebase.xml
+*.stats.md
