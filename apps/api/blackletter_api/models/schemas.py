@@ -110,6 +110,17 @@ class JobStatus(BaseModel):
     created_at: Optional[datetime] = None
 
 
+class JobCreateResponse(BaseModel):
+    """Enhanced response schema for job creation with 202 Accepted pattern.
+    Integrated from v4mpire77/blackletter for async job processing.
+    """
+    job_id: str = Field(description="Created job identifier")
+    status: JobState = Field(default=JobState.queued, description="Initial job status")
+    message: str = Field(default="Job created successfully", description="Status message")
+    location: str = Field(description="URL to check job status")
+    analysis_id: Optional[str] = Field(default=None, description="Analysis ID if available")
+
+
 class ExportOptions(BaseModel):
     include_logo: bool = False
     include_meta: bool = True
