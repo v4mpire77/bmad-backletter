@@ -59,6 +59,51 @@ pnpm dev
 
 > **Note**: These commands assume a `pnpm-workspace.yaml` exists at the repository root to enable pnpm workspace features.
 
+### Enhanced Environment Setup
+
+The platform now supports enhanced async processing with Celery workers and Supabase integration. Key environment variables:
+
+#### Required for Async Processing
+```bash
+# Celery Configuration (integrated from v4mpire77/blackletter)
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+REDIS_URL=redis://localhost:6379/0
+
+# API Security
+SECRET_KEY=your-secret-key-here-replace-in-production
+```
+
+#### Optional Supabase Integration
+```bash
+# Supabase Database (when using Docker Compose)
+SUPABASE_URL=http://localhost:54322
+SUPABASE_ANON_KEY=your-supabase-anon-key
+GOTRUE_JWT_SECRET=your-jwt-secret-replace-in-production
+```
+
+#### Starting the Celery Worker
+
+For background processing of contract analysis jobs:
+
+```bash
+# Start the Celery worker (Unix/Linux/macOS)
+source .venv/bin/activate
+celery -A blackletter_api.services.celery_app:celery_app worker --loglevel=info
+
+# Start with Docker Compose (includes Redis, Supabase, and all services)
+docker-compose up celery redis supabase-db
+```
+
+On Windows PowerShell:
+```powershell
+# Activate virtual environment
+.\.venv\Scripts\Activate.ps1
+
+# Start Celery worker
+celery -A blackletter_api.services.celery_app:celery_app worker --loglevel=info
+```
+
 ### Demo Mode
 
 To run the UI without a backend, enable mock data by setting `NEXT_PUBLIC_USE_MOCKS=1` in your environment. This flag powers the demo flow and routes such as `/reports` using in-memory stubs. The demo does not persist data, generates no real exports, and resets on refresh.
