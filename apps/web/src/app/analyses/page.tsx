@@ -1,25 +1,43 @@
-import React from 'react';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import React, { useState, useEffect } from 'react';
 
-export default async function AnalysesPage() {
-  let items: { id: string; name: string; status: 'pending' | 'complete' }[] = [];
-  let error: string | null = null;
+export default function AnalysesPage() {
+  const [items, setItems] = useState<{ id: string; name: string; status: 'pending' | 'complete' }[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  try {
-    const response = await fetch('/api/analyses');
-    if (!response.ok) {
-      throw new Error('Failed to fetch analyses');
-    }
-    const data = await response.json();
-    items = data.map((a: any) => ({
-      id: a.id,
-      name: a.name,
-      status: a.status,
-    }));
-  } catch (err) {
-    error = 'Failed to load analyses. Please try again later.';
-    console.error('Error loading analyses:', err);
+  useEffect(() => {
+    const fetchAnalyses = async () => {
+      try {
+        const response = await fetch('/api/analyses');
+        if (!response.ok) {
+          throw new Error('Failed to fetch analyses');
+        }
+        const data = await response.json();
+        setItems(data.map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          status: a.status,
+        })));
+      } catch (err) {
+        setError('Failed to load analyses. Please try again later.');
+        console.error('Error loading analyses:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalyses();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        <h1 className="text-2xl font-semibold">Analyses</h1>
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </div>
+    );
   }
 
   return (

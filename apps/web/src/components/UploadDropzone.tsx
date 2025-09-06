@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 
-export default function UploadDropzone() {
+const UploadDropzone = memo(function UploadDropzone() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -13,7 +13,7 @@ export default function UploadDropzone() {
 
   if (networkError) throw networkError;
 
-  const handleFiles = (files: FileList | null) => {
+  const handleFiles = useCallback((files: FileList | null) => {
     const file = files?.[0];
     if (!file) return;
 
@@ -62,23 +62,27 @@ export default function UploadDropzone() {
     };
     xhr.onerror = () => setNetworkError(new Error("Upload failed"));
     xhr.send(body);
-  };
+  }, [router]);
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const onDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     handleFiles(e.dataTransfer.files);
-  };
+  }, [handleFiles]);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     handleFiles(e.target.files);
-  };
+  }, [handleFiles]);
+
+  const handleClick = useCallback(() => {
+    inputRef.current?.click();
+  }, []);
 
   return (
     <div
       className="rounded-2xl border p-8 text-center cursor-pointer"
       onDragOver={(e) => e.preventDefault()}
       onDrop={onDrop}
-      onClick={() => inputRef.current?.click()}
+      onClick={handleClick}
       role="button"
       tabIndex={0}
     >
@@ -109,7 +113,9 @@ export default function UploadDropzone() {
       )}
     </div>
   );
-}
+});
+
+export default UploadDropzone;
 
 export class UploadErrorBoundary extends React.Component<
   React.PropsWithChildren,
