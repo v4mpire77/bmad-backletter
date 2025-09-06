@@ -1,0 +1,200 @@
+{
+  "test_suite_info": {
+    "name": "GDPR Article 28(3) Processor Obligations Test Suite",
+    "version": "1.0.0",
+    "framework": "Context Engineering Framework v2.0.0",
+    "description": "Golden test fixtures for GDPR Article 28(3) processor obligations detection",
+    "created": "2024-01-15",
+    "author": "Blackletter Systems"
+  },
+  "processor_obligations_test_cases": [
+    {
+      "id": "weak_28_3_a_instructions",
+      "category": "28_3_a",
+      "description": "Weak processing instructions compliance - vague authorization",
+      "severity": "high",
+      "contract_text": "The Processor may process Personal Data as it deems appropriate for the purposes of this Agreement. Controller will provide instructions when necessary. Processor reserves the right to process data in accordance with its own policies where Controller instructions are unclear or conflicting.",
+      "expected_issues": [
+        {
+          "type": "weak_language",
+          "severity": "High",
+          "citation": "GDPR Article 28(3)(a)",
+          "snippet": "may process Personal Data as it deems appropriate",
+          "explanation": "Vague processing authorization without specific documented instructions",
+          "confidence_min": 0.70
+        }
+      ],
+      "expected_coverage": {
+        "28_3_a": {
+          "present": true,
+          "strength": "weak",
+          "confidence_min": 0.70,
+          "status": "Partial"
+        }
+      }
+    },
+    {
+      "id": "missing_28_3_b_confidentiality",
+      "category": "28_3_b",
+      "description": "Missing personnel confidentiality requirements",
+      "severity": "high",
+      "contract_text": "Processor shall implement appropriate technical measures to ensure data security. All processing will be conducted professionally by qualified personnel. Staff training on data protection principles will be provided as deemed necessary by Processor.",
+      "expected_issues": [
+        {
+          "type": "missing_obligation",
+          "severity": "High",
+          "citation": "GDPR Article 28(3)(b)",
+          "snippet": "No confidentiality commitment found",
+          "explanation": "Article 28(3)(b) requires explicit personnel confidentiality commitments",
+          "confidence_min": 0.85
+        }
+      ],
+      "expected_coverage": {
+        "28_3_b": {
+          "present": false,
+          "strength": "absent",
+          "confidence_min": 0.85,
+          "status": "GAP"
+        }
+      }
+    },
+    {
+      "id": "strong_28_3_f_breach_notification",
+      "category": "28_3_f",
+      "description": "Strong breach notification clause with specific timeframes",
+      "severity": "low",
+      "contract_text": "Processor shall notify Controller within 24 hours of becoming aware of any personal data breach affecting the Personal Data processed under this Agreement. Such notification shall include detailed information about the nature of the breach, categories and approximate number of data subjects concerned, likely consequences, and measures taken or proposed to address the breach and mitigate potential adverse effects.",
+      "expected_issues": [],
+      "expected_coverage": {
+        "28_3_f": {
+          "present": true,
+          "strength": "strong",
+          "confidence_min": 0.90,
+          "status": "OK"
+        }
+      }
+    },
+    {
+      "id": "weak_28_3_d_subprocessor",
+      "category": "28_3_d",
+      "description": "Weak sub-processor authorization - general consent",
+      "severity": "medium",
+      "contract_text": "Processor may engage sub-processors to assist with the Services, provided that such sub-processors are bound by data protection obligations no less protective than those set forth herein. Controller hereby provides general authorization for the engagement of sub-processors. Processor will maintain a list of current sub-processors and notify Controller of any changes with reasonable advance notice.",
+      "expected_issues": [
+        {
+          "type": "weak_language",
+          "severity": "Medium",
+          "citation": "GDPR Article 28(3)(d)",
+          "snippet": "general authorization for the engagement of sub-processors",
+          "explanation": "General authorization may not meet GDPR requirements for specific prior written authorization",
+          "confidence_min": 0.75
+        }
+      ],
+      "expected_coverage": {
+        "28_3_d": {
+          "present": true,
+          "strength": "weak",
+          "confidence_min": 0.75,
+          "status": "Partial"
+        }
+      }
+    },
+    {
+      "id": "comprehensive_28_3_obligations",
+      "category": "all",
+      "description": "Contract with comprehensive GDPR Article 28(3) coverage",
+      "severity": "low",
+      "contract_text": "1. PROCESSING INSTRUCTIONS: Processor shall process Personal Data strictly in accordance with documented written instructions from Controller, including with regard to transfers of personal data to third countries or international organisations. 2. CONFIDENTIALITY: Processor ensures that persons authorized to process Personal Data have committed themselves to confidentiality or are under an appropriate statutory obligation of confidentiality. 3. SECURITY MEASURES: Processor shall implement appropriate technical and organizational measures to ensure a level of security appropriate to the risk as required by Article 32 GDPR. 4. SUB-PROCESSORS: Processor shall not engage another processor (sub-processor) without prior specific or general written authorization of Controller. 5. DATA SUBJECT RIGHTS: Processor shall assist Controller by appropriate technical and organizational measures, insofar as possible, for the fulfilment of Controller's obligation to respond to requests for exercising data subject rights. 6. BREACH NOTIFICATION: Processor shall notify Controller without undue delay after becoming aware of a personal data breach and assist Controller in meeting its breach notification obligations. 7. DATA DELETION: At the choice of Controller, Processor shall delete or return all Personal Data to Controller after the end of the provision of services and delete existing copies unless Union or Member State law requires storage. 8. AUDIT RIGHTS: Processor shall make available to Controller all information necessary for demonstrating compliance with obligations and allow for and contribute to audits and inspections conducted by Controller or an auditor mandated by Controller.",
+      "expected_issues": [],
+      "expected_coverage": {
+        "28_3_a": {"present": true, "strength": "strong", "confidence_min": 0.90, "status": "OK"},
+        "28_3_b": {"present": true, "strength": "strong", "confidence_min": 0.85, "status": "OK"},
+        "28_3_c": {"present": true, "strength": "strong", "confidence_min": 0.80, "status": "OK"},
+        "28_3_d": {"present": true, "strength": "strong", "confidence_min": 0.85, "status": "OK"},
+        "28_3_e": {"present": true, "strength": "strong", "confidence_min": 0.75, "status": "OK"},
+        "28_3_f": {"present": true, "strength": "strong", "confidence_min": 0.80, "status": "OK"},
+        "28_3_g": {"present": true, "strength": "strong", "confidence_min": 0.85, "status": "OK"},
+        "28_3_h": {"present": true, "strength": "strong", "confidence_min": 0.80, "status": "OK"}
+      }
+    },
+    {
+      "id": "commercial_reasonable_language",
+      "category": "weak_language",
+      "description": "Multiple instances of weak commercial language",
+      "severity": "medium",
+      "contract_text": "Processor will use commercially reasonable efforts to implement security measures. Data subject requests will be handled within a reasonable time. Processor may engage sub-processors where commercially reasonable. Breach notifications will be provided to the extent practicable.",
+      "expected_issues": [
+        {
+          "type": "weak_language",
+          "severity": "Medium",
+          "citation": "GDPR Article 28(3)(c)",
+          "snippet": "commercially reasonable efforts to implement security measures",
+          "explanation": "Commercial reasonableness standard may not meet GDPR requirements",
+          "confidence_min": 0.80
+        },
+        {
+          "type": "weak_language", 
+          "severity": "Medium",
+          "citation": "GDPR Article 28(3)(e)",
+          "snippet": "within a reasonable time",
+          "explanation": "Vague timeframe for data subject rights assistance",
+          "confidence_min": 0.75
+        }
+      ],
+      "expected_coverage": {
+        "28_3_c": {"present": true, "strength": "weak", "confidence_min": 0.80, "status": "Partial"},
+        "28_3_e": {"present": true, "strength": "weak", "confidence_min": 0.75, "status": "Partial"}
+      }
+    },
+    {
+      "id": "minimal_compliance_attempt",
+      "category": "partial_coverage",
+      "description": "Minimal compliance attempt with weak implementation",
+      "severity": "high",
+      "contract_text": "Processor acknowledges GDPR obligations. Data will be processed appropriately. Security measures will be reasonable. Sub-processors may be used if suitable. Controller may audit if necessary.",
+      "expected_issues": [
+        {
+          "type": "weak_language",
+          "severity": "High", 
+          "citation": "GDPR Article 28(3)(a)",
+          "snippet": "Data will be processed appropriately",
+          "explanation": "Vague processing commitment without documented instructions requirement",
+          "confidence_min": 0.85
+        },
+        {
+          "type": "weak_language",
+          "severity": "High",
+          "citation": "GDPR Article 28(3)(c)", 
+          "snippet": "Security measures will be reasonable",
+          "explanation": "Vague security commitment without Article 32 reference",
+          "confidence_min": 0.80
+        }
+      ],
+      "expected_coverage": {
+        "28_3_a": {"present": true, "strength": "weak", "confidence_min": 0.85, "status": "Partial"},
+        "28_3_b": {"present": false, "strength": "absent", "confidence_min": 0.90, "status": "GAP"},
+        "28_3_c": {"present": true, "strength": "weak", "confidence_min": 0.80, "status": "Partial"},
+        "28_3_d": {"present": true, "strength": "weak", "confidence_min": 0.75, "status": "Partial"},
+        "28_3_e": {"present": false, "strength": "absent", "confidence_min": 0.85, "status": "GAP"},
+        "28_3_f": {"present": false, "strength": "absent", "confidence_min": 0.90, "status": "GAP"},
+        "28_3_g": {"present": false, "strength": "absent", "confidence_min": 0.85, "status": "GAP"},
+        "28_3_h": {"present": true, "strength": "weak", "confidence_min": 0.70, "status": "Partial"}
+      }
+    }
+  ],
+  "validation_criteria": {
+    "precision_threshold": 0.85,
+    "recall_threshold": 0.90,
+    "confidence_threshold": 0.70,
+    "max_processing_time_seconds": 60,
+    "required_articles": ["28_3_a", "28_3_b", "28_3_c", "28_3_d", "28_3_e", "28_3_f", "28_3_g", "28_3_h"]
+  },
+  "test_metadata": {
+    "total_test_cases": 7,
+    "coverage_tests": 7,
+    "issue_detection_tests": 5,
+    "weak_language_tests": 4,
+    "missing_obligation_tests": 3,
+    "comprehensive_tests": 1
+  }
+}
