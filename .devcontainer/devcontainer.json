@@ -39,7 +39,12 @@
         "ms-azuretools.vscode-azurestaticwebapps",
         "github.copilot",
         "github.copilot-chat",
-        "robertpiosik.gemini-coder"
+        "robertpiosik.gemini-coder",
+        "Google.geminicodeassist",
+        "printfn.gemini-improved",
+        "Google.gemini-cli-vscode-ide-companion",
+        "google.gemini-cli-vscode-ide-companion",
+        "ms-vscode.remote-explorer"
       ]
     }
   }
