@@ -20,11 +20,10 @@ export function highlightAnchors(evidence: string, anchors: Anchor[]): string {
     if (start < lastIndex || start >= evidence.length) return; // skip overlaps/out of bounds
     result += evidence.slice(lastIndex, start);
     const segment = evidence.slice(start, end);
-    result += `<mark data-anchorkey="a${i}" tabindex="0">${segment}</mark>`;
+    result += `<mark style="background-color:#fef08a;color:#000" data-anchorkey="a${i}" tabindex="0">${segment}</mark>`;
     lastIndex = end;
   });
   result += evidence.slice(lastIndex);
 
-  return DOMPurify.sanitize(result, { ADD_ATTR: ['data-anchorkey', 'tabindex'] });
+  return DOMPurify.sanitize(result, { ADD_ATTR: ['data-anchorkey', 'tabindex', 'style'] });
 }
-

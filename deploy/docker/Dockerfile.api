@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN python -m venv /opt/venv \
+    && . /opt/venv/bin/activate \
+    && pip install --no-cache-dir --prefer-binary -r /tmp/requirements.txt
+
+# Copy API source code
+COPY apps/api apps/api
+
+# Set the module path for the API app. Override at build/run time if needed.
+ARG MODULE_PATH=blackletter_api.main:app
+ENV MODULE_PATH=${MODULE_PATH}
+
+ENV PATH="/opt/venv/bin:${PATH}" \
+    PYTHONUNBUFFERED=1
+
+EXPOSE 8000
+
+CMD ["uvicorn", "${MODULE_PATH}", "--app-dir", "apps/api", "--host", "0.0.0.0", "--port", "8000"]
