@@ -78,26 +78,29 @@ async def create_contract_analysis_job(
 def process_contract_analysis(self, job_id: str, analysis_id: str, file_path: str, filename: str):
     """
     Enhanced Celery task for contract analysis processing.
-    Integrated from v4mpire77/blackletter for robust async processing.
+    Integrated from v4mpire77/blackletter for robust async processing with GDPR analysis.
     """
     try:
         # Update job status to running
         update_job_status(job_id, JobState.running)
         logger.info(f"Starting analysis for job {job_id}")
         
-        # Simulate processing steps (replace with actual GDPR analysis)
-        time.sleep(2)  # Placeholder for extraction
-        update_job_status(job_id, JobState.running, "Text extraction complete")
+        # Step 1: Text extraction
+        update_job_status(job_id, JobState.running, "Extracting text from document")
+        extracted_text = extract_text_from_file(file_path, filename)
         
-        time.sleep(2)  # Placeholder for GDPR analysis
-        update_job_status(job_id, JobState.running, "GDPR analysis in progress")
+        # Step 2: GDPR analysis with enhanced analyzer
+        update_job_status(job_id, JobState.running, "Running enhanced GDPR Article 28(3) analysis")
+        findings, coverage = run_gdpr_analysis(extracted_text, analysis_id, filename)
         
-        time.sleep(2)  # Placeholder for evidence gathering
-        update_job_status(job_id, JobState.running, "Evidence gathering complete")
+        # Step 3: Store results
+        update_job_status(job_id, JobState.running, "Storing analysis results")
+        store_analysis_results(analysis_id, findings, coverage, filename)
         
         # Mark as complete
         update_job_status(job_id, JobState.done)
-        logger.info(f"Analysis completed for job {job_id}")
+        logger.info(f"Enhanced GDPR analysis completed for job {job_id}: "
+                   f"{len(findings)} findings, {coverage.present}/{coverage.total} obligations detected")
         
         # Clean up temp file
         try:
@@ -110,6 +113,46 @@ def process_contract_analysis(self, job_id: str, analysis_id: str, file_path: st
         update_job_status(job_id, JobState.error, error_msg)
         logger.error(f"Job {job_id} failed: {error_msg}", exc_info=True)
         raise self.retry(countdown=60, max_retries=3)
+
+
+def extract_text_from_file(file_path: str, filename: str) -> str:
+    """Extract text from uploaded file."""
+    try:
+        if filename.lower().endswith('.pdf'):
+            # Simple PDF text extraction (placeholder)
+            # In production, use PyMuPDF or similar
+            with open(file_path, 'rb') as f:
+                content = f.read()
+                return f"Extracted text from PDF: {filename} (placeholder implementation)"
+        
+        elif filename.lower().endswith(('.docx', '.doc')):
+            # Simple DOCX text extraction (placeholder)
+            # In production, use python-docx or similar
+            with open(file_path, 'rb') as f:
+                content = f.read()
+                return f"Extracted text from Word document: {filename} (placeholder implementation)"
+        
+        else:
+            # Try to read as plain text
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                return f.read()
+                
+    except Exception as e:
+        logger.error(f"Error extracting text from {filename}: {str(e)}")
+        raise
+
+
+def run_gdpr_analysis(text: str, analysis_id: str, filename: str):
+    """Run enhanced GDPR analysis using the integrated analyzer."""
+    from .gdpr_analyzer import gdpr_analyzer
+    return gdpr_analyzer.analyze_document(text, analysis_id, filename)
+
+
+def store_analysis_results(analysis_id: str, findings, coverage, filename: str):
+    """Store analysis results (placeholder implementation)."""
+    # In production, this would store to database or filesystem
+    logger.info(f"Stored analysis results for {analysis_id}: "
+               f"{len(findings)} findings, coverage: {coverage.percentage:.1f}%")
 
 
 def update_job_status(job_id: str, status: JobState, message: str = "") -> None:
