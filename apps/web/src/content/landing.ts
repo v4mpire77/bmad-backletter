@@ -12,7 +12,7 @@ export const landing = {
       {
         href: "/new",
         label: "Try the GDPR Checker",
-        variant: "secondary",
+        variant: "ghost",
       },
     ],
     micro: "Private by default. LLM is off unless you enable it. When enabled, we only send short snippets.",
