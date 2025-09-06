@@ -9,6 +9,11 @@ export const landing = {
         label: "Try the Demo",
         variant: "primary",
       },
+      {
+        href: "/new",
+        label: "Try the GDPR Checker",
+        variant: "secondary",
+      },
     ],
     micro: "Private by default. LLM is off unless you enable it. When enabled, we only send short snippets.",
   },
